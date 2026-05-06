@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sinq Delivery & Market</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root { --primary: #bc0000; --primary-light: #fcebeb; --bg: #f5f6fa; --white: #ffffff; --text-dark: #2c3e50; --gold: #f1c40f; --success: #27ae60; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); margin: 0; padding: 0; direction: rtl; text-align: right; color: var(--text-dark); overflow-x: hidden; }
+        .container { padding: 15px; padding-bottom: 90px; }
+
+        /* Login & Security */
+        #authView { position: fixed; top:0; left:0; width:100%; height:100vh; background:var(--white); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; box-sizing:border-box; }
+        .auth-logo { width:130px; height:130px; object-fit:cover; border-radius:35px; margin-bottom:20px; box-shadow:0 10px 25px rgba(188,0,0,0.2); animation: pulse 2s infinite; border: 4px solid #fff; }
+        @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.05);} 100% {transform: scale(1);} }
+        .auth-input { width:100%; padding:15px; margin:8px 0; border:1px solid #eee; border-radius:14px; font-size:14px; background:#f9f9f9; outline:none; box-sizing:border-box; }
+        .auth-input:focus { border-color: var(--primary); background: white; }
+        .btn-main { background:var(--primary); color:white; border:none; width:100%; padding:16px; border-radius:14px; font-weight:900; font-size:16px; margin-top:10px; cursor:pointer; box-shadow:0 8px 20px rgba(188,0,0,0.25); transition:0.2s; }
+        .btn-main:active { transform:scale(0.98); }
+
+        /* Header & Nav */
+        .top-header { background:var(--white); padding:12px 15px; position:sticky; top:0; z-index:100; box-shadow:0 2px 10px rgba(0,0,0,0.03); }
+        .header-flex { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+        .loc-chip { background:var(--primary-light); color:var(--primary); padding:8px 15px; border-radius:20px; font-size:13px; font-weight:900; display:flex; align-items:center; gap:5px; cursor:pointer; }
+        .search-bar { width:100%; padding:14px 15px; background:#f0f2f5; border:none; border-radius:14px; font-size:14px; outline:none; box-sizing:border-box; font-family:inherit; }
+
+        .bottom-nav { position:fixed; bottom:0; left:0; width:100%; background:var(--white); display:flex; justify-content:space-around; padding:12px 0 18px; box-shadow:0 -5px 25px rgba(0,0,0,0.06); z-index:1000; border-top-left-radius:25px; border-top-right-radius:25px; }
+        .nav-item { display:flex; flex-direction:column; align-items:center; gap:5px; color:#a0a0a0; font-size:11px; font-weight:900; cursor:pointer; transition:0.3s; width:33.3%; position:relative; }
+        .nav-item.active { color:var(--primary); transform:translateY(-4px); }
+        .cart-badge { background:var(--primary); color:white; font-size:10px; padding:2px 6px; border-radius:10px; position:absolute; top:-5px; right:30%; border:2px solid white; display:none; }
+
+        .view-section { display:none; animation:fadeIn 0.3s; }
+        .view-section.active { display:block; }
+        @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+
+        /* Home UI (Grid & Cards) */
+        .cat-grid-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 8px; margin: 20px 0; }
+        .cat-item { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; }
+        .cat-icon-box { width: 50px; height: 50px; background: var(--white); border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--text-dark); box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: 0.2s; }
+        .cat-item.active .cat-icon-box { background: var(--primary); color: var(--white); transform: scale(1.05); box-shadow: 0 6px 15px rgba(188,0,0,0.2); }
+        .cat-name { font-size: 11px; font-weight: 800; text-align: center; }
+
+        .section-title { font-size: 18px; font-weight: 900; margin: 25px 0 15px; color: #1a1a1a; display: flex; justify-content: space-between; align-items: center; }
+        
+        .grid { display:grid; grid-template-columns:1fr 1fr; gap:15px; }
+        .card { background:var(--white); border-radius:20px; overflow:hidden; box-shadow:0 4px 15px rgba(0,0,0,0.03); cursor:pointer; position: relative; border: 1px solid #f5f5f5; }
+        .card-banner { width:100%; height:110px; object-fit:cover; }
+        .time-badge { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.95); color: var(--text-dark); font-size: 10px; font-weight: 900; padding: 4px 8px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); backdrop-filter: blur(4px); }
+        .card-logo { width: 45px; height: 45px; border-radius: 50%; border: 3px solid white; position: absolute; top: 85px; left: 10px; object-fit: cover; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 2; }
+        .card-body { padding: 12px; padding-top: 25px; }
+        .shop-rating { font-size: 11px; color: #888; display: flex; align-items: center; gap: 3px; font-weight: bold; margin-top: 4px; }
+
+        /* Shop Profile Modal */
+        #shopView { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--bg); z-index:2000; overflow-y:auto; padding-bottom:80px; }
+        .shop-header-wrapper { position: relative; width: 100%; height: 200px; }
+        .shop-banner-img { width: 100%; height: 100%; object-fit: cover; }
+        .shop-logo-img { width: 90px; height: 90px; border-radius: 50%; border: 4px solid white; position: absolute; bottom: -45px; right: 50%; transform: translateX(50%); object-fit: cover; box-shadow: 0 5px 15px rgba(0,0,0,0.15); background: white; z-index: 10; }
+        .back-circle { position:absolute; top:15px; right:15px; background:rgba(255,255,255,0.9); width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 10px rgba(0,0,0,0.1); font-size:18px; cursor:pointer; z-index:20; }
+        .shop-info-card { background:white; margin: 55px 15px 15px; border-radius:20px; padding:20px; padding-top:10px; box-shadow: 0 5px 25px rgba(0,0,0,0.05); text-align:center; position: relative; z-index: 5; }
+        
+        .product-card { display: flex; background: var(--white); border-radius: 16px; padding: 10px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); align-items: center; gap: 12px; border: 1px solid #f5f5f5; cursor:pointer; }
+        .add-btn { background: var(--primary-light); color: var(--primary); border: none; width: 35px; height: 35px; border-radius: 10px; font-size: 18px; font-weight:bold; cursor: pointer; display: flex; align-items: center; justify-content: center; transition:0.2s;}
+        .add-btn:active { transform:scale(0.9); }
+
+        /* Product Detail & AI Modal */
+        #productModal { position:fixed; top:0; left:0; width:100%; height:100%; background:var(--white); z-index:3000; display:none; overflow-y:auto; padding-bottom:80px; }
+        .prod-banner { width:100%; height:300px; object-fit:cover; border-bottom-left-radius:30px; border-bottom-right-radius:30px; box-shadow:0 5px 15px rgba(0,0,0,0.1); }
+        .ai-box { background:linear-gradient(135deg, #e8f4fd, #fdf2f2); padding:15px; border-radius:16px; margin-top:15px; border:1px solid #d6eaf8; display:none; line-height:1.5; font-size:14px; }
+        .fav-btn { color:#ddd; font-size:24px; cursor:pointer; transition:0.2s; }
+        .fav-btn.active { color:var(--primary); transform:scale(1.1); }
+
+        /* Cart View */
+        .cart-item { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px; border-radius: 16px; margin-bottom: 10px; border: 1px solid #eee; }
+        .remove-btn { color: #e74c3c; background: #fadbd8; border: none; width: 30px; height: 30px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+        /* Smart Payment UI */
+        #paymentOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 4000; display: none; align-items: flex-end; backdrop-filter: blur(3px); }
+        .payment-modal { background: white; width: 100%; border-top-left-radius: 30px; border-top-right-radius: 30px; padding: 30px 20px; box-sizing: border-box; animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-height:90vh; overflow-y:auto; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .pay-option { display: flex; align-items: center; justify-content: space-between; padding: 18px; border: 2px solid #f0f0f0; border-radius: 16px; margin-bottom: 15px; font-weight: 900; cursor: pointer; transition: 0.2s; background: white; }
+        .pay-option i { font-size: 26px; }
+        .pay-option:active { transform: scale(0.98); }
+        .pay-telebirr { color: #0088cc; }
+        .pay-cbe { color: #8e44ad; }
+        .digital-pay-box { background: #f9f9f9; padding: 20px; border-radius: 16px; border: 1px solid #eee; margin-bottom: 15px; text-align: center; }
+        .acc-number-box { background: white; border: 2px dashed var(--primary); color: var(--text-dark); padding: 15px; border-radius: 12px; font-size: 20px; font-weight: 900; letter-spacing: 2px; margin: 15px 0; display: flex; justify-content: space-between; align-items: center; }
+        .copy-btn { background: var(--primary-light); color: var(--primary); border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
+        .file-upload-wrapper { position: relative; width: 100%; margin-bottom: 20px; }
+        .file-upload-input { width: 100%; padding: 15px; background: #fff; border: 2px dashed #ddd; border-radius: 14px; text-align: center; cursor: pointer; }
+
+        /* Security Profile & KYC */
+        .wallet-card { background: linear-gradient(135deg, var(--primary), #e74c3c); border-radius: 20px; padding: 20px; color: white; box-shadow: 0 10px 25px rgba(188,0,0,0.3); margin-bottom: 20px; display:flex; align-items:center; gap:15px; }
+        .verified-badge { background: var(--success); color: white; padding: 4px 10px; border-radius: 20px; font-size: 11px; display: flex; align-items: center; gap: 5px; margin-top: 5px; width: fit-content; }
+        .unverified-badge { background: #e74c3c; color: white; padding: 4px 10px; border-radius: 20px; font-size: 11px; display: flex; align-items: center; gap: 5px; margin-top: 5px; width: fit-content; }
+        .security-box { background: white; padding: 20px; border-radius: 16px; border: 2px dashed #ddd; margin-bottom: 15px; display: none; }
+        .profile-menu-item { background: white; padding: 18px 20px; border-radius: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; font-weight: 800; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .menu-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+
+        /* Promo Modal */
+        #promoModalOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
+        .promo-content { position: relative; width: 85%; max-width: 350px; animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .promo-img { width: 100%; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); display: block; }
+        .promo-close { position: absolute; bottom: -60px; left: 50%; transform: translateX(-50%); background: transparent; border: 2px solid white; color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div id="authView">
+    <img src="https://i.ibb.co/4gdWgwW7/x.jpg" class="auth-logo">
+    <h1 style="margin:0; color:var(--primary); font-size:35px;">Sinq.</h1>
+    <p style="color:#888; margin-bottom:30px; font-weight:bold; text-align:center;">እባክዎ ትክክለኛ መረጃዎን ያስገቡ</p>
+    
+    <input type="text" id="regName" class="auth-input" placeholder="👤 ትክክለኛ ሙሉ ስምዎ">
+    <input type="tel" id="regPhone" class="auth-input" placeholder="📱 ስልክ ቁጥር (09/07...)">
+    
+    <button class="btn-main" id="regBtn" onclick="secureRegister()">ወደ ሲንቅ ግባ <i class="fa-solid fa-arrow-left"></i></button>
+    <div style="font-size:10px; color:#aaa; margin-top:20px;"><i class="fa-solid fa-lock"></i> በቴሌግራም ጥበቃ የተረጋገጠ</div>
+</div>
+
+<div id="mainApp" style="display:none;">
+
+    <div class="top-header">
+        <div class="header-flex">
+            <div class="loc-chip" onclick="switchTab('profileView', document.getElementById('navProfile'))">
+                <i class="fa-solid fa-location-dot"></i> <span id="headerLoc">ኮምቦልቻ (አድራሻ)</span>
+            </div>
+            <img src="https://i.ibb.co/ZjxfXn7/x.jpg" style="height:32px; border-radius:8px;">
+        </div>
+        <input type="text" class="search-bar" id="searchInput" placeholder="🔍 ሱቅ፣ እቃ ወይም ምግብ ይፈልጉ..." onkeyup="searchItems()">
+    </div>
+
+    <div id="homeView" class="view-section active container">
+        
+        <div class="cat-grid-container">
+            <div class="cat-item active" onclick="filterCat('ሁሉንም', this)"><div class="cat-icon-box"><i class="fa-solid fa-border-all"></i></div><span class="cat-name">ሁሉንም</span></div>
+            <div class="cat-item" onclick="filterCat('ምግብ ቤቶች', this)"><div class="cat-icon-box" style="color:#e67e22;"><i class="fa-solid fa-burger"></i></div><span class="cat-name">ምግብ</span></div>
+            <div class="cat-item" onclick="filterCat('ሱፐርማርኬት', this)"><div class="cat-icon-box" style="color:#27ae60;"><i class="fa-solid fa-cart-shopping"></i></div><span class="cat-name">ማርኬት</span></div>
+            <div class="cat-item" onclick="filterCat('መጠጦች', this)"><div class="cat-icon-box" style="color:#8e44ad;"><i class="fa-solid fa-wine-bottle"></i></div><span class="cat-name">መጠጥ</span></div>
+            <div class="cat-item" onclick="filterCat('ፋርማሲ', this)"><div class="cat-icon-box" style="color:#e74c3c;"><i class="fa-solid fa-pills"></i></div><span class="cat-name">ፋርማሲ</span></div>
+            <div class="cat-item" onclick="filterCat('ኮስሞቲክስ', this)"><div class="cat-icon-box" style="color:#ff4757;"><i class="fa-solid fa-spa"></i></div><span class="cat-name">ኮስሞቲክስ</span></div>
+            <div class="cat-item" onclick="filterCat('ኤሌክትሮኒክስ', this)"><div class="cat-icon-box" style="color:#2980b9;"><i class="fa-solid fa-tv"></i></div><span class="cat-name">ኤሌክትሮኒክስ</span></div>
+            <div class="cat-item" onclick="filterCat('ነፃ ገበያ', this)"><div class="cat-icon-box" style="color:#34495e;"><i class="fa-solid fa-store"></i></div><span class="cat-name">ገበያ</span></div>
+        </div>
+
+        <div class="section-title" id="gridTitle">
+            ሱቆች እና ገበያ <span style="font-size:12px; color:var(--primary); cursor:pointer;">ሁሉንም እይ</span>
+        </div>
+        <div class="grid" id="shopGrid"></div>
+        <div id="searchResults" style="display:none;"></div>
+    </div>
+
+    <div id="cartView" class="view-section container">
+        <h2 style="color:var(--primary); margin-top:0;">ቅርጫት 🛒</h2>
+        <div id="cartItemsList"></div>
+        
+        <div id="cartTotalDisplay" style="display:none; background:white; padding:20px; border-radius:16px; box-shadow:0 4px 15px rgba(0,0,0,0.03);">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-weight:bold; color:#666;"><span>የእቃ ሂሳብ:</span><span id="subTotal">0 ብር</span></div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-weight:bold; color:#666;"><span>ዴሊቬሪ ክፍያ:</span><span>50 ብር</span></div>
+            <hr style="border:0; border-top:1px dashed #ccc; margin:15px 0;">
+            <div style="display:flex; justify-content:space-between; color:var(--primary); font-size:20px; font-weight:900;"><span>ጠቅላላ:</span><span id="grandTotal">0 ብር</span></div>
+            
+            <button class="btn-main" style="margin-top:20px;" onclick="openSmartPayment()">ትዕዛዙን አረጋግጥ (Checkout)</button>
+        </div>
+        <div id="emptyCartMsg" style="text-align:center; color:#999; padding:60px 20px;">ቅርጫትዎ ባዶ ነው</div>
+    </div>
+
+    <div id="profileView" class="view-section container">
+        
+        <div class="wallet-card">
+            <div style="width: 60px; height: 60px; background: white; color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 25px;">👤</div>
+            <div>
+                <h2 id="profileNameDisplay" style="margin:0 0 2px; font-size: 18px;"></h2>
+                <div id="verificationStatus" class="unverified-badge"><i class="fa-solid fa-xmark"></i> ያልተረጋገጠ ሻጭ</div>
+            </div>
+        </div>
+
+        <div class="profile-menu-item" onclick="updateLocation()">
+            <div class="menu-icon" style="background:#e8f4fd; color:#3498db;"><i class="fa-solid fa-location-dot"></i></div>
+            <div style="flex-grow:1;"><div style="font-size:14px;">የማድረሻ አድራሻ (ካርታ)</div></div>
+            <i class="fa-solid fa-chevron-left" style="color:#ddd;"></i>
+        </div>
+
+        <div id="kycBox" class="security-box" style="display:block;">
+            <h3 style="margin:0 0 5px; color:#e74c3c;"><i class="fa-solid fa-shield-halved"></i> የሻጭነት ማረጋገጫ (KYC)</h3>
+            <p style="font-size:12px; color:#666; margin-bottom:15px;">በሲንቅ ላይ እቃ ለመሸጥ፣ የፋይዳ (Fayda) መታወቂያዎን ማስገባት ግዴታ ነው።</p>
+            <input type="file" id="idPhoto" class="auth-input" accept="image/*">
+            <button class="btn-main" id="verifyBtn" onclick="submitKYC()">ለማረጋገጫ ላክ</button>
+            <hr style="border:0; border-top:1px dashed #ccc; margin:15px 0;">
+            <div style="display:flex; gap:10px;">
+                <input type="password" id="verifyCode" class="auth-input" style="margin:0;" placeholder="የማረጋገጫ ኮድ">
+                <button class="btn-main" style="width:auto; margin:0;" onclick="checkVerificationCode()">አረጋግጥ</button>
+            </div>
+        </div>
+
+        <div id="sellerDashboard" class="security-box" style="border-color:var(--success);">
+            <h3 style="margin:0 0 10px; color:var(--success);"><i class="fa-solid fa-store"></i> የሻጭ መቆጣጠሪያ</h3>
+            <input type="file" id="sellPhoto" class="auth-input" accept="image/*">
+            <input type="text" id="sellName" class="auth-input" placeholder="የእቃው ስም">
+            <input type="number" id="sellPrice" class="auth-input" placeholder="ዋጋ (በብር)">
+            <button class="btn-main" id="uploadBtn" style="background:var(--success);" onclick="submitSecureProduct()">እቃውን ገበያ ላይ አውጣ</button>
+        </div>
+
+        <button class="btn-main" style="background:#fdedec; color:#e74c3c; margin-top:20px; box-shadow:none;" onclick="logout()">ከአካውንት ውጣ</button>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('homeView', this)"><i class="fa-solid fa-home"></i><span>ዋና</span></div>
+        <div class="nav-item" style="position:relative;" onclick="switchTab('cartView', this)">
+            <i class="fa-solid fa-basket-shopping"></i><span class="cart-badge" id="navCartCount">0</span><span>ቅርጫት</span>
+        </div>
+        <div class="nav-item" id="navProfile" onclick="switchTab('profileView', this)"><i class="fa-solid fa-user"></i><span>ፕሮፋይል</span></div>
+    </div>
+
+</div>
+
+<div id="shopView">
+    <div class="shop-header-wrapper">
+        <img id="shopBanner" class="shop-banner-img" src="">
+        <div class="back-circle" onclick="document.getElementById('shopView').style.display='none'"><i class="fa-solid fa-arrow-right"></i></div>
+        <img id="shopLogo" class="shop-logo-img" src="">
+    </div>
+    <div class="shop-info-card">
+        <h2 id="shopName" style="margin:0 0 5px; font-weight:900; font-size:22px;"></h2>
+        <p id="shopDesc" style="color:var(--text-muted); font-size:13px; margin:0; font-weight:600;"></p>
+        <div class="shop-rating" style="justify-content:center; margin-top:5px; font-size:14px;"><i class="fa-solid fa-star" style="color:var(--gold);"></i> <span id="shopRatingVal"></span> Rating</div>
+    </div>
+    <div class="container" style="padding-top:0;">
+        <h3 style="margin-top:0; font-weight:900;">ምርቶች</h3>
+        <div id="productGrid"></div>
+    </div>
+</div>
+
+<div id="productModal">
+    <div class="back-circle" onclick="document.getElementById('productModal').style.display='none'"><i class="fa-solid fa-arrow-right"></i></div>
+    <img id="modalImg" class="prod-banner" style="border-radius:0; height:300px;">
+    <div class="container" style="margin-top:-30px; position:relative; z-index:10;">
+        <div style="background:white; padding:20px; border-radius:20px; box-shadow:0 5px 15px rgba(0,0,0,0.05);">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2 id="modalName" style="margin:0; font-weight:900; font-size:22px;"></h2>
+            </div>
+            <p id="modalShop" style="color:#888; font-weight:bold; margin:5px 0 10px;"></p>
+            <h1 id="modalPrice" style="color:var(--primary); margin:10px 0;"></h1>
+            
+            <button class="btn-main" style="background:#e8f4fd; color:#3498db; box-shadow:none;" onclick="triggerAI()"><i class="fa-solid fa-robot"></i> ስለ እቃው AI ጠይቅ</button>
+            <div id="aiResponse" class="ai-box"></div>
+            
+            <button class="btn-main" style="background:var(--success); margin-top:15px;" id="modalAddBtn">ወደ ቅርጫት ጨምር <i class="fa-solid fa-plus"></i></button>
+        </div>
+    </div>
+</div>
+
+<div id="promoModalOverlay">
+    <div class="promo-content">
+        <img src="https://i.ibb.co/Cs1qJDh7/x.jpg" class="promo-img">
+        <button class="btn-main" style="position:absolute; bottom:20px; left:50%; transform:translateX(-50%); width: 80%; box-shadow: 0 5px 15px rgba(0,0,0,0.5);" onclick="closePromo()">አሁን ይገበያዩ 🛍️</button>
+        <button class="promo-close" onclick="closePromo()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+</div>
+
+<div id="paymentOverlay">
+    <div class="payment-modal">
+        <div id="paymentSelectionBox">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h2 style="margin:0; font-weight:900;">በምን መክፈል ይፈልጋሉ?</h2>
+                <div onclick="closePayment()" style="background:#f0f0f0; width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer;"><i class="fa-solid fa-xmark"></i></div>
+            </div>
+            <div class="pay-option pay-telebirr" onclick="showDigitalForm('Telebirr', '096910607')">
+                <div><i class="fa-solid fa-mobile-screen-button"></i> በ ቴሌብር (Telebirr)</div><i class="fa-solid fa-chevron-left" style="font-size:18px;"></i>
+            </div>
+            <div class="pay-option pay-cbe" onclick="showDigitalForm('CBE', '1000562339427')">
+                <div><i class="fa-solid fa-building-columns"></i> በ ንግድ ባንክ (CBE Birr)</div><i class="fa-solid fa-chevron-left" style="font-size:18px;"></i>
+            </div>
+        </div>
+
+        <div id="digitalPaymentForm" style="display:none;">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px; cursor:pointer; color:var(--primary); font-weight:bold;" onclick="backToMethods()">
+                <i class="fa-solid fa-arrow-right"></i> ወደ ኋላ
+            </div>
+            <h3 style="margin:0; text-align:center; color:#333;">በ <span id="selectedMethodText"></span> ይክፈሉ</h3>
+            <p style="text-align:center; font-size:12px; color:#888;">እባክዎ ጠቅላላ ሂሳቡን (<span id="payAmountDisp" style="font-weight:bold; color:var(--primary);"></span>) ከታች ባለው አካውንት ገቢ ያድርጉና ደረሰኝ ያስገቡ።</p>
+            
+            <div class="digital-pay-box" style="display:block;">
+                <div style="font-size:14px; color:#666;">የአካውንት ስም: <b style="color:#222;">Aymen Kemal</b></div>
+                <div class="acc-number-box">
+                    <span id="accNumberDisplay"></span>
+                    <button class="copy-btn" onclick="copyAccount()"><i class="fa-solid fa-copy"></i> ኮፒ</button>
+                </div>
+            </div>
+
+            <label style="font-size:13px; font-weight:900; color:var(--primary); display:block; margin-bottom:5px;">የክፍያ ማረጋገጫ (Screenshot) *</label>
+            <div class="file-upload-wrapper">
+                <input type="file" id="paymentScreenshot" class="file-upload-input" accept="image/*">
+            </div>
+            <button class="btn-main" id="confirmPayBtn" onclick="processScreenshotOrder()">አረጋግጥ እና እዘዝ <i class="fa-solid fa-check"></i></button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    
+    // 🌟 BOT TOKENS & SECURITY CONFIG 🌟
+    const orderBotToken = "8666783314:AAEzdZ0VOUJ7MFH8-UeT900z-fm80ds7NVk"; 
+    const sellerBotToken = "8626862233:AAFEvJNgNTgB1VOCdz9NDE8fQO7UDk-LXXk"; 
+    const regBotToken = "8763423685:AAGPbYp7YNfSeTp_d49eco86gkx30IyDOxE"; 
+    const adminId = "1493452810"; 
+    const SECRET_VERIFICATION_CODE = "SINQ2026-YES"; 
+
+    let cart = [];
+    let currentCategory = 'ሁሉንም';
+    let selectedBankMethod = "";
+    let lastOrderTime = 0;
+    let lastUploadTime = 0;
+
+    // 🌟 DATABASE 🌟
+    const shops = [
+        { id: 1, name: "አዎርስ ካፌ", category: "ምግብ ቤቶች", time: "15-30 ደቂቃ", rating: 4.8, desc: "ምግቦች እና መጠጦች", logo: "https://i.ibb.co/3r5x2w5/awors.jpg", banner: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=600", items: [{ name: "ፒዛ", price: 250, img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400" }, { name: "በርገር", price: 500, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400" }] },
+        { id: 2, name: "አሞር ካፌ", category: "ምግብ ቤቶች", time: "20-40 ደቂቃ", rating: 4.6, desc: "ቁርስ፣ ሳንድዊች እና ፒዛ", logo: "https://i.ibb.co/bWcQ5M6/amor.jpg", banner: "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?w=600", items: [{ name: "ስፔሻል ፉል", price: 130, img: "https://images.unsplash.com/photo-1548943487-a2e4b43b5852?w=400" }, { name: "ስፔሻል ፒዛ", price: 450, img: "https://images.unsplash.com/photo-1604381720451-3eaa9ee036b7?w=400" }] },
+        { id: 4, name: "Asli Cosmetics", category: "ኮስሞቲክስ", time: "10-20 ደቂቃ", rating: 4.9, desc: "ኦርጅናል የውበት መጠበቂያ", logo: "https://i.ibb.co/B5bKG1yc/x.jpg", banner: "https://i.ibb.co/Cs1qJDh7/x.jpg", items: [ { name: "Savuage ሽቶ (100ml)", price: 2000, img: "https://i.ibb.co/v4rx3HVg/x.jpg" }, { name: "Vaseline Body Lotion", price: 600, img: "https://i.ibb.co/j96dX3fL/x.jpg" }, { name: "Dr. Davey Facial Cleanser", price: 150, img: "https://i.ibb.co/Wvq3BzHs/x.jpg" }] },
+        { id: 5, name: "Shoa Supermarket", category: "ሱፐርማርኬት", time: "30-50 ደቂቃ", rating: 4.5, desc: "የቤት ፍጆታዎች", logo: "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=100", banner: "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=600", items: [] },
+        { id: 100, name: "የሲንቅ ነፃ ገበያ", category: "ነፃ ገበያ", time: "በስምምነት", rating: 4.2, desc: "ከሰው ለሰው መገበያያ", logo: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=100", banner: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600", items: [{ name: "iPhone 13 Pro", price: 65000, img: "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=400" }] }
+    ];
+
+    window.onload = function() {
+        if(localStorage.getItem('sinq_user_name')) {
+            document.getElementById('authView').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            document.getElementById('displayUserName').innerText = localStorage.getItem('sinq_user_name');
+            document.getElementById('profileNameDisplay').innerText = localStorage.getItem('sinq_user_name');
+            
+            if(localStorage.getItem('sinq_loc_str')) document.getElementById('headerLoc').innerText = "✅ ተመዝግቧል";
+            if(localStorage.getItem('sinq_kyc_hash') === btoa(SECRET_VERIFICATION_CODE)) unlockSellerDashboard();
+            
+            renderHomeItems();
+            
+            // Promo Popup Logic
+            if(!sessionStorage.getItem('promo_seen')) {
+                setTimeout(() => { document.getElementById('promoModalOverlay').style.display = 'flex'; }, 1000);
+            }
+        }
+    }
+
+    // 🌟 SECURE REGISTER 🌟
+    function secureRegister() {
+        let name = document.getElementById('regName').value.trim();
+        let phone = document.getElementById('regPhone').value.trim();
+        const phoneRegex = /^(09|07)\d{8}$/;
+        
+        if(!name || !phone) { alert("እባክዎ ሙሉ ስምዎን እና ስልክዎን ያስገቡ!"); return; }
+        if(!phoneRegex.test(phone)) { alert("❌ የስልክ ቁጥር ስህተት! እባክዎ 09 ወይም 07 ብለው የሚጀምር 10 ቁጥር ያስገቡ።"); return; }
+        
+        let tgId = tg.initDataUnsafe?.user?.id || "Web_" + Date.now();
+        let tgUsername = tg.initDataUnsafe?.user?.username || "Unknown";
+
+        let btn = document.getElementById('regBtn');
+        btn.innerHTML = "በመግባት ላይ... ⏳"; btn.disabled = true;
+
+        let msg = `🆕 **አዲስ ደንበኛ ተመዘገበ** 🆕\n\n👤 ስም: ${name}\n📱 ስልክ: ${phone}\n🆔 TG ID: \`${tgId}\`\n🔗 Username: @${tgUsername}`;
+
+        fetch(`https://api.telegram.org/bot${regBotToken}/sendMessage`, {
+            method: "POST", headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({chat_id: adminId, text: msg, parse_mode: "Markdown"})
+        }).then(() => {
+            localStorage.setItem('sinq_user_name', name);
+            localStorage.setItem('sinq_user_phone', phone);
+            localStorage.setItem('sinq_tg_id', tgId);
+            localStorage.setItem('sinq_tg_username', tgUsername);
+            window.onload();
+        }).catch(() => {
+            alert("❌ የኢንተርኔት ግንኙነትዎን ያረጋግጡ!");
+            btn.innerHTML = "ወደ ሲንቅ ግባ <i class='fa-solid fa-arrow-left'></i>"; btn.disabled = false;
+        });
+    }
+
+    // UTILS
+    function closePromo() { document.getElementById('promoModalOverlay').style.display = 'none'; sessionStorage.setItem('promo_seen', 'true'); }
+    function switchTab(tabId, el) {
+        document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        el.classList.add('active');
+    }
+    function updateLocation() {
+        if (navigator.geolocation) {
+            document.getElementById('headerLoc').innerText = "በመፈለግ ላይ...";
+            navigator.geolocation.getCurrentPosition(pos => {
+                let userLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                localStorage.setItem('sinq_loc_str', 'saved');
+                localStorage.setItem('sinq_loc_coords', JSON.stringify(userLoc));
+                document.getElementById('headerLoc').innerText = "✅ ተመዝግቧል";
+                alert("📍 የማድረሻ ቦታዎ በተሳካ ሁኔታ ተመዝግቧል!");
+            }, err => { alert("❌ እባክዎ የስልክዎን ሎኬሽን (GPS) ያብሩ!"); document.getElementById('headerLoc').innerText = "ኮምቦልቻ (አድራሻ)"; });
+        }
+    }
+
+    // 🌟 HOME RENDERING 🌟
+    function filterCat(cat, el) {
+        currentCategory = cat;
+        document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('active'));
+        el.classList.add('active');
+        renderHomeItems();
+    }
+    function renderHomeItems() {
+        let html = '';
+        let filtered = currentCategory === 'ሁሉንም' ? shops : shops.filter(s => s.category === currentCategory);
+        filtered.forEach(shop => {
+            html += `
+            <div class="card" onclick="openShop(${shop.id})">
+                <div class="time-badge">🛵 ${shop.time}</div>
+                <img src="${shop.banner}" class="card-banner">
+                <img src="${shop.logo}" class="card-logo" onerror="this.src='https://via.placeholder.com/100/bc0000/fff?text=S'">
+                <div class="card-body">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <b style="font-size:15px;">${shop.name}</b>
+                        <div class="shop-rating"><i class="fa-solid fa-star" style="color:var(--gold);"></i> ${shop.rating}</div>
+                    </div>
+                    <div style="font-size:12px; color:#888; margin-top:2px;">${shop.desc}</div>
+                </div>
+            </div>`;
+        });
+        document.getElementById('shopGrid').innerHTML = html || "<p style='grid-column:span 2; text-align:center;'>ምንም የለም</p>";
+    }
+
+    // 🌟 SHOP & PRODUCT MODALS 🌟
+    function openShop(id) {
+        let shop = shops.find(s => s.id === id);
+        document.getElementById('shopView').style.display = 'block';
+        document.getElementById('shopBanner').src = shop.banner;
+        document.getElementById('shopLogo').src = shop.logo;
+        document.getElementById('shopName').innerText = shop.name;
+        document.getElementById('shopDesc').innerText = shop.desc;
+        document.getElementById('shopRatingVal').innerText = shop.rating;
+        
+        let phtml = '';
+        shop.items.forEach(item => {
+            phtml += `<div class="product-card" onclick="openProduct('${shop.name}', '${item.name}', ${item.price}, '${item.img}')"><img src="${item.img}" style="width:70px; height:70px; border-radius:12px; object-fit:cover;"><div style="flex-grow:1;"><div style="font-weight:900;">${item.name}</div><div style="color:var(--primary); font-weight:bold;">${item.price} ብር</div></div><button class="add-btn" onclick="event.stopPropagation(); addToCart('${shop.name}', '${item.name}', ${item.price})"><i class="fa-solid fa-plus"></i></button></div>`;
+        });
+        document.getElementById('productGrid').innerHTML = phtml || "<p style='text-align:center;'>ዕቃዎች በቅርቡ ይገባሉ</p>";
+    }
+
+    let currentProd = {};
+    function openProduct(shop, name, price, img) {
+        currentProd = {shop, name, price, img};
+        document.getElementById('modalImg').src = img;
+        document.getElementById('modalName').innerText = name;
+        document.getElementById('modalShop').innerText = "ከ " + shop;
+        document.getElementById('modalPrice').innerText = price + " ብር";
+        document.getElementById('aiResponse').style.display = 'none';
+        document.getElementById('modalAddBtn').onclick = () => { addToCart(shop, name, price); document.getElementById('productModal').style.display='none'; };
+        document.getElementById('productModal').style.display = 'block';
+    }
+
+    function triggerAI() {
+        let box = document.getElementById('aiResponse');
+        box.style.display = 'block'; box.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Sinq AI እያሰበ ነው...`;
+        setTimeout(() => {
+            box.innerHTML = `🤖 **Sinq AI ማብራሪያ:**<br><br>**${currentProd.name}** በኮምቦልቻ ከ **${currentProd.shop}** የሚቀርብ ምርጥ ምርት ነው። በ **${currentProd.price} ብር** ብቻ የቀረበ ሲሆን፣ ጥራቱ የተረጋገጠ ነው።`;
+        }, 1500);
+    }
+
+    // 🌟 CART SYSTEM 🌟
+    function addToCart(shop, name, price) {
+        cart.push({ id: Date.now(), shop, name, price });
+        updateCartUI();
+        tg.HapticFeedback.impactOccurred("medium");
+        alert(`✅ ${name} ወደ ቅርጫት ገብቷል`);
+    }
+
+    function removeFromCart(id) { cart = cart.filter(item => item.id !== id); updateCartUI(); }
+
+    function updateCartUI() {
+        let count = cart.length;
+        let badge = document.getElementById('navCartCount');
+        if(count > 0) {
+            badge.style.display = 'block'; badge.innerText = count;
+            document.getElementById('cartTotalDisplay').style.display = 'block';
+            document.getElementById('emptyCartMsg').style.display = 'none';
+            let html = '', subTotal = 0;
+            cart.forEach(item => {
+                subTotal += item.price;
+                html += `<div class="cart-item"><div><b style="font-size:15px;">${item.name}</b><div style="font-size:12px; color:#888;">${item.shop}</div><div style="color:var(--primary); font-weight:900;">${item.price} ብር</div></div><button class="remove-btn" onclick="removeFromCart(${item.id})"><i class="fa-solid fa-xmark"></i></button></div>`;
+            });
+            document.getElementById('cartItemsList').innerHTML = html;
+            document.getElementById('subTotal').innerText = subTotal + " ብር";
+            document.getElementById('grandTotal').innerText = (subTotal + 50) + " ብር";
+        } else {
+            badge.style.display = 'none';
+            document.getElementById('cartItemsList').innerHTML = '';
+            document.getElementById('emptyCartMsg').style.display = 'block';
+            document.getElementById('cartTotalDisplay').style.display = 'none';
+        }
+    }
+
+    // 🌟 PAYMENT & ORDERING 🌟
+    function openSmartPayment() {
+        let locStr = localStorage.getItem('sinq_loc_str');
+        if(!locStr) { alert("❌ እባክዎ መጀመሪያ የማድረሻ ሎኬሽንዎን (ካርታ) ያስመዝግቡ!"); switchTab('profileView', document.getElementById('navProfile')); return; }
+        if(Date.now() - lastOrderTime < 60000) { alert("⚠️ እባክዎ ቀጣይ ትዕዛዝ ለማድረግ 1 ደቂቃ ይጠብቁ (Spam Protection)!"); return; }
+
+        let subTotal = cart.reduce((s, i) => s + i.price, 0);
+        document.getElementById('paymentOverlay').style.display = 'flex';
+        document.getElementById('paymentSelectionBox').style.display = 'block';
+        document.getElementById('digitalPaymentForm').style.display = 'none';
+        document.getElementById('paymentScreenshot').value = ''; 
+        document.getElementById('payAmountDisp').innerText = (subTotal + 50) + " ብር";
+    }
+
+    function closePayment() { document.getElementById('paymentOverlay').style.display = 'none'; }
+    function showDigitalForm(method, accNumber) {
+        selectedBankMethod = method;
+        document.getElementById('paymentSelectionBox').style.display = 'none';
+        document.getElementById('digitalPaymentForm').style.display = 'block';
+        document.getElementById('selectedMethodText').innerText = method;
+        document.getElementById('accNumberDisplay').innerText = accNumber;
+    }
+    function backToMethods() { document.getElementById('digitalPaymentForm').style.display = 'none'; document.getElementById('paymentSelectionBox').style.display = 'block'; }
+    
+    function copyAccount() {
+        navigator.clipboard.writeText(document.getElementById('accNumberDisplay').innerText);
+        tg.HapticFeedback.impactOccurred("light"); alert("✅ አካውንት ቁጥሩ ኮፒ ተደርጓል!");
+    }
+
+    function processScreenshotOrder() {
+        let screenshotFile = document.getElementById('paymentScreenshot').files[0];
+        if(!screenshotFile) { alert("❌ የከፈሉበትን ደረሰኝ ፎቶ ያያይዙ!"); return; }
+
+        let btn = document.getElementById('confirmPayBtn');
+        btn.innerHTML = "ደረሰኙን በመላክ ላይ... ⏳"; btn.disabled = true;
+
+        let name = localStorage.getItem('sinq_user_name');
+        let phone = localStorage.getItem('sinq_user_phone');
+        let tgId = localStorage.getItem('sinq_tg_id');
+        let grand = cart.reduce((s, i) => s + i.price, 0) + 50;
+        let items = cart.map(i => i.name).join(", ");
+        
+        let savedLoc = JSON.parse(localStorage.getItem('sinq_loc_coords'));
+        let map_link = `http://googleusercontent.com/maps.google.com/5${savedLoc.lat},${savedLoc.lng}`;
+
+        let msg = `🚨 **አዲስ ትዕዛዝ (ለዴሊቬሪ ዝግጁ)** 🚨\n\n👤 **ስም:** ${name}\n📱 **ስልክ:** ${phone}\n📍 **የማድረሻ ቦታ:**\n${map_link}\n\n🛍 **እቃዎች:** ${items}\n💰 **ጠቅላላ ዋጋ:** ${grand} ብር\n💳 **ክፍያ:** ${selectedBankMethod}\n\n⚠️ **አድሚን: የውሸት ደረሰኝ ከሆነ ወይም እቃው ካለቀ እዚህ ደንበኛውን ያሳውቁ:**\n👉 tg://user?id=${tgId}`;
+
+        let formData = new FormData();
+        formData.append("chat_id", adminId);
+        formData.append("photo", screenshotFile);
+        formData.append("caption", msg);
+
+        fetch(`https://api.telegram.org/bot${orderBotToken}/sendPhoto`, { method: "POST", body: formData })
+        .then(res => res.json())
+        .then(data => {
+            if(data.ok) {
+                closePayment(); lastOrderTime = Date.now(); cart = []; updateCartUI(); tg.close();
+                alert(`🎉 ትዕዛዝዎ በተሳካ ሁኔታ ተልኳል!\nዴሊቬሪ ሰራተኛችን ወዲያውኑ ይደውልልዎታል።`); 
+            } else { alert("❌ ፋይሉ በጣም ትልቅ ነው።"); btn.innerHTML = "አረጋግጥ እና እዘዝ <i class='fa-solid fa-check'></i>"; btn.disabled = false; }
+        }).catch(err => { alert("❌ የኢንተርኔት ግንኙነት ችግር!"); btn.innerHTML = "አረጋግጥ እና እዘዝ <i class='fa-solid fa-check'></i>"; btn.disabled = false; });
+    }
+
+    // 🌟 SELLER KYC & UPLOAD 🌟
+    function submitKYC() {
+        let photo = document.getElementById('idPhoto').files[0];
+        if(!photo) { alert("መታወቂያ ያያይዙ!"); return; }
+        let btn = document.getElementById('verifyBtn');
+        btn.innerHTML = "በመላክ ላይ... ⏳"; btn.disabled = true;
+
+        let tgId = localStorage.getItem('sinq_tg_id');
+        let msg = `🚨 **የሻጭነት ማረጋገጫ (KYC)** 🚨\n👤 ስም: ${localStorage.getItem('sinq_user_name')}\n📱 ስልክ: ${localStorage.getItem('sinq_user_phone')}\n🔒 TG ID: \`${tgId}\`\n👉 **ማረጋገጫ ኮድ:** \`${SECRET_VERIFICATION_CODE}\``;
+
+        let formData = new FormData();
+        formData.append("chat_id", adminId); formData.append("photo", photo); formData.append("caption", msg); formData.append("parse_mode", "Markdown");
+
+        fetch(`https://api.telegram.org/bot${sellerBotToken}/sendPhoto`, { method: "POST", body: formData })
+        .then(() => { alert("✅ ተልኳል!"); btn.innerHTML = "ለማረጋገጫ ላክ"; btn.disabled = false; });
+    }
+
+    function checkVerificationCode() {
+        if(document.getElementById('verifyCode').value === SECRET_VERIFICATION_CODE) {
+            localStorage.setItem('sinq_kyc_hash', btoa(SECRET_VERIFICATION_CODE));
+            alert("🎉 መታወቂያዎ ተረጋግጧል።"); unlockSellerDashboard();
+        } else { alert("❌ የተሳሳተ ኮድ!"); }
+    }
+
+    function unlockSellerDashboard() {
+        document.getElementById('kycBox').style.display = 'none';
+        document.getElementById('sellerDashboard').style.display = 'block';
+        let badge = document.getElementById('verificationStatus');
+        badge.className = 'verified-badge'; badge.innerHTML = '<i class="fa-solid fa-check-circle"></i> የተረጋገጠ ሻጭ (Verified)';
+    }
+
+    function submitSecureProduct() {
+        if(Date.now() - lastUploadTime < 30000) { alert("⚠️ እባክዎ ቀጣይ እቃ ለመጫን 30 ሰከንድ ይጠብቁ!"); return; }
+        let photo = document.getElementById('sellPhoto').files[0];
+        let name = document.getElementById('sellName').value; let price = document.getElementById('sellPrice').value;
+        if(!photo || !name || !price) { alert("ፎቶ፣ ስም እና ዋጋ ግዴታ ነው!"); return; }
+        
+        let btn = document.getElementById('uploadBtn'); btn.innerHTML = "በመላክ ላይ... ⏳"; btn.disabled = true;
+
+        let msg = `✅ **ከተረጋገጠ ሻጭ አዲስ እቃ**\n\n🛍 እቃ: ${name}\n💰 ዋጋ: ${price} ብር\n👤 ሻጭ: ${localStorage.getItem('sinq_user_name')} (ID: \`${localStorage.getItem('sinq_tg_id')}\`)`;
+        let formData = new FormData(); formData.append("chat_id", adminId); formData.append("photo", photo); formData.append("caption", msg); formData.append("parse_mode", "Markdown");
+
+        fetch(`https://api.telegram.org/bot${sellerBotToken}/sendPhoto`, { method: "POST", body: formData })
+        .then(() => { alert("✅ አድሚን ጋር ደርሷል!"); lastUploadTime = Date.now(); btn.innerHTML = "እቃውን ገበያ ላይ አውጣ"; btn.disabled = false; });
+    }
+
+    function logout() { localStorage.clear(); window.location.reload(); }
+</script>
+</body>
+</html>
