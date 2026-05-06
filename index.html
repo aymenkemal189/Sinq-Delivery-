@@ -36,7 +36,12 @@
         .view-section.active { display:block; }
         @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
 
-        /* Home UI (Grid & Cards) */
+        /* Home UI & Slider */
+        .slider-container { width: 100%; height: 160px; overflow: hidden; position: relative; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.06); margin-bottom: 20px; }
+        .slides { display: flex; width: 300%; height: 100%; transition: transform 0.5s ease-in-out; }
+        .slide { width: 33.333%; height: 100%; background-size: cover; background-position: center; position: relative; }
+        .slide-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.85)); padding: 25px 15px 12px; color: white; }
+
         .cat-grid-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 8px; margin: 20px 0; }
         .cat-item { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; }
         .cat-icon-box { width: 50px; height: 50px; background: var(--white); border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--text-dark); box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: 0.2s; }
@@ -99,12 +104,11 @@
         .profile-menu-item { background: white; padding: 18px 20px; border-radius: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; font-weight: 800; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         .menu-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
 
-        /* Promo Modal */
-        #promoModalOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
-        .promo-content { position: relative; width: 85%; max-width: 350px; animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .promo-img { width: 100%; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); display: block; }
-        .promo-close { position: absolute; bottom: -60px; left: 50%; transform: translateX(-50%); background: transparent; border: 2px solid white; color: white; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        /* Profile Picture Edit */
+        .profile-avatar-wrapper { position: relative; width: 60px; height: 60px; cursor: pointer; }
+        .profile-avatar-img { width: 100%; height: 100%; background: white; border-radius: 50%; object-fit: cover; display: block; border: 2px solid white; }
+        .profile-edit-icon { position: absolute; bottom: -2px; right: -2px; background: var(--white); color: var(--primary); width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        #hiddenProfileInput { display: none; }
     </style>
 </head>
 <body>
@@ -112,13 +116,16 @@
 <div id="authView">
     <img src="https://i.ibb.co/4gdWgwW7/x.jpg" class="auth-logo">
     <h1 style="margin:0; color:var(--primary); font-size:35px;">Sinq.</h1>
-    <p style="color:#888; margin-bottom:30px; font-weight:bold; text-align:center;">እባክዎ ትክክለኛ መረጃዎን ያስገቡ</p>
+    <p style="color:#888; margin-bottom:20px; font-weight:bold; text-align:center;">እባክዎ መረጃዎን ያስገቡ</p>
     
     <input type="text" id="regName" class="auth-input" placeholder="👤 ትክክለኛ ሙሉ ስምዎ">
     <input type="tel" id="regPhone" class="auth-input" placeholder="📱 ስልክ ቁጥር (09/07...)">
     
+    <label style="width:100%; text-align:right; font-size:12px; font-weight:bold; color:#888; margin-top:5px;">የፕሮፋይል ፎቶ (አማራጭ)</label>
+    <input type="file" id="regProfilePic" class="auth-input" accept="image/*">
+    
     <button class="btn-main" id="regBtn" onclick="secureRegister()">ወደ ሲንቅ ግባ <i class="fa-solid fa-arrow-left"></i></button>
-    <div style="font-size:10px; color:#aaa; margin-top:20px;"><i class="fa-solid fa-lock"></i> በቴሌግራም ጥበቃ የተረጋገጠ</div>
+    <div style="font-size:10px; color:#aaa; margin-top:15px;"><i class="fa-solid fa-lock"></i> በቴሌግራም ጥበቃ የተረጋገጠ</div>
 </div>
 
 <div id="mainApp" style="display:none;">
@@ -135,6 +142,20 @@
 
     <div id="homeView" class="view-section active container">
         
+        <div class="slider-container">
+            <div class="slides" id="slider">
+                <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600');">
+                    <div class="slide-overlay"><p style="margin:0; font-weight:900; font-size:18px;">አሞር ካፌ 🍕</p><span style="font-size:13px; opacity:0.9;">ልዩ ምግቦች አሁኑኑ ይዘዙ</span></div>
+                </div>
+                <div class="slide" style="background-image: url('https://i.ibb.co/Cs1qJDh7/x.jpg');">
+                    <div class="slide-overlay"><p style="margin:0; font-weight:900; font-size:18px;">Asli Cosmetics 💄</p><span style="font-size:13px; opacity:0.9;">ኦርጅናል የውበት መጠበቂያዎች</span></div>
+                </div>
+                <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600');">
+                    <div class="slide-overlay"><p style="margin:0; font-weight:900; font-size:18px;">የሲንቅ ነፃ ገበያ 🛍️</p><span style="font-size:13px; opacity:0.9;">እቃዎን በነፃ ይሽጡ</span></div>
+                </div>
+            </div>
+        </div>
+
         <div class="cat-grid-container">
             <div class="cat-item active" onclick="filterCat('ሁሉንም', this)"><div class="cat-icon-box"><i class="fa-solid fa-border-all"></i></div><span class="cat-name">ሁሉንም</span></div>
             <div class="cat-item" onclick="filterCat('ምግብ ቤቶች', this)"><div class="cat-icon-box" style="color:#e67e22;"><i class="fa-solid fa-burger"></i></div><span class="cat-name">ምግብ</span></div>
@@ -171,7 +192,12 @@
     <div id="profileView" class="view-section container">
         
         <div class="wallet-card">
-            <div style="width: 60px; height: 60px; background: white; color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 25px;">👤</div>
+            <div class="profile-avatar-wrapper" onclick="document.getElementById('hiddenProfileInput').click()">
+                <img id="profileAvatarImg" class="profile-avatar-img" src="https://via.placeholder.com/60/ffffff/bc0000?text=👤">
+                <div class="profile-edit-icon"><i class="fa-solid fa-pen"></i></div>
+            </div>
+            <input type="file" id="hiddenProfileInput" accept="image/*" onchange="changeProfilePhoto(event)">
+            
             <div>
                 <h2 id="profileNameDisplay" style="margin:0 0 2px; font-size: 18px;"></h2>
                 <div id="verificationStatus" class="unverified-badge"><i class="fa-solid fa-xmark"></i> ያልተረጋገጠ ሻጭ</div>
@@ -186,7 +212,7 @@
 
         <div id="kycBox" class="security-box" style="display:block;">
             <h3 style="margin:0 0 5px; color:#e74c3c;"><i class="fa-solid fa-shield-halved"></i> የሻጭነት ማረጋገጫ (KYC)</h3>
-            <p style="font-size:12px; color:#666; margin-bottom:15px;">በሲንቅ ላይ እቃ ለመሸጥ፣ የፋይዳ (Fayda) መታወቂያዎን ማስገባት ግዴታ ነው።</p>
+            <p style="font-size:12px; color:#666; margin-bottom:15px;">በሲንቅ ላይ እቃ ለመሸጥ፣ ህጋዊ መታወቂያዎን ማስገባት ግዴታ ነው።</p>
             <input type="file" id="idPhoto" class="auth-input" accept="image/*">
             <button class="btn-main" id="verifyBtn" onclick="submitKYC()">ለማረጋገጫ ላክ</button>
             <hr style="border:0; border-top:1px dashed #ccc; margin:15px 0;">
@@ -253,14 +279,6 @@
     </div>
 </div>
 
-<div id="promoModalOverlay">
-    <div class="promo-content">
-        <img src="https://i.ibb.co/Cs1qJDh7/x.jpg" class="promo-img">
-        <button class="btn-main" style="position:absolute; bottom:20px; left:50%; transform:translateX(-50%); width: 80%; box-shadow: 0 5px 15px rgba(0,0,0,0.5);" onclick="closePromo()">አሁን ይገበያዩ 🛍️</button>
-        <button class="promo-close" onclick="closePromo()"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-</div>
-
 <div id="paymentOverlay">
     <div class="payment-modal">
         <div id="paymentSelectionBox">
@@ -321,7 +339,7 @@
     const shops = [
         { id: 1, name: "አዎርስ ካፌ", category: "ምግብ ቤቶች", time: "15-30 ደቂቃ", rating: 4.8, desc: "ምግቦች እና መጠጦች", logo: "https://i.ibb.co/3r5x2w5/awors.jpg", banner: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=600", items: [{ name: "ፒዛ", price: 250, img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400" }, { name: "በርገር", price: 500, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400" }] },
         { id: 2, name: "አሞር ካፌ", category: "ምግብ ቤቶች", time: "20-40 ደቂቃ", rating: 4.6, desc: "ቁርስ፣ ሳንድዊች እና ፒዛ", logo: "https://i.ibb.co/bWcQ5M6/amor.jpg", banner: "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?w=600", items: [{ name: "ስፔሻል ፉል", price: 130, img: "https://images.unsplash.com/photo-1548943487-a2e4b43b5852?w=400" }, { name: "ስፔሻል ፒዛ", price: 450, img: "https://images.unsplash.com/photo-1604381720451-3eaa9ee036b7?w=400" }] },
-        { id: 4, name: "Asli Cosmetics", category: "ኮስሞቲክስ", time: "10-20 ደቂቃ", rating: 4.9, desc: "ኦርጅናል የውበት መጠበቂያ", logo: "https://i.ibb.co/B5bKG1yc/x.jpg", banner: "https://i.ibb.co/Cs1qJDh7/x.jpg", items: [ { name: "Savuage ሽቶ (100ml)", price: 2000, img: "https://i.ibb.co/v4rx3HVg/x.jpg" }, { name: "Vaseline Body Lotion", price: 600, img: "https://i.ibb.co/j96dX3fL/x.jpg" }, { name: "Dr. Davey Facial Cleanser", price: 150, img: "https://i.ibb.co/Wvq3BzHs/x.jpg" }] },
+        { id: 4, name: "Asli Cosmetics", category: "ኮስሞቲክስ", time: "10-20 ደቂቃ", rating: 4.9, desc: "ኦርጅናል የውበት መጠበቂያ", logo: "https://i.ibb.co/B5bKG1yc/x.jpg", banner: "https://i.ibb.co/Cs1qJDh7/x.jpg", items: [ { name: "Savuage ሽቶ", price: 2000, img: "https://i.ibb.co/v4rx3HVg/x.jpg" }, { name: "Vaseline Body Lotion", price: 600, img: "https://i.ibb.co/j96dX3fL/x.jpg" }, { name: "Dr. Davey Facial Cleanser", price: 150, img: "https://i.ibb.co/Wvq3BzHs/x.jpg" }, { name: "Dr. Davey Black Soap", price: 650, img: "https://i.ibb.co/nsKks3bC/x.jpg" }, { name: "CeraVe Foaming Facial Cleanser", price: 2100, img: "https://i.ibb.co/G3pKf1xF/x.jpg" }] },
         { id: 5, name: "Shoa Supermarket", category: "ሱፐርማርኬት", time: "30-50 ደቂቃ", rating: 4.5, desc: "የቤት ፍጆታዎች", logo: "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=100", banner: "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=600", items: [] },
         { id: 100, name: "የሲንቅ ነፃ ገበያ", category: "ነፃ ገበያ", time: "በስምምነት", rating: 4.2, desc: "ከሰው ለሰው መገበያያ", logo: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=100", banner: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600", items: [{ name: "iPhone 13 Pro", price: 65000, img: "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=400" }] }
     ];
@@ -336,16 +354,25 @@
             if(localStorage.getItem('sinq_loc_str')) document.getElementById('headerLoc').innerText = "✅ ተመዝግቧል";
             if(localStorage.getItem('sinq_kyc_hash') === btoa(SECRET_VERIFICATION_CODE)) unlockSellerDashboard();
             
-            renderHomeItems();
+            // Load Profile Pic if exists
+            let savedPic = localStorage.getItem('sinq_profile_pic');
+            if(savedPic) { document.getElementById('profileAvatarImg').src = savedPic; }
             
-            // Promo Popup Logic
-            if(!sessionStorage.getItem('promo_seen')) {
-                setTimeout(() => { document.getElementById('promoModalOverlay').style.display = 'flex'; }, 1000);
-            }
+            renderHomeItems();
+            startAutoSlider();
         }
     }
 
-    // 🌟 SECURE REGISTER 🌟
+    // 🌟 AUTO SLIDER FIX 🌟
+    function startAutoSlider() {
+        let slideIndex = 0;
+        setInterval(() => {
+            slideIndex = (slideIndex + 1) % 3;
+            document.getElementById('slider').style.transform = `translateX(-${slideIndex * 33.333}%)`;
+        }, 4000);
+    }
+
+    // 🌟 SECURE REGISTER & PROFILE PIC UPDATE 🌟
     function secureRegister() {
         let name = document.getElementById('regName').value.trim();
         let phone = document.getElementById('regPhone').value.trim();
@@ -370,15 +397,38 @@
             localStorage.setItem('sinq_user_phone', phone);
             localStorage.setItem('sinq_tg_id', tgId);
             localStorage.setItem('sinq_tg_username', tgUsername);
-            window.onload();
+            
+            // Handle Profile Pic if uploaded during registration
+            let photoInput = document.getElementById('regProfilePic');
+            if(photoInput.files && photoInput.files[0]) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    localStorage.setItem('sinq_profile_pic', e.target.result);
+                    window.onload();
+                };
+                reader.readAsDataURL(photoInput.files[0]);
+            } else {
+                window.onload();
+            }
         }).catch(() => {
             alert("❌ የኢንተርኔት ግንኙነትዎን ያረጋግጡ!");
             btn.innerHTML = "ወደ ሲንቅ ግባ <i class='fa-solid fa-arrow-left'></i>"; btn.disabled = false;
         });
     }
 
+    function changeProfilePhoto(event) {
+        let file = event.target.files[0];
+        if(file) {
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                localStorage.setItem('sinq_profile_pic', e.target.result);
+                document.getElementById('profileAvatarImg').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
     // UTILS
-    function closePromo() { document.getElementById('promoModalOverlay').style.display = 'none'; sessionStorage.setItem('promo_seen', 'true'); }
     function switchTab(tabId, el) {
         document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
@@ -536,12 +586,14 @@
         let phone = localStorage.getItem('sinq_user_phone');
         let tgId = localStorage.getItem('sinq_tg_id');
         let grand = cart.reduce((s, i) => s + i.price, 0) + 50;
-        let items = cart.map(i => i.name).join(", ");
+        
+        // 🌟 ADDED SHOP NAME IN THE ORDER TICKET 🌟
+        let items = cart.map(i => `- ${i.name} (ከ ${i.shop})`).join("\n");
         
         let savedLoc = JSON.parse(localStorage.getItem('sinq_loc_coords'));
         let map_link = `http://googleusercontent.com/maps.google.com/5${savedLoc.lat},${savedLoc.lng}`;
 
-        let msg = `🚨 **አዲስ ትዕዛዝ (ለዴሊቬሪ ዝግጁ)** 🚨\n\n👤 **ስም:** ${name}\n📱 **ስልክ:** ${phone}\n📍 **የማድረሻ ቦታ:**\n${map_link}\n\n🛍 **እቃዎች:** ${items}\n💰 **ጠቅላላ ዋጋ:** ${grand} ብር\n💳 **ክፍያ:** ${selectedBankMethod}\n\n⚠️ **አድሚን: የውሸት ደረሰኝ ከሆነ ወይም እቃው ካለቀ እዚህ ደንበኛውን ያሳውቁ:**\n👉 tg://user?id=${tgId}`;
+        let msg = `🚨 **አዲስ ትዕዛዝ (ለዴሊቬሪ ዝግጁ)** 🚨\n\n👤 **ስም:** ${name}\n📱 **ስልክ:** ${phone}\n📍 **የማድረሻ ቦታ:**\n${map_link}\n\n🛍 **እቃዎች:**\n${items}\n💰 **ጠቅላላ ዋጋ:** ${grand} ብር\n💳 **ክፍያ:** ${selectedBankMethod}\n\n⚠️ **አድሚን: የውሸት ደረሰኝ ከሆነ ወይም እቃው ካለቀ እዚህ ደንበኛውን ያሳውቁ:**\n👉 tg://user?id=${tgId}`;
 
         let formData = new FormData();
         formData.append("chat_id", adminId);
