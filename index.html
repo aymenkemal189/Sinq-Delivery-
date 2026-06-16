@@ -1,838 +1,1288 @@
 <!DOCTYPE html>
-<html lang="am">
+<html lang="am" data-theme="light" data-lang="am">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sinq Delivery & Market</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        :root { --primary: #bc0000; --primary-light: #fcebeb; --bg: #f5f6fa; --white: #ffffff; --text-dark: #2c3e50; --gold: #f1c40f; --success: #27ae60; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); margin: 0; padding: 0; direction: rtl; text-align: right; color: var(--text-dark); overflow-x: hidden; }
-        .container { padding: 15px; padding-bottom: 90px; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Sinq. Delivery & Market</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* ═══════════════ CSS VARIABLES ═══════════════ */
+:root{
+  --p:#bc0000;--p2:#e74c3c;--pg:linear-gradient(135deg,#bc0000,#e74c3c);
+  --bg:#f0f2f8;--bg2:#e8eaf2;--surface:rgba(255,255,255,0.72);
+  --surface2:rgba(255,255,255,0.45);--border:rgba(255,255,255,0.35);
+  --w:#fff;--dark:#12121f;--txt:#1a1a2e;--txt2:#555;--txt3:#999;
+  --gold:#f1c40f;--ok:#00b894;--info:#0984e3;
+  --shad:0 8px 32px rgba(188,0,0,0.1);--shad2:0 4px 20px rgba(0,0,0,0.06);
+  --rad:22px;--rads:14px;--radxs:10px;
+  --blur:blur(20px);--blur2:blur(12px);
+  --trans:0.28s cubic-bezier(0.4,0,0.2,1);
+}
+[data-theme="dark"]{
+  --bg:#0d0d1a;--bg2:#12121f;--surface:rgba(25,25,45,0.82);
+  --surface2:rgba(30,30,55,0.6);--border:rgba(255,255,255,0.1);
+  --w:rgba(20,20,38,0.95);--txt:#f0f0ff;--txt2:#aaa;--txt3:#666;
+  --shad:0 8px 32px rgba(0,0,0,0.4);--shad2:0 4px 20px rgba(0,0,0,0.3);
+}
 
-        /* Login */
-        #authView { position: fixed; top:0; left:0; width:100%; height:100vh; background:var(--white); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; box-sizing:border-box; }
-        .auth-logo { width:130px; height:130px; object-fit:cover; border-radius:35px; margin-bottom:20px; box-shadow:0 10px 25px rgba(188,0,0,0.2); animation: pulse 2s infinite; border: 4px solid #fff; }
-        @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.05);} 100% {transform: scale(1);} }
-        .auth-input { width:100%; padding:15px; margin:8px 0; border:1px solid #eee; border-radius:14px; font-size:14px; background:#f9f9f9; outline:none; box-sizing:border-box; transition:0.3s;}
-        .auth-input:focus { border-color: var(--primary); background: white; }
-        .btn-main { background:var(--primary); color:white; border:none; width:100%; padding:16px; border-radius:14px; font-weight:900; font-size:16px; margin-top:10px; cursor:pointer; box-shadow:0 8px 20px rgba(188,0,0,0.25); transition:0.2s; }
-        .btn-main:active { transform:scale(0.98); }
+/* ═══════════════ RESET ═══════════════ */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow-x:hidden;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);direction:rtl;text-align:right;transition:background var(--trans),color var(--trans);}
+::-webkit-scrollbar{width:3px;height:3px;}
+::-webkit-scrollbar-thumb{background:var(--p);border-radius:3px;}
 
-        /* Header & Nav */
-        .top-header { background:var(--white); padding:12px 15px; position:sticky; top:0; z-index:100; box-shadow:0 2px 10px rgba(0,0,0,0.03); }
-        .header-flex { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-        .loc-chip { background:var(--primary-light); color:var(--primary); padding:8px 15px; border-radius:20px; font-size:13px; font-weight:900; display:flex; align-items:center; gap:5px; cursor:pointer; }
-        .search-bar { width:100%; padding:14px 15px; background:#f0f2f5; border:none; border-radius:14px; font-size:14px; outline:none; box-sizing:border-box; font-family:inherit; }
+/* ═══════════════ GLASSMORPHISM UTILS ═══════════════ */
+.glass{background:var(--surface);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:1px solid var(--border);border-radius:var(--rad);}
+.glass-s{background:var(--surface2);backdrop-filter:var(--blur2);-webkit-backdrop-filter:var(--blur2);border:1px solid var(--border);border-radius:var(--rads);}
+.card-shad{box-shadow:var(--shad);}
 
-        .bottom-nav { position:fixed; bottom:0; left:0; width:100%; background:var(--white); display:flex; justify-content:space-around; padding:12px 0 18px; box-shadow:0 -5px 25px rgba(0,0,0,0.06); z-index:1000; border-top-left-radius:25px; border-top-right-radius:25px; }
-        .nav-item { display:flex; flex-direction:column; align-items:center; gap:5px; color:#a0a0a0; font-size:11px; font-weight:900; cursor:pointer; transition:0.3s; width:33.3%; position:relative; }
-        .nav-item.active { color:var(--primary); transform:translateY(-4px); }
-        .cart-badge { background:var(--primary); color:white; font-size:10px; padding:2px 6px; border-radius:10px; position:absolute; top:-5px; right:30%; border:2px solid white; display:none; }
+/* ═══════════════ SKELETON SCREEN ═══════════════ */
+#skeleton{position:fixed;inset:0;background:var(--bg);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;transition:opacity .4s;}
+#skeleton.hide{opacity:0;pointer-events:none;}
+.sk-logo{width:90px;height:90px;border-radius:28px;background:linear-gradient(90deg,var(--bg2) 25%,var(--surface) 50%,var(--bg2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;}
+.sk-bar{height:12px;border-radius:6px;background:linear-gradient(90deg,var(--bg2) 25%,var(--surface) 50%,var(--bg2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+.sk-title{width:120px;}
+.sk-sub{width:180px;height:9px;border-radius:4px;background:linear-gradient(90deg,var(--bg2) 25%,var(--surface) 50%,var(--bg2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite .1s;}
+.sk-pulse{width:50px;height:50px;border-radius:50%;border:3px solid rgba(188,0,0,.2);border-top-color:var(--p);animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
 
-        .view-section { display:none; animation:fadeIn 0.3s; }
-        .view-section.active { display:block; }
-        @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+/* ═══════════════ AUTH ═══════════════ */
+#authView{position:fixed;inset:0;z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:0;overflow-y:auto;background:var(--bg);}
+.auth-bg{position:fixed;inset:0;z-index:-1;overflow:hidden;}
+.auth-orb{position:absolute;border-radius:50%;filter:blur(60px);animation:orb 6s ease-in-out infinite;}
+.orb1{width:300px;height:300px;background:radial-gradient(circle,rgba(188,0,0,.4),transparent 70%);top:-10%;right:-10%;animation-delay:0s;}
+.orb2{width:200px;height:200px;background:radial-gradient(circle,rgba(231,76,60,.3),transparent 70%);bottom:20%;left:-5%;animation-delay:2s;}
+.orb3{width:150px;height:150px;background:radial-gradient(circle,rgba(188,0,0,.2),transparent 70%);bottom:-5%;right:30%;animation-delay:4s;}
+@keyframes orb{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(15px,-15px) scale(1.05);}66%{transform:translate(-10px,10px) scale(.95);}}
+.auth-inner{width:100%;max-width:400px;padding:50px 24px 40px;display:flex;flex-direction:column;align-items:center;}
+.auth-logo{width:88px;height:88px;border-radius:26px;object-fit:cover;border:2px solid rgba(255,255,255,.2);box-shadow:0 0 40px rgba(188,0,0,.5);animation:float 3s ease-in-out infinite;margin-bottom:14px;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.auth-brand{font-size:40px;font-weight:900;background:var(--pg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-1px;}
+.auth-sub{font-size:12px;color:var(--txt2);font-weight:700;margin-bottom:28px;}
+.auth-card{width:100%;padding:24px;}
+.auth-tabs{display:flex;background:var(--bg2);border-radius:var(--rads);padding:4px;margin-bottom:20px;gap:4px;}
+.auth-tab{flex:1;padding:10px;border:none;border-radius:var(--radxs);font-weight:900;font-size:13px;cursor:pointer;font-family:inherit;transition:var(--trans);background:transparent;color:var(--txt2);}
+.auth-tab.active{background:var(--pg);color:#fff;box-shadow:0 4px 12px rgba(188,0,0,.3);}
+.inp-wrap{position:relative;margin:8px 0;}
+.inp-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--txt3);font-size:13px;}
+.a-inp{width:100%;padding:14px 38px 14px 14px;border:1.5px solid var(--border);border-radius:var(--rads);font-size:14px;background:var(--surface2);color:var(--txt);outline:none;font-family:inherit;transition:var(--trans);}
+.a-inp::placeholder{color:var(--txt3);}
+.a-inp:focus{border-color:var(--p);background:var(--surface);box-shadow:0 0 0 3px rgba(188,0,0,.1);}
+.a-inp.error{border-color:#e74c3c;animation:shake .3s ease-in-out;}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+.inp-err{font-size:11px;color:#e74c3c;font-weight:700;margin-top:3px;display:none;}
+.btn-p{background:var(--pg);color:#fff;border:none;width:100%;padding:16px;border-radius:var(--rads);font-weight:900;font-size:15px;cursor:pointer;font-family:inherit;box-shadow:0 8px 25px rgba(188,0,0,.35);transition:var(--trans);position:relative;overflow:hidden;margin-top:8px;}
+.btn-p::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.15);opacity:0;transition:opacity .2s;}
+.btn-p:hover::before{opacity:1;}
+.btn-p:active{transform:scale(.97);}
+.btn-p:disabled{opacity:.55;cursor:not-allowed;transform:none;}
+.btn-ghost{background:transparent;color:var(--p);border:1.5px solid rgba(188,0,0,.25);border-radius:var(--rads);padding:14px;font-weight:900;font-size:14px;cursor:pointer;font-family:inherit;transition:var(--trans);width:100%;margin-top:6px;}
+.btn-ghost:hover{background:var(--pl);}
 
-        /* Home UI & Slider */
-        .slider-container { width: 100%; height: 160px; overflow: hidden; position: relative; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.06); margin-bottom: 20px; }
-        .slides { display: flex; width: 200%; height: 100%; transition: transform 0.5s ease-in-out; }
-        .slide { width: 50%; height: 100%; background-size: cover; background-position: center; position: relative; }
-        .slide-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.85)); padding: 25px 15px 12px; color: white; }
+/* ═══════════════ TOP HEADER ═══════════════ */
+.top-hdr{background:var(--surface);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-bottom:1px solid var(--border);padding:12px 15px;position:sticky;top:0;z-index:500;transition:background var(--trans);}
+.hdr-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px;gap:8px;}
+.loc-chip{background:rgba(188,0,0,.1);color:var(--p);padding:8px 12px;border-radius:50px;font-size:11px;font-weight:900;display:flex;align-items:center;gap:5px;cursor:pointer;border:1.5px solid rgba(188,0,0,.15);transition:var(--trans);flex-shrink:0;}
+.loc-chip:active{transform:scale(.97);}
+.hdr-actions{display:flex;align-items:center;gap:8px;}
+.icon-btn{width:36px;height:36px;border-radius:11px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:var(--trans);background:var(--surface2);color:var(--txt);}
+.icon-btn:active{transform:scale(.92);}
+.s-wrap{position:relative;}
+.s-ico{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--txt3);font-size:13px;}
+.s-bar{width:100%;padding:12px 14px 12px 38px;background:var(--surface2);border:1.5px solid var(--border);border-radius:50px;font-size:13px;outline:none;font-family:inherit;color:var(--txt);transition:var(--trans);}
+.s-bar:focus{border-color:var(--p);background:var(--surface);box-shadow:0 0 0 3px rgba(188,0,0,.08);}
+.s-bar::placeholder{color:var(--txt3);}
 
-        .cat-grid-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 8px; margin: 20px 0; }
-        .cat-item { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; }
-        .cat-icon-box { width: 50px; height: 50px; background: var(--white); border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--text-dark); box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: 0.2s; }
-        .cat-item.active .cat-icon-box { background: var(--primary); color: var(--white); transform: scale(1.05); box-shadow: 0 6px 15px rgba(188,0,0,0.2); }
-        .cat-name { font-size: 11px; font-weight: 800; text-align: center; }
+/* ═══════════════ BOTTOM NAV ═══════════════ */
+.bnav{position:fixed;bottom:0;left:0;width:100%;background:var(--surface);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 20px;z-index:600;border-radius:24px 24px 0 0;}
+.ni{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--txt3);font-size:9px;font-weight:900;cursor:pointer;transition:var(--trans);width:20%;position:relative;}
+.ni.active{color:var(--p);}
+.ni-iw{width:40px;height:40px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:17px;transition:var(--trans);}
+.ni.active .ni-iw{background:rgba(188,0,0,.1);}
+.cbadge{background:var(--p);color:#fff;font-size:9px;padding:1px 5px;border-radius:8px;position:absolute;top:0;right:10%;border:2px solid var(--bg);display:none;font-weight:900;min-width:16px;text-align:center;}
 
-        .section-title { font-size: 18px; font-weight: 900; margin: 25px 0 15px; color: #1a1a1a; display: flex; justify-content: space-between; align-items: center; }
-        
-        .grid { display:grid; grid-template-columns:1fr 1fr; gap:15px; }
-        .card { background:var(--white); border-radius:20px; overflow:hidden; box-shadow:0 4px 15px rgba(0,0,0,0.03); cursor:pointer; position: relative; border: 1px solid #f5f5f5; }
-        .card-banner { width:100%; height:110px; object-fit:cover; }
-        .time-badge { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.95); color: var(--text-dark); font-size: 10px; font-weight: 900; padding: 4px 8px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); backdrop-filter: blur(4px); }
-        .card-logo { width: 45px; height: 45px; border-radius: 50%; border: 3px solid white; position: absolute; top: 85px; left: 10px; object-fit: cover; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 2; }
-        .card-body { padding: 12px; padding-top: 25px; }
-        .shop-rating { font-size: 11px; color: #888; display: flex; align-items: center; gap: 3px; font-weight: bold; margin-top: 4px; }
+/* ═══════════════ VIEWS ═══════════════ */
+.vs{display:none;animation:fadeUp .3s both;padding-bottom:95px;}
+.vs.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
 
-        /* General Products List */
-        .product-card { display: flex; background: var(--white); border-radius: 16px; padding: 12px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); align-items: center; gap: 15px; border: 1px solid #f0f0f0; cursor:pointer; }
-        .prod-img-small { width:80px; height:80px; border-radius:12px; object-fit:cover; }
-        .add-btn { background: var(--primary-light); color: var(--primary); border: none; width: 35px; height: 35px; border-radius: 10px; font-size: 18px; font-weight:bold; cursor: pointer; display: flex; align-items: center; justify-content: center; transition:0.2s;}
-        .add-btn:active { transform:scale(0.9); }
+/* ═══════════════ SLIDER ═══════════════ */
+.sl-wrap{margin:14px;border-radius:var(--rad);overflow:hidden;position:relative;height:168px;box-shadow:0 12px 35px rgba(188,0,0,.18);}
+.slides{display:flex;height:100%;transition:transform .55s cubic-bezier(.4,0,.2,1);}
+.slide{min-width:100%;height:100%;background-size:cover;background-position:center;position:relative;}
+.sl-ov{position:absolute;inset:0;background:linear-gradient(145deg,rgba(0,0,0,.62) 0%,transparent 65%);display:flex;flex-direction:column;justify-content:flex-end;padding:18px;}
+.sl-dots{position:absolute;bottom:10px;right:50%;transform:translateX(50%);display:flex;gap:5px;}
+.dot{width:5px;height:5px;border-radius:3px;background:rgba(255,255,255,.35);transition:var(--trans);}
+.dot.active{width:20px;background:#fff;}
 
-        /* Shop Profile Modal */
-        #shopView { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:var(--bg); z-index:2000; overflow-y:auto; padding-bottom:80px; }
-        .shop-header-wrapper { position: relative; width: 100%; height: 200px; }
-        .shop-banner-img { width: 100%; height: 100%; object-fit: cover; }
-        .shop-logo-img { width: 90px; height: 90px; border-radius: 50%; border: 4px solid white; position: absolute; bottom: -45px; right: 50%; transform: translateX(50%); object-fit: cover; box-shadow: 0 5px 15px rgba(0,0,0,0.15); background: white; z-index: 10; }
-        .back-circle { position:absolute; top:15px; right:15px; background:rgba(255,255,255,0.9); width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 10px rgba(0,0,0,0.1); font-size:18px; cursor:pointer; z-index:20; }
-        .shop-info-card { background:white; margin: 55px 15px 15px; border-radius:20px; padding:20px; padding-top:10px; box-shadow: 0 5px 25px rgba(0,0,0,0.05); text-align:center; position: relative; z-index: 5; }
+/* ═══════════════ PROMO STRIP ═══════════════ */
+.promo{margin:0 14px 14px;background:var(--pg);border-radius:var(--rads);padding:12px 15px;display:flex;align-items:center;gap:10px;color:#fff;position:relative;overflow:hidden;}
+.promo::before{content:'';position:absolute;right:-20px;top:-20px;width:80px;height:80px;background:rgba(255,255,255,.1);border-radius:50%;}
+.promo-ic{width:38px;height:38px;background:rgba(255,255,255,.2);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
 
-        /* Product Detail Expanded */
-        #productModal { position:fixed; top:0; left:0; width:100%; height:100%; background:var(--bg); z-index:3000; display:none; overflow-y:auto; padding-bottom:80px; }
-        .prod-modal-banner { width:100%; height:350px; object-fit:cover; }
-        .prod-info-box { background:white; margin:-30px 0 0 0; padding:25px 20px; border-top-left-radius:30px; border-top-right-radius:30px; position:relative; z-index:10; min-height:50vh; box-shadow:0 -5px 20px rgba(0,0,0,0.05); }
-        .prod-desc-text { color:#666; font-size:14px; line-height:1.6; margin-top:15px; padding-top:15px; border-top:1px solid #eee; }
+/* ═══════════════ CATEGORIES ═══════════════ */
+.cats{display:flex;gap:9px;overflow-x:auto;padding:0 14px 6px;scrollbar-width:none;}
+.cats::-webkit-scrollbar{display:none;}
+.cat-pill{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;flex-shrink:0;transition:var(--trans);}
+.cat-ic{width:52px;height:52px;background:var(--surface);backdrop-filter:var(--blur2);border:1.5px solid var(--border);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:20px;transition:var(--trans);}
+.cat-pill.active .cat-ic{background:var(--pg);border-color:var(--p);box-shadow:0 6px 18px rgba(188,0,0,.28);transform:translateY(-3px);}
+.cat-nm{font-size:10px;font-weight:900;color:var(--txt2);white-space:nowrap;}
+.cat-pill.active .cat-nm{color:var(--p);}
 
-        /* Cart View */
-        .cart-item { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px; border-radius: 16px; margin-bottom: 10px; border: 1px solid #eee; }
-        .remove-btn { color: #e74c3c; background: #fadbd8; border: none; width: 30px; height: 30px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+/* ═══════════════ SEC TITLE ═══════════════ */
+.sec-t{display:flex;justify-content:space-between;align-items:center;padding:0 14px;margin:18px 0 11px;}
+.sec-t h3{font-size:16px;font-weight:900;color:var(--txt);}
+.sec-t span{font-size:11px;color:var(--p);font-weight:800;cursor:pointer;}
 
-        /* Smart Payment UI */
-        #paymentOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 4000; display: none; align-items: flex-end; backdrop-filter: blur(3px); }
-        .payment-modal { background: white; width: 100%; border-top-left-radius: 30px; border-top-right-radius: 30px; padding: 30px 20px; box-sizing: border-box; animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-height:90vh; overflow-y:auto; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .pay-option { display: flex; align-items: center; justify-content: space-between; padding: 18px; border: 2px solid #f0f0f0; border-radius: 16px; margin-bottom: 15px; font-weight: 900; cursor: pointer; transition: 0.2s; background: white; }
-        .pay-option i { font-size: 26px; }
-        .pay-option:active { transform: scale(0.98); }
-        .pay-telebirr { color: #0088cc; }
-        .pay-cbe { color: #8e44ad; }
-        .digital-pay-box { background: #f9f9f9; padding: 20px; border-radius: 16px; border: 1px solid #eee; margin-bottom: 15px; text-align: center; }
-        .acc-number-box { background: white; border: 2px dashed var(--primary); color: var(--text-dark); padding: 15px; border-radius: 12px; font-size: 20px; font-weight: 900; letter-spacing: 2px; margin: 15px 0; display: flex; justify-content: space-between; align-items: center; }
-        .copy-btn { background: var(--primary-light); color: var(--primary); border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
-        .file-upload-wrapper { position: relative; width: 100%; margin-bottom: 20px; }
-        .file-upload-input { width: 100%; padding: 15px; background: #fff; border: 2px dashed #ddd; border-radius: 14px; text-align: center; cursor: pointer; }
+/* ═══════════════ SHOP CARDS ═══════════════ */
+.shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 14px;}
+.sh-card{background:var(--surface);backdrop-filter:var(--blur2);border:1px solid var(--border);border-radius:var(--rad);overflow:hidden;box-shadow:var(--shad2);cursor:pointer;transition:var(--trans);}
+.sh-card:active{transform:scale(.97);}
+.sh-img-w{position:relative;height:108px;}
+.sh-img-w img{width:100%;height:100%;object-fit:cover;}
+.sh-ov{position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.35) 0%,transparent 55%);}
+.tb{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.9);backdrop-filter:blur(6px);padding:3px 8px;border-radius:9px;font-size:9px;font-weight:900;color:#222;}
+.sh-logo{width:42px;height:42px;border-radius:50%;border:2.5px solid var(--w);position:absolute;bottom:-18px;right:12px;object-fit:cover;box-shadow:0 3px 10px rgba(0,0,0,.15);background:var(--w);}
+.sh-body{padding:22px 11px 12px;}
+.sh-name{font-weight:900;font-size:13px;margin-bottom:2px;color:var(--txt);}
+.sh-desc{font-size:10px;color:var(--txt3);}
+.sh-ft{display:flex;justify-content:space-between;align-items:center;margin-top:7px;}
+.rat{display:flex;align-items:center;gap:2px;font-size:10px;font-weight:900;background:rgba(241,196,15,.12);color:#a07700;padding:3px 7px;border-radius:7px;}
 
-        /* Security Profile & KYC */
-        .wallet-card { background: linear-gradient(135deg, var(--primary), #e74c3c); border-radius: 20px; padding: 20px; color: white; box-shadow: 0 10px 25px rgba(188,0,0,0.3); margin-bottom: 20px; display:flex; align-items:center; gap:15px; }
-        .verified-badge { background: var(--success); color: white; padding: 4px 10px; border-radius: 20px; font-size: 11px; display: flex; align-items: center; gap: 5px; margin-top: 5px; width: fit-content; }
-        .unverified-badge { background: #e74c3c; color: white; padding: 4px 10px; border-radius: 20px; font-size: 11px; display: flex; align-items: center; gap: 5px; margin-top: 5px; width: fit-content; }
-        .security-box { background: white; padding: 20px; border-radius: 16px; border: 2px dashed #ddd; margin-bottom: 15px; display: none; }
-        .profile-menu-item { background: white; padding: 18px 20px; border-radius: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; font-weight: 800; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
-        .menu-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-        .profile-avatar-wrapper { position: relative; width: 60px; height: 60px; cursor: pointer; }
-        .profile-avatar-img { width: 100%; height: 100%; background: white; border-radius: 50%; object-fit: cover; display: block; border: 2px solid white; }
-        .profile-edit-icon { position: absolute; bottom: -2px; right: -2px; background: var(--white); color: var(--primary); width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        #hiddenProfileInput { display: none; }
-    </style>
+/* ═══════════════ HOT SELLS ═══════════════ */
+.hot-scroll{display:flex;gap:11px;overflow-x:auto;padding:0 14px 4px;scrollbar-width:none;}
+.hot-scroll::-webkit-scrollbar{display:none;}
+.hot-card{flex-shrink:0;width:128px;background:var(--surface);backdrop-filter:var(--blur2);border:1px solid var(--border);border-radius:var(--rads);overflow:hidden;box-shadow:var(--shad2);cursor:pointer;transition:var(--trans);}
+.hot-card:active{transform:scale(.96);}
+.hot-img{width:100%;height:98px;object-fit:cover;}
+.hot-body{padding:8px 9px 10px;}
+.hot-name{font-size:11px;font-weight:900;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--txt);}
+.hot-price{font-size:12px;font-weight:900;color:var(--p);}
+.hot-shop{font-size:9px;color:var(--txt3);}
+
+/* ═══════════════ SHOP VIEW ═══════════════ */
+#shopView{display:none;position:fixed;inset:0;background:var(--bg);z-index:2000;overflow-y:auto;padding-bottom:80px;}
+.sh-hero{height:210px;position:relative;}
+.sh-hero img{width:100%;height:100%;object-fit:cover;}
+.sh-hero-ov{position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.65) 0%,transparent 55%);}
+.back-btn{position:absolute;top:15px;right:15px;background:var(--surface);backdrop-filter:var(--blur2);width:40px;height:40px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;z-index:10;border:1px solid var(--border);color:var(--txt);}
+.sh-logo-big{width:76px;height:76px;border-radius:50%;border:3.5px solid var(--w);position:absolute;bottom:-38px;right:50%;transform:translateX(50%);object-fit:cover;box-shadow:0 6px 20px rgba(0,0,0,.18);z-index:5;background:var(--w);}
+.sh-info{background:var(--surface);backdrop-filter:var(--blur);border:1px solid var(--border);margin:48px 14px 14px;border-radius:var(--rad);padding:15px;text-align:center;box-shadow:var(--shad2);}
+.sh-stats{display:flex;justify-content:space-around;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.stat-i{text-align:center;}
+.sv{font-size:15px;font-weight:900;color:var(--txt);}
+.sl2{font-size:10px;color:var(--txt3);font-weight:700;}
+
+/* ═══════════════ PRODUCT GRID ═══════════════ */
+.prod-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;padding:0 14px;}
+.pg-card{background:var(--surface);backdrop-filter:var(--blur2);border:1px solid var(--border);border-radius:var(--rads);overflow:hidden;box-shadow:var(--shad2);cursor:pointer;transition:var(--trans);}
+.pg-card:active{transform:scale(.97);}
+.pg-img{width:100%;height:112px;object-fit:cover;}
+.pg-body{padding:9px 10px 11px;}
+.pg-name{font-weight:900;font-size:12px;margin-bottom:1px;color:var(--txt);}
+.pg-brand{font-size:9px;color:var(--txt3);margin-bottom:4px;}
+.pg-row{display:flex;justify-content:space-between;align-items:center;}
+.pg-price{color:var(--p);font-weight:900;font-size:13px;}
+.pg-add{width:30px;height:30px;background:var(--pg);border:none;border-radius:9px;color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--trans);}
+.pg-add:active{transform:scale(.88);}
+
+/* ═══════════════ PRODUCT MODAL ═══════════════ */
+#prodModal{position:fixed;inset:0;background:var(--bg);z-index:3000;display:none;overflow-y:auto;padding-bottom:100px;}
+.pm-img{width:100%;height:290px;object-fit:cover;}
+.pm-body{padding:18px 15px;margin-top:-22px;position:relative;z-index:5;}
+.pm-card{background:var(--surface);backdrop-filter:var(--blur);border:1px solid var(--border);border-radius:var(--rad);padding:18px;box-shadow:var(--shad);}
+.pm-name{font-size:21px;font-weight:900;color:var(--txt);}
+.pm-shop{font-size:12px;color:var(--txt3);margin-top:3px;}
+.pm-brand{font-size:10px;font-weight:900;background:rgba(188,0,0,.1);color:var(--p);padding:3px 9px;border-radius:7px;display:inline-block;margin:6px 0;}
+.pm-desc{font-size:13px;color:var(--txt2);line-height:1.7;background:var(--surface2);border-radius:var(--rads);padding:12px;margin:10px 0;border:1px solid var(--border);}
+.pm-price{font-size:27px;font-weight:900;background:var(--pg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:8px 0;}
+.qty-row{display:flex;align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rads);overflow:hidden;margin:12px 0;}
+.qb{width:48px;height:46px;border:none;background:transparent;font-size:20px;font-weight:900;cursor:pointer;color:var(--p);display:flex;align-items:center;justify-content:center;transition:var(--trans);}
+.qb:active{background:rgba(188,0,0,.1);}
+.qn{flex:1;text-align:center;font-size:18px;font-weight:900;color:var(--txt);}
+.pm-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+.btn-buy{background:var(--pg);color:#fff;border:none;padding:15px;border-radius:var(--rads);font-weight:900;font-size:14px;cursor:pointer;font-family:inherit;box-shadow:0 6px 20px rgba(188,0,0,.28);transition:var(--trans);}
+.btn-buy:active{transform:scale(.97);}
+.btn-add-c{background:rgba(188,0,0,.08);color:var(--p);border:1.5px solid rgba(188,0,0,.2);padding:15px;border-radius:var(--rads);font-weight:900;font-size:14px;cursor:pointer;font-family:inherit;transition:var(--trans);}
+.btn-add-c:active{transform:scale(.97);}
+
+/* ═══════════════ CART ═══════════════ */
+.cart-hdr{padding:20px 15px 16px;background:var(--pg);color:#fff;}
+.ci{background:var(--surface);backdrop-filter:var(--blur2);border:1px solid var(--border);border-radius:var(--rads);margin:0 14px 10px;padding:12px;display:flex;align-items:center;gap:11px;transition:var(--trans);}
+.ci-img{width:58px;height:58px;border-radius:12px;object-fit:cover;flex-shrink:0;}
+.qm-row{display:flex;align-items:center;gap:7px;margin-top:5px;}
+.qmb{width:27px;height:27px;border-radius:8px;border:none;background:rgba(188,0,0,.1);color:var(--p);font-size:15px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--trans);}
+.qmb:active{transform:scale(.88);}
+.del-b{background:rgba(188,0,0,.08);color:var(--p);border:none;width:32px;height:32px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.cart-sum-card{background:var(--surface);backdrop-filter:var(--blur);border:1px solid var(--border);margin:0 14px;border-radius:var(--rad);padding:18px;box-shadow:var(--shad2);}
+.sr{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--txt2);}
+.sr:last-child{border:none;padding-top:12px;}
+.sr-tot{font-size:19px;font-weight:900;background:var(--pg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.lm-inp{width:100%;padding:12px 14px;margin:8px 0 14px;border:1.5px solid var(--border);border-radius:var(--rads);font-size:13px;background:var(--surface2);color:var(--txt);outline:none;font-family:inherit;transition:var(--trans);}
+.lm-inp:focus{border-color:var(--p);}
+.lm-inp::placeholder{color:var(--txt3);}
+
+/* ═══════════════ PAYMENT ═══════════════ */
+#payOv{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:4000;display:none;align-items:flex-end;backdrop-filter:blur(6px);}
+.pay-sh{background:var(--surface);backdrop-filter:var(--blur);border:1px solid var(--border);width:100%;border-radius:26px 26px 0 0;padding:24px 18px 40px;max-height:92vh;overflow-y:auto;animation:slideUp .35s cubic-bezier(.175,.885,.32,1.275);}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:none;}}
+.pay-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px;}
+.pay-opt{display:flex;align-items:center;gap:13px;padding:16px;border:1.5px solid var(--border);border-radius:var(--rads);margin-bottom:11px;cursor:pointer;transition:var(--trans);background:var(--surface2);font-weight:900;color:var(--txt);}
+.pay-opt:active{transform:scale(.98);}
+.pay-oi{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.acc-num{background:var(--surface);border:2px dashed var(--p);border-radius:11px;padding:13px 15px;font-size:17px;font-weight:900;letter-spacing:2px;display:flex;justify-content:space-between;align-items:center;margin-top:9px;color:var(--txt);}
+.copy-b{background:rgba(188,0,0,.1);color:var(--p);border:none;padding:7px 12px;border-radius:7px;font-weight:900;font-size:11px;cursor:pointer;font-family:inherit;}
+.upz{border:2px dashed var(--border);border-radius:var(--rads);padding:20px;text-align:center;margin:12px 0;cursor:pointer;transition:var(--trans);background:var(--surface2);}
+.upz:hover{border-color:var(--p);background:rgba(188,0,0,.04);}
+
+/* ═══════════════ PROFILE ═══════════════ */
+.prof-hero{padding:28px 15px 55px;position:relative;overflow:hidden;background:var(--pg);}
+.prof-hero::before{content:'';position:absolute;top:-30%;right:-10%;width:180px;height:180px;background:rgba(255,255,255,.12);border-radius:50%;}
+.prof-hero::after{content:'';position:absolute;bottom:-20%;left:-5%;width:120px;height:120px;background:rgba(0,0,0,.1);border-radius:50%;}
+.prof-av{width:76px;height:76px;border-radius:26px;border:3px solid rgba(255,255,255,.35);object-fit:cover;cursor:pointer;transition:var(--trans);}
+.prof-av:hover{border-color:#fff;}
+.prof-cards{margin:-38px 14px 0;position:relative;z-index:5;}
+.stat-card{background:var(--surface);backdrop-filter:var(--blur);border:1px solid var(--border);border-radius:var(--rad);padding:18px;margin-bottom:12px;box-shadow:var(--shad2);}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);}
+.sbox{text-align:center;padding:8px 0;border-right:1px solid var(--border);}
+.sbox:last-child{border:none;}
+.menu-card{background:var(--surface);backdrop-filter:var(--blur);border:1px solid var(--border);border-radius:var(--rad);margin-bottom:11px;overflow:hidden;box-shadow:var(--shad2);}
+.mrow{display:flex;align-items:center;gap:13px;padding:15px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:var(--trans);}
+.mrow:last-child{border:none;}
+.mrow:active{background:var(--surface2);}
+.mrow-ic{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.bv{background:rgba(0,184,148,.15);color:var(--ok);padding:3px 9px;border-radius:20px;font-size:10px;font-weight:900;display:inline-flex;align-items:center;gap:3px;}
+.buv{background:rgba(231,76,60,.1);color:#e74c3c;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:900;display:inline-flex;align-items:center;gap:3px;}
+.kyc-box{background:var(--surface);backdrop-filter:var(--blur2);border:1.5px solid rgba(188,0,0,.15);border-radius:var(--rad);padding:18px;margin-bottom:12px;}
+.sell-box{background:var(--surface);backdrop-filter:var(--blur2);border:1.5px solid rgba(0,184,148,.2);border-radius:var(--rad);padding:18px;margin-bottom:12px;display:none;}
+.field{width:100%;padding:13px 15px;margin:6px 0;border:1.5px solid var(--border);border-radius:var(--rads);font-size:13px;background:var(--surface2);outline:none;font-family:inherit;color:var(--txt);transition:var(--trans);}
+.field:focus{border-color:var(--p);}
+.field::placeholder{color:var(--txt3);}
+
+/* ═══════════════ ORDERS ═══════════════ */
+.ord-card{background:var(--surface);backdrop-filter:var(--blur2);border:1px solid var(--border);border-radius:var(--rads);margin:0 14px 11px;padding:15px;box-shadow:var(--shad2);}
+
+/* ═══════════════ CHAT ═══════════════ */
+#chatView{padding-top:0;}
+.chat-hdr{background:var(--pg);padding:18px 15px 14px;color:#fff;}
+.msgs-wrap{padding:14px;display:flex;flex-direction:column;gap:10px;padding-bottom:80px;}
+.msg{max-width:80%;padding:11px 14px;border-radius:18px;font-size:13px;line-height:1.5;animation:msgIn .25s both;}
+@keyframes msgIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+.msg-bot{background:var(--surface);border:1px solid var(--border);border-bottom-right-radius:4px;align-self:flex-end;color:var(--txt);}
+.msg-user{background:var(--pg);color:#fff;border-bottom-left-radius:4px;align-self:flex-start;}
+.msg-time{font-size:9px;opacity:.6;margin-top:4px;}
+.chat-inp-row{position:fixed;bottom:0;left:0;width:100%;padding:10px 14px 24px;background:var(--surface);backdrop-filter:var(--blur);border-top:1px solid var(--border);display:flex;gap:8px;z-index:10;}
+.chat-inp{flex:1;padding:12px 14px;border:1.5px solid var(--border);border-radius:50px;font-size:13px;background:var(--surface2);color:var(--txt);outline:none;font-family:inherit;}
+.chat-inp:focus{border-color:var(--p);}
+.chat-inp::placeholder{color:var(--txt3);}
+.chat-send{width:44px;height:44px;border-radius:14px;background:var(--pg);border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+/* ═══════════════ LANG SELECTOR ═══════════════ */
+.lang-pills{display:flex;gap:6px;flex-wrap:wrap;}
+.lang-pill{padding:6px 14px;border-radius:50px;border:1.5px solid var(--border);font-size:12px;font-weight:900;cursor:pointer;transition:var(--trans);background:var(--surface2);color:var(--txt);}
+.lang-pill.active{background:var(--pg);color:#fff;border-color:var(--p);}
+
+/* ═══════════════ TOAST ═══════════════ */
+#toast{position:fixed;bottom:110px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--dark);color:#fff;padding:11px 20px;border-radius:50px;font-size:12px;font-weight:700;opacity:0;transition:var(--trans);z-index:9999;white-space:nowrap;pointer-events:none;box-shadow:0 8px 25px rgba(0,0,0,.3);}
+[data-theme="dark"] #toast{background:rgba(255,255,255,.9);color:#111;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ═══════════════ EMPTY STATES ═══════════════ */
+.empty{text-align:center;padding:50px 20px;}
+.empty .ei{font-size:44px;margin-bottom:12px;}
+.empty p{font-weight:700;font-size:14px;color:var(--txt3);}
+
+/* ═══════════════ MISC ═══════════════ */
+.divider{height:1px;background:var(--border);margin:14px 0;}
+.badge{padding:3px 8px;border-radius:7px;font-size:10px;font-weight:900;}
+.badge-ok{background:rgba(0,184,148,.12);color:var(--ok);}
+.badge-warn{background:rgba(241,196,15,.12);color:#a07700;}
+.ripple{position:relative;overflow:hidden;}
+.ripple::after{content:'';position:absolute;top:50%;left:50%;width:0;height:0;background:rgba(255,255,255,.3);border-radius:50%;transform:translate(-50%,-50%);transition:width .4s,height .4s,opacity .4s;opacity:0;}
+.ripple:active::after{width:200px;height:200px;opacity:1;transition:none;}
+</style>
 </head>
 <body>
 
-<div id="authView">
-    <img src="https://i.ibb.co/4gdWgwW7/x.jpg" class="auth-logo">
-    <h1 style="margin:0; color:var(--primary); font-size:35px;">Sinq.</h1>
-    <p style="color:#888; margin-bottom:20px; font-weight:bold; text-align:center;">እባክዎ መረጃዎን ያስገቡ</p>
-    
-    <input type="text" id="regName" class="auth-input" placeholder="👤 ሙሉ ስምዎ">
-    <input type="tel" id="regPhone" class="auth-input" placeholder="📱 ስልክ ቁጥር (09/07...)">
-    
-    <label style="width:100%; text-align:right; font-size:12px; font-weight:bold; color:#888; margin-top:5px;">የፕሮፋይል ፎቶ (አማራጭ)</label>
-    <input type="file" id="regProfilePic" class="auth-input" accept="image/*">
-    
-    <button class="btn-main" id="regBtn" onclick="secureRegister()">ወደ ሲንቅ ግባ <i class="fa-solid fa-arrow-left"></i></button>
+<!-- ═══ SKELETON ═══ -->
+<div id="skeleton">
+  <div class="sk-logo"></div>
+  <div class="sk-bar sk-title"></div>
+  <div class="sk-sub"></div>
+  <div class="sk-pulse"></div>
 </div>
 
+<!-- ═══ AUTH ═══ -->
+<div id="authView" style="display:none;">
+  <div class="auth-bg">
+    <div class="auth-orb orb1"></div>
+    <div class="auth-orb orb2"></div>
+    <div class="auth-orb orb3"></div>
+  </div>
+  <div class="auth-inner">
+    <img src="https://i.ibb.co/6cPCXJCx/x.jpg" class="auth-logo" onerror="this.style.background='#bc0000'">
+    <div class="auth-brand">Sinq.</div>
+    <div class="auth-sub">ኮምቦልቻ · Delivery & Market 2026</div>
+    <div class="auth-card glass">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">ግባ</button>
+        <button class="auth-tab" id="tabReg" onclick="switchAuthTab('reg')">ተመዝገብ</button>
+      </div>
+      <!-- Login -->
+      <div id="loginForm">
+        <div class="inp-wrap"><i class="fa-solid fa-phone inp-icon"></i><input class="a-inp" id="lPhone" type="tel" placeholder="📱 ስልክ ቁጥር (09/07...)"></div>
+        <div class="inp-err" id="lPhoneErr">ትክክለኛ ስልክ ቁጥር ያስገቡ</div>
+        <button class="btn-p ripple" id="lBtn" onclick="doLogin()">ግባ &nbsp;<i class="fa-solid fa-arrow-left"></i></button>
+      </div>
+      <!-- Register -->
+      <div id="regForm" style="display:none;">
+        <div class="inp-wrap"><i class="fa-solid fa-user inp-icon"></i><input class="a-inp" id="rName" type="text" placeholder="👤 ሙሉ ስምዎ"></div>
+        <div class="inp-err" id="rNameErr">ስምዎን ያስገቡ</div>
+        <div class="inp-wrap"><i class="fa-solid fa-phone inp-icon"></i><input class="a-inp" id="rPhone" type="tel" placeholder="📱 ስልክ (09/07...)"></div>
+        <div class="inp-err" id="rPhoneErr">ትክክለኛ ስልክ ቁጥር ያስገቡ</div>
+        <label style="font-size:11px;color:var(--txt3);font-weight:700;margin-top:4px;display:block;">የፕሮፋይል ፎቶ</label>
+        <input class="a-inp" id="rPic" type="file" accept="image/*" style="padding:9px;margin-top:5px;">
+        <button class="btn-p ripple" id="rBtn" onclick="doReg()">ተመዝገብ &nbsp;<i class="fa-solid fa-arrow-left"></i></button>
+      </div>
+      <div style="text-align:center;margin-top:14px;font-size:10px;color:var(--txt3);"><i class="fa-solid fa-shield-halved"></i> Secured · No data sold · 2026</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MAIN APP ═══ -->
 <div id="mainApp" style="display:none;">
-
-    <div class="top-header">
-        <div class="header-flex">
-            <div class="loc-chip" onclick="switchTab('profileView', document.getElementById('navProfile'))">
-                <i class="fa-solid fa-location-dot"></i> <span id="headerLoc">ኮምቦልቻ (አድራሻ)</span>
-            </div>
-            <img src="https://i.ibb.co/ZjxfXn7/x.jpg" style="height:32px; border-radius:8px;">
-        </div>
-        <input type="text" class="search-bar" id="searchInput" placeholder="🔍 ሱቅ፣ እቃ ወይም ምግብ ይፈልጉ..." onkeyup="searchItems()">
+  <!-- Header -->
+  <div class="top-hdr">
+    <div class="hdr-row">
+      <div class="loc-chip" id="locChip" onclick="doLoc()">
+        <i class="fa-solid fa-location-dot"></i><span id="hLoc">ኮምቦልቻ</span>
+      </div>
+      <div class="hdr-actions">
+        <button class="icon-btn" onclick="toggleTheme()" id="themeBtn" title="Theme"><i class="fa-solid fa-moon"></i></button>
+        <button class="icon-btn" onclick="switchTab('chatView',document.getElementById('nChat'))" title="Chat"><i class="fa-solid fa-comments"></i></button>
+        <button class="icon-btn" onclick="switchLang()" title="Language" id="langBtn"><span style="font-size:11px;font-weight:900;">አማ</span></button>
+      </div>
     </div>
-
-    <div id="homeView" class="view-section active container">
-        
-        <div id="mainContentWrapper">
-            <div class="slider-container">
-                <div class="slides" id="slider">
-                    <div class="slide" style="background-image: url('https://i.ibb.co/6cPCXJCx/x.jpg');">
-                        <div class="slide-overlay"><p style="margin:0; font-weight:900; font-size:18px;">Sinq Delivery 🚀</p><span style="font-size:13px; opacity:0.9;">ፈጣን ማድረሻ</span></div>
-                    </div>
-                    <div class="slide" style="background-image: url('https://i.ibb.co/6cPCXJCx/x.jpg');">
-                        <div class="slide-overlay"><p style="margin:0; font-weight:900; font-size:18px;">ልዩ ቅናሽ 🎁</p><span style="font-size:13px; opacity:0.9;">አሁኑኑ ይዘዙ</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="cat-grid-container">
-                <div class="cat-item active" onclick="filterCat('ሁሉንም', this)"><div class="cat-icon-box"><i class="fa-solid fa-border-all"></i></div><span class="cat-name">ሁሉንም</span></div>
-                <div class="cat-item" onclick="filterCat('ምግብ ቤቶች', this)"><div class="cat-icon-box" style="color:#e67e22;"><i class="fa-solid fa-burger"></i></div><span class="cat-name">ምግብ</span></div>
-                <div class="cat-item" onclick="filterCat('ሱፐርማርኬት', this)"><div class="cat-icon-box" style="color:#27ae60;"><i class="fa-solid fa-cart-shopping"></i></div><span class="cat-name">ማርኬት</span></div>
-                <div class="cat-item" onclick="filterCat('መጠጦች', this)"><div class="cat-icon-box" style="color:#8e44ad;"><i class="fa-solid fa-wine-bottle"></i></div><span class="cat-name">መጠጥ</span></div>
-                <div class="cat-item" onclick="filterCat('ፋርማሲ', this)"><div class="cat-icon-box" style="color:#e74c3c;"><i class="fa-solid fa-pills"></i></div><span class="cat-name">ፋርማሲ</span></div>
-                <div class="cat-item" onclick="filterCat('ኮስሞቲክስ', this)"><div class="cat-icon-box" style="color:#ff4757;"><i class="fa-solid fa-spa"></i></div><span class="cat-name">ኮስሞቲክስ</span></div>
-                <div class="cat-item" onclick="filterCat('ኤሌክትሮኒክስ', this)"><div class="cat-icon-box" style="color:#2980b9;"><i class="fa-solid fa-tv"></i></div><span class="cat-name">ኤሌክትሮኒክስ</span></div>
-                <div class="cat-item" onclick="filterCat('ነፃ ገበያ', this)"><div class="cat-icon-box" style="color:#34495e;"><i class="fa-solid fa-store"></i></div><span class="cat-name">ገበያ</span></div>
-            </div>
-
-            <div class="section-title">ተወዳጅ እቃዎች</div>
-            <div id="featuredProductsGrid"></div>
-
-            <div class="section-title">ሱቆች እና ገበያ</div>
-            <div class="grid" id="shopGrid"></div>
-        </div>
-        
-        <div id="searchResults" style="display:none; margin-top:10px;"></div>
+    <div class="s-wrap">
+      <i class="fa-solid fa-magnifying-glass s-ico"></i>
+      <input class="s-bar" id="sBar" placeholder="ሱቅ፣ ምርት ወይም ምድብ ይፈልጉ..." oninput="doSearch()">
     </div>
+  </div>
 
-    <div id="cartView" class="view-section container">
-        <h2 style="color:var(--primary); margin-top:0;">ቅርጫት 🛒</h2>
-        <div id="cartItemsList"></div>
-        
-        <div id="cartTotalDisplay" style="display:none; background:white; padding:20px; border-radius:16px; box-shadow:0 4px 15px rgba(0,0,0,0.03);">
-            
-            <label style="font-size:12px; font-weight:bold; color:var(--primary);">ልዩ የሰፈር ስም / መለያ (Landmark) *</label>
-            <input type="text" id="specificAddress" class="auth-input" style="margin-top:5px; margin-bottom:15px;" placeholder="ምሳሌ፡ መብራት ሀይል፣ አዋሽ ባንክ ጀርባ...">
-
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-weight:bold; color:#666;"><span>የእቃ ሂሳብ:</span><span id="subTotal">0 ብር</span></div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-weight:bold; color:#666;"><span>ዴሊቬሪ ክፍያ (<span id="distKm">...</span> ኪ.ሜ):</span><span id="deliveryFeeDisplay">50 ብር</span></div>
-            <hr style="border:0; border-top:1px dashed #ccc; margin:15px 0;">
-            <div style="display:flex; justify-content:space-between; color:var(--primary); font-size:20px; font-weight:900;"><span>ጠቅላላ:</span><span id="grandTotal">0 ብር</span></div>
-            
-            <button class="btn-main" style="margin-top:20px;" onclick="openSmartPayment()">ትዕዛዙን አረጋግጥ (Checkout)</button>
+  <!-- HOME -->
+  <div id="homeView" class="vs active">
+    <div class="sl-wrap">
+      <div class="slides" id="slTrack">
+        <div class="slide" style="background-image:url('https://i.ibb.co/6cPCXJCx/x.jpg')">
+          <div class="sl-ov"><div style="color:rgba(255,255,255,.8);font-size:12px;font-weight:700;">✨ ምርጥ ምርቶች</div><div style="color:#fff;font-size:20px;font-weight:900;margin-top:2px;">Asli Cosmetics 💄</div></div>
         </div>
-        <div id="emptyCartMsg" style="text-align:center; color:#999; padding:60px 20px;">ቅርጫትዎ ባዶ ነው</div>
+        <div class="slide" style="background-image:url('https://i.ibb.co/N2R1ChwM/x.jpg')">
+          <div class="sl-ov"><div style="color:rgba(255,255,255,.8);font-size:12px;font-weight:700;">🍕 ልዩ ምግቦች</div><div style="color:#fff;font-size:20px;font-weight:900;margin-top:2px;">አሞር ካፌ</div></div>
+        </div>
+        <div class="slide" style="background-image:url('https://i.ibb.co/b5xn5p7w/x.jpg')">
+          <div class="sl-ov"><div style="color:rgba(255,255,255,.8);font-size:12px;font-weight:700;">🛍️ ነፃ ያስተዋውቁ</div><div style="color:#fff;font-size:20px;font-weight:900;margin-top:2px;">ሲንቅ ነፃ ገበያ</div></div>
+        </div>
+      </div>
+      <div class="sl-dots" id="slDots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div>
     </div>
-
-    <div id="profileView" class="view-section container">
-        
-        <div class="wallet-card">
-            <div class="profile-avatar-wrapper" onclick="document.getElementById('hiddenProfileInput').click()">
-                <img id="profileAvatarImg" class="profile-avatar-img" src="https://via.placeholder.com/60/ffffff/bc0000?text=👤">
-                <div class="profile-edit-icon"><i class="fa-solid fa-pen"></i></div>
-            </div>
-            <input type="file" id="hiddenProfileInput" accept="image/*" onchange="changeProfilePhoto(event)">
-            
-            <div>
-                <h2 id="profileNameDisplay" style="margin:0 0 2px; font-size: 18px;"></h2>
-                <div id="verificationStatus" class="unverified-badge"><i class="fa-solid fa-xmark"></i> ያልተረጋገጠ ሻጭ</div>
-            </div>
-        </div>
-
-        <div class="profile-menu-item" onclick="updateLocation()">
-            <div class="menu-icon" style="background:#e8f4fd; color:#3498db;"><i class="fa-solid fa-location-dot"></i></div>
-            <div style="flex-grow:1;"><div style="font-size:14px;">የማድረሻ አድራሻ (ካርታ)</div></div>
-            <i class="fa-solid fa-chevron-left" style="color:#ddd;"></i>
-        </div>
-
-        <div id="kycBox" class="security-box" style="display:block;">
-            <h3 style="margin:0 0 5px; color:#e74c3c;"><i class="fa-solid fa-shield-halved"></i> የሻጭነት ማረጋገጫ (KYC)</h3>
-            <p style="font-size:12px; color:#666; margin-bottom:15px;">በሲንቅ ላይ እቃ ለመሸጥ፣ ህጋዊ መታወቂያዎን ማስገባት ግዴታ ነው።</p>
-            <input type="file" id="idPhoto" class="auth-input" accept="image/*">
-            <button class="btn-main" id="verifyBtn" onclick="submitKYC()">ለማረጋገጫ ላክ</button>
-            <hr style="border:0; border-top:1px dashed #ccc; margin:15px 0;">
-            <div style="display:flex; gap:10px;">
-                <input type="password" id="verifyCode" class="auth-input" style="margin:0;" placeholder="የማረጋገጫ ኮድ">
-                <button class="btn-main" style="width:auto; margin:0;" onclick="checkVerificationCode()">አረጋግጥ</button>
-            </div>
-        </div>
-
-        <div id="sellerDashboard" class="security-box" style="border-color:var(--success);">
-            <h3 style="margin:0 0 10px; color:var(--success);"><i class="fa-solid fa-store"></i> የሻጭ መቆጣጠሪያ</h3>
-            <input type="file" id="sellPhoto" class="auth-input" accept="image/*">
-            <input type="text" id="sellName" class="auth-input" placeholder="የእቃው ስም">
-            <input type="number" id="sellPrice" class="auth-input" placeholder="ዋጋ (በብር)">
-            <button class="btn-main" id="uploadBtn" style="background:var(--success);" onclick="submitSecureProduct()">እቃውን ገበያ ላይ አውጣ</button>
-        </div>
-
-        <button class="btn-main" style="background:#fdedec; color:#e74c3c; margin-top:20px; box-shadow:none;" onclick="logout()">ከአካውንት ውጣ</button>
+    <div class="promo">
+      <div class="promo-ic">🚀</div>
+      <div><div style="font-weight:900;font-size:13px;">ፈጣን ዴሊቬሪ — 30 ደቂቃ!</div><div style="font-size:11px;opacity:.85;">ኮምቦልቻ ውስጥ #1 ዴሊቨሪ</div></div>
+      <i class="fa-solid fa-chevron-left" style="margin-right:auto;opacity:.5;font-size:11px;"></i>
     </div>
+    <div class="cats" id="catRow"></div>
+    <div class="sec-t"><h3>🔥 የሳምንቱ ምርጥ ሽያጮች</h3></div>
+    <div class="hot-scroll" id="hotRow"></div>
+    <div class="sec-t"><h3 id="gridTitle">ሁሉም ሱቆች</h3><span onclick="setCat('ሁሉንም',null)">ሁሉንም እይ</span></div>
+    <div class="shop-grid" id="shopGrid"></div>
+    <div id="srWrap" style="display:none;padding:0 14px;"></div>
+  </div>
 
-    <div class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab('homeView', this)"><i class="fa-solid fa-home"></i><span>ዋና</span></div>
-        <div class="nav-item" style="position:relative;" onclick="switchTab('cartView', this)">
-            <i class="fa-solid fa-basket-shopping"></i><span class="cart-badge" id="navCartCount">0</span><span>ቅርጫት</span>
-        </div>
-        <div class="nav-item" id="navProfile" onclick="switchTab('profileView', this)"><i class="fa-solid fa-user"></i><span>ፕሮፋይል</span></div>
+  <!-- CART -->
+  <div id="cartView" class="vs">
+    <div class="cart-hdr"><div style="font-size:20px;font-weight:900;">ቅርጫት 🛒</div><div style="font-size:12px;opacity:.85;margin-top:3px;" id="cHdrC">0 እቃዎች</div></div>
+    <div style="height:12px;"></div>
+    <div id="cList"></div>
+    <div id="cSum" style="display:none;padding:0 14px 14px;">
+      <div class="cart-sum-card">
+        <label style="font-size:11px;font-weight:900;color:var(--p);">📍 ልዩ ሰፈር / Landmark *</label>
+        <input type="text" id="lmInp" class="lm-inp" placeholder="ምሳሌ፡ አዋሽ ባንክ ፊት ለፊት...">
+        <div class="sr"><span>የእቃ ሂሳብ</span><span id="cSub">0 ብር</span></div>
+        <div class="sr"><span>ዴሊቬሪ (<span id="distKm">?</span> ኪ.ሜ)</span><span id="cDel">50 ብር</span></div>
+        <div class="sr"><span style="font-weight:900;color:var(--txt);">ጠቅላላ</span><span class="sr-tot" id="cGrand">50 ብር</span></div>
+      </div>
+      <button class="btn-p ripple" style="margin-top:12px;" onclick="openPay()">Checkout <i class="fa-solid fa-arrow-left"></i></button>
     </div>
+    <div id="cEmpty" class="empty"><div class="ei">🛒</div><p>ቅርጫትዎ ባዶ ነው</p></div>
+  </div>
 
+  <!-- ORDERS -->
+  <div id="ordersView" class="vs">
+    <div style="padding:16px 14px 8px;font-size:18px;font-weight:900;color:var(--txt);">ትዕዛዞቼ 📦</div>
+    <div id="ordList"></div>
+  </div>
+
+  <!-- CHAT -->
+  <div id="chatView" class="vs">
+    <div class="chat-hdr"><div style="font-size:18px;font-weight:900;">Sinq ድጋፍ 💬</div><div style="font-size:11px;opacity:.8;">24/7 እንረዳዎታለን</div></div>
+    <div class="msgs-wrap" id="msgsWrap"></div>
+    <div class="chat-inp-row">
+      <input class="chat-inp" id="chatInp" placeholder="መልዕክት ይፃፉ..." onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="chat-send" onclick="sendChat()"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div id="profileView" class="vs">
+    <div class="prof-hero">
+      <div style="display:flex;align-items:center;gap:13px;position:relative;z-index:2;">
+        <div style="position:relative;cursor:pointer;" onclick="document.getElementById('pPicIn').click()">
+          <img id="avImg" class="prof-av" src="https://via.placeholder.com/76/bc0000/fff?text=S">
+          <div style="position:absolute;bottom:-3px;right:-3px;background:rgba(255,255,255,.9);color:var(--p);width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;box-shadow:0 2px 6px rgba(0,0,0,.2);"><i class="fa-solid fa-pen"></i></div>
+        </div>
+        <input type="file" id="pPicIn" accept="image/*" style="display:none;" onchange="chgPic(event)">
+        <div>
+          <div style="color:#fff;font-size:19px;font-weight:900;" id="pName">ስምዎ</div>
+          <div id="vBadge" class="buv" style="margin-top:4px;"><i class="fa-solid fa-circle-xmark"></i> ያልተረጋገጠ</div>
+        </div>
+      </div>
+    </div>
+    <div class="prof-cards">
+      <div class="stat-card">
+        <div class="stat-grid">
+          <div class="sbox"><div style="font-size:15px;font-weight:900;color:var(--txt);" id="stOrd">0</div><div style="font-size:10px;color:var(--txt3);font-weight:700;">ትዕዛዞች</div></div>
+          <div class="sbox"><div style="font-size:15px;font-weight:900;color:var(--txt);">⭐ 4.8</div><div style="font-size:10px;color:var(--txt3);font-weight:700;">ደረጃ</div></div>
+          <div class="sbox"><div style="font-size:15px;font-weight:900;color:var(--txt);">🏆</div><div style="font-size:10px;color:var(--txt3);font-weight:700;">VIP</div></div>
+        </div>
+      </div>
+      <!-- Language -->
+      <div class="menu-card" style="padding:15px 18px;">
+        <div style="font-size:12px;font-weight:900;color:var(--txt2);margin-bottom:10px;"><i class="fa-solid fa-globe"></i> ቋንቋ / Language</div>
+        <div class="lang-pills" id="langPills">
+          <div class="lang-pill active" onclick="setLang('am',this)">አማርኛ</div>
+          <div class="lang-pill" onclick="setLang('en',this)">English</div>
+        </div>
+      </div>
+      <div class="menu-card">
+        <div class="mrow" onclick="doLoc()">
+          <div class="mrow-ic" style="background:rgba(52,152,219,.12);color:#3498db;"><i class="fa-solid fa-location-dot"></i></div>
+          <div style="flex:1;"><div style="font-weight:900;font-size:13px;color:var(--txt);">የማድረሻ ቦታ</div><div style="font-size:10px;color:var(--txt3);">GPS ካርታ</div></div>
+          <i class="fa-solid fa-chevron-left" style="color:var(--txt3);font-size:12px;"></i>
+        </div>
+        <div class="mrow" onclick="switchTab('ordersView',document.getElementById('nOrd'))">
+          <div class="mrow-ic" style="background:rgba(0,184,148,.12);color:var(--ok);"><i class="fa-solid fa-box"></i></div>
+          <div style="flex:1;"><div style="font-weight:900;font-size:13px;color:var(--txt);">ትዕዛዞቼ</div><div style="font-size:10px;color:var(--txt3);">ታሪክ</div></div>
+          <i class="fa-solid fa-chevron-left" style="color:var(--txt3);font-size:12px;"></i>
+        </div>
+        <div class="mrow" onclick="switchTab('chatView',document.getElementById('nChat'))">
+          <div class="mrow-ic" style="background:rgba(9,132,227,.12);color:#0984e3;"><i class="fa-solid fa-comments"></i></div>
+          <div style="flex:1;"><div style="font-weight:900;font-size:13px;color:var(--txt);">ድጋፍ ጠይቁ</div><div style="font-size:10px;color:var(--txt3);">24/7 Chat</div></div>
+          <i class="fa-solid fa-chevron-left" style="color:var(--txt3);font-size:12px;"></i>
+        </div>
+        <div class="mrow" onclick="toggleTheme()">
+          <div class="mrow-ic" style="background:rgba(241,196,15,.12);color:#a07700;"><i class="fa-solid fa-circle-half-stroke"></i></div>
+          <div style="flex:1;"><div style="font-weight:900;font-size:13px;color:var(--txt);">Dark / Light Mode</div><div style="font-size:10px;color:var(--txt3);" id="themeLabel">Light Mode</div></div>
+          <div id="themeToggle" style="width:42px;height:24px;background:var(--border);border-radius:12px;position:relative;cursor:pointer;transition:var(--trans);"><div style="width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;top:3px;right:3px;transition:var(--trans);box-shadow:0 2px 5px rgba(0,0,0,.2);"></div></div>
+        </div>
+        <div class="mrow" onclick="shareApp()">
+          <div class="mrow-ic" style="background:rgba(231,76,60,.1);color:#e74c3c;"><i class="fa-solid fa-share-nodes"></i></div>
+          <div style="flex:1;"><div style="font-weight:900;font-size:13px;color:var(--txt);">ሲንቅ ለጓደኞች ላክ</div><div style="font-size:10px;color:var(--txt3);">Referral</div></div>
+          <i class="fa-solid fa-chevron-left" style="color:var(--txt3);font-size:12px;"></i>
+        </div>
+      </div>
+      <!-- KYC -->
+      <div class="kyc-box" id="kycBox">
+        <div style="font-size:14px;font-weight:900;color:var(--p);margin-bottom:5px;"><i class="fa-solid fa-shield-halved"></i> የሻጭነት ማረጋገጫ (KYC)</div>
+        <div style="font-size:11px;color:var(--txt2);margin-bottom:12px;">እቃ ለመሸጥ መታወቂያዎን ያስገቡ</div>
+        <input type="file" id="idPh" class="field" accept="image/*" style="padding:9px;">
+        <button class="btn-p ripple" id="kycBtn" onclick="sendKYC()">ለማረጋገጫ ላክ</button>
+        <div class="divider"></div>
+        <div style="display:flex;gap:7px;">
+          <input type="password" id="kycCode" class="field" style="margin:0;flex:1;" placeholder="የማረጋገጫ ኮድ">
+          <button class="btn-p" style="width:auto;margin:0;padding:13px 16px;" onclick="checkKYC()">አረጋግጥ</button>
+        </div>
+      </div>
+      <!-- Seller Dashboard -->
+      <div class="sell-box" id="sellBox">
+        <div style="font-size:14px;font-weight:900;color:var(--ok);margin-bottom:11px;"><i class="fa-solid fa-store"></i> የሻጭ ዳሽቦርድ</div>
+        <input type="file" id="sPh" class="field" accept="image/*" style="padding:9px;">
+        <input type="text" id="sNm" class="field" placeholder="የእቃው ስም">
+        <input type="number" id="sPr" class="field" placeholder="ዋጋ (ብር)">
+        <input type="text" id="sDe" class="field" placeholder="አጭር መግለጫ">
+        <button class="btn-p" style="background:linear-gradient(135deg,var(--ok),#00a381);" id="sellBtn" onclick="uploadProd()">
+          <i class="fa-solid fa-upload"></i> እቃ ገበያ ላይ አውጣ
+        </button>
+      </div>
+      <button class="btn-ghost" onclick="doLogout()" style="margin-bottom:14px;"><i class="fa-solid fa-right-from-bracket"></i> ከአካውንት ውጣ</button>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <div class="bnav">
+    <div class="ni active" id="nHome" onclick="switchTab('homeView',this)"><div class="ni-iw"><i class="fa-solid fa-house"></i></div><span>ዋና</span></div>
+    <div class="ni" id="nCart" onclick="switchTab('cartView',this)"><div class="ni-iw" style="position:relative;"><i class="fa-solid fa-basket-shopping"></i><span class="cbadge" id="cBadge">0</span></div><span>ቅርጫት</span></div>
+    <div class="ni" id="nOrd" onclick="switchTab('ordersView',this)"><div class="ni-iw"><i class="fa-solid fa-box-open"></i></div><span>ትዕዛዝ</span></div>
+    <div class="ni" id="nChat" onclick="switchTab('chatView',this)"><div class="ni-iw"><i class="fa-solid fa-comments"></i></div><span>Chat</span></div>
+    <div class="ni" id="nProf" onclick="switchTab('profileView',this)"><div class="ni-iw"><i class="fa-solid fa-user-circle"></i></div><span>ፕሮፋይል</span></div>
+  </div>
 </div>
 
+<!-- SHOP VIEW -->
 <div id="shopView">
-    <div class="shop-header-wrapper">
-        <img id="shopBanner" class="shop-banner-img" src="">
-        <div class="back-circle" onclick="document.getElementById('shopView').style.display='none'"><i class="fa-solid fa-arrow-right"></i></div>
-        <img id="shopLogo" class="shop-logo-img" src="">
+  <div class="sh-hero">
+    <img id="shBanner" src="" style="width:100%;height:100%;object-fit:cover;">
+    <div class="sh-hero-ov"></div>
+    <div class="back-btn" onclick="document.getElementById('shopView').style.display='none'"><i class="fa-solid fa-arrow-right"></i></div>
+    <img id="shLogo" class="sh-logo-big" src="">
+  </div>
+  <div class="sh-info">
+    <div style="font-size:19px;font-weight:900;color:var(--txt);" id="shName"></div>
+    <div style="font-size:12px;color:var(--txt3);margin-top:2px;" id="shDesc"></div>
+    <div class="sh-stats">
+      <div class="stat-i"><div class="sv" id="shRat"></div><div class="sl2">Rating</div></div>
+      <div class="stat-i"><div class="sv" id="shTime"></div><div class="sl2">ደቂቃ</div></div>
+      <div class="stat-i"><div class="sv" id="shCnt"></div><div class="sl2">ምርቶች</div></div>
     </div>
-    <div class="shop-info-card">
-        <h2 id="shopName" style="margin:0 0 5px; font-weight:900; font-size:22px;"></h2>
-        <p id="shopDesc" style="color:var(--text-muted); font-size:13px; margin:0; font-weight:600;"></p>
-        <div class="shop-rating" style="justify-content:center; margin-top:5px; font-size:14px;"><i class="fa-solid fa-star" style="color:var(--gold);"></i> <span id="shopRatingVal"></span> Rating</div>
-    </div>
-    <div class="container" style="padding-top:0;">
-        <h3 style="margin-top:0; font-weight:900;">ምርቶች</h3>
-        <div id="productGrid"></div>
-    </div>
+  </div>
+  <div style="padding:4px 14px 12px;font-weight:900;font-size:15px;color:var(--txt);margin-top:8px;">ምርቶች</div>
+  <div class="prod-grid" id="shProdGrid"></div>
 </div>
 
-<div id="productModal">
-    <div class="back-circle" onclick="document.getElementById('productModal').style.display='none'" style="z-index: 50;"><i class="fa-solid fa-arrow-left"></i></div>
-    <img id="modalImg" class="prod-modal-banner" src="">
-    <div class="prod-info-box">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-            <div>
-                <h2 id="modalName" style="margin:0; font-weight:900; font-size:24px; color:#111;"></h2>
-                <p id="modalShop" style="color:var(--primary); font-weight:bold; margin:5px 0 10px; font-size:13px;"></p>
-            </div>
-            <h2 id="modalPrice" style="color:var(--success); margin:0; font-weight:900;"></h2>
-        </div>
-        
-        <div class="prod-desc-text" id="modalDesc"></div>
-        
-        <button class="btn-main" style="background:var(--primary); margin-top:25px;" id="modalAddBtn">ወደ ቅርጫት ጨምር <i class="fa-solid fa-cart-plus"></i></button>
+<!-- PRODUCT MODAL -->
+<div id="prodModal">
+  <div class="back-btn" style="position:fixed;top:15px;right:15px;z-index:10;" onclick="document.getElementById('prodModal').style.display='none'"><i class="fa-solid fa-arrow-right"></i></div>
+  <img id="pmImg" class="pm-img">
+  <div class="pm-body">
+    <div class="pm-card">
+      <div class="pm-name" id="pmName"></div>
+      <div class="pm-shop" id="pmShop"></div>
+      <div class="pm-brand" id="pmBrand"></div>
+      <div class="pm-desc" id="pmDesc"></div>
+      <div class="pm-price" id="pmPrice"></div>
+      <div class="qty-row">
+        <button class="qb" onclick="chgQty(-1)">－</button>
+        <div class="qn" id="qNum">1</div>
+        <button class="qb" onclick="chgQty(1)">＋</button>
+      </div>
+      <div class="pm-btns">
+        <button class="btn-buy ripple" id="buyNowBtn">ገዝ አሁን 💳</button>
+        <button class="btn-add-c ripple" id="addCartBtn">🛒 ቅርጫት</button>
+      </div>
     </div>
+  </div>
 </div>
 
-<div id="paymentOverlay">
-    <div class="payment-modal">
-        <div id="paymentSelectionBox">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h2 style="margin:0; font-weight:900;">በምን መክፈል ይፈልጋሉ?</h2>
-                <div onclick="closePayment()" style="background:#f0f0f0; width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer;"><i class="fa-solid fa-xmark"></i></div>
-            </div>
-            <div class="pay-option pay-telebirr" onclick="showDigitalForm('Telebirr', '096910607')">
-                <div><i class="fa-solid fa-mobile-screen-button"></i> በ ቴሌብር (Telebirr)</div><i class="fa-solid fa-chevron-left" style="font-size:18px;"></i>
-            </div>
-            <div class="pay-option pay-cbe" onclick="showDigitalForm('CBE', '1000562339427')">
-                <div><i class="fa-solid fa-building-columns"></i> በ ንግድ ባንክ (CBE Birr)</div><i class="fa-solid fa-chevron-left" style="font-size:18px;"></i>
-            </div>
-        </div>
-
-        <div id="digitalPaymentForm" style="display:none;">
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px; cursor:pointer; color:var(--primary); font-weight:bold;" onclick="backToMethods()">
-                <i class="fa-solid fa-arrow-right"></i> ወደ ኋላ
-            </div>
-            <h3 style="margin:0; text-align:center; color:#333;">በ <span id="selectedMethodText"></span> ይክፈሉ</h3>
-            <p style="text-align:center; font-size:12px; color:#888;">እባክዎ ጠቅላላ ሂሳቡን (<span id="payAmountDisp" style="font-weight:bold; color:var(--primary);"></span>) ከታች ባለው አካውንት ገቢ ያድርጉና ደረሰኝ ያስገቡ።</p>
-            
-            <div class="digital-pay-box" style="display:block;">
-                <div style="font-size:14px; color:#666;">የአካውንት ስም: <b style="color:#222;">Aymen Kemal</b></div>
-                <div class="acc-number-box">
-                    <span id="accNumberDisplay"></span>
-                    <button class="copy-btn" onclick="copyAccount()"><i class="fa-solid fa-copy"></i> ኮፒ</button>
-                </div>
-            </div>
-
-            <label style="font-size:13px; font-weight:900; color:var(--primary); display:block; margin-bottom:5px;">የክፍያ ማረጋገጫ (Screenshot) *</label>
-            <div class="file-upload-wrapper">
-                <input type="file" id="paymentScreenshot" class="file-upload-input" accept="image/*">
-            </div>
-            <button class="btn-main" id="confirmPayBtn" onclick="processScreenshotOrder()">አረጋግጥ እና እዘዝ <i class="fa-solid fa-check"></i></button>
-        </div>
+<!-- PAYMENT -->
+<div id="payOv" onclick="if(event.target===this)closePay()">
+  <div class="pay-sh">
+    <div class="pay-handle"></div>
+    <div id="ps1">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div style="font-size:18px;font-weight:900;color:var(--txt);">ክፍያ ምርጫ</div>
+        <div onclick="closePay()" style="cursor:pointer;background:var(--surface2);width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--txt);"><i class="fa-solid fa-xmark"></i></div>
+      </div>
+      <div style="background:rgba(188,0,0,.06);border-radius:var(--rads);padding:13px 15px;margin-bottom:16px;display:flex;justify-content:space-between;font-weight:900;border:1px solid rgba(188,0,0,.12);">
+        <span style="color:var(--txt2);">ጠቅላላ</span>
+        <span style="font-size:17px;background:var(--pg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;" id="pTotal">0 ብር</span>
+      </div>
+      <div class="pay-opt ripple" onclick="showPay('Telebirr','0969106073')">
+        <div class="pay-oi" style="background:rgba(0,136,204,.12);color:#0088cc;"><i class="fa-solid fa-mobile-screen-button"></i></div>
+        <div style="flex:1;"><div style="font-size:14px;">Telebirr</div><div style="font-size:11px;color:var(--txt3);font-weight:700;">0969106073</div></div>
+        <i class="fa-solid fa-chevron-left" style="color:var(--txt3);font-size:12px;"></i>
+      </div>
+      <div class="pay-opt ripple" onclick="showPay('CBE Birr','1000562339427')">
+        <div class="pay-oi" style="background:rgba(142,68,173,.12);color:#8e44ad;"><i class="fa-solid fa-building-columns"></i></div>
+        <div style="flex:1;"><div style="font-size:14px;">CBE Birr</div><div style="font-size:11px;color:var(--txt3);font-weight:700;">1000562339427</div></div>
+        <i class="fa-solid fa-chevron-left" style="color:var(--txt3);font-size:12px;"></i>
+      </div>
     </div>
+    <div id="ps2" style="display:none;">
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:16px;cursor:pointer;color:var(--p);font-weight:900;" onclick="backPay()">
+        <i class="fa-solid fa-arrow-right"></i> ወደ ኋላ
+      </div>
+      <h3 style="text-align:center;margin-bottom:4px;color:var(--txt);">በ <span id="pMeth"></span> ይክፈሉ</h3>
+      <p style="text-align:center;font-size:12px;color:var(--txt3);margin-bottom:12px;">ጠቅላላ <b style="color:var(--p);" id="pTotal2"></b> ወደ ዚህ አካውንት ያስተላልፉ</p>
+      <div style="background:var(--surface2);padding:15px;border-radius:var(--rads);border:1px solid var(--border);">
+        <div style="font-size:12px;color:var(--txt2);">አካውንት ስም: <b>Aymen Kemal</b></div>
+        <div class="acc-num"><span id="pAcc"></span><button class="copy-b" onclick="copyAcc()"><i class="fa-solid fa-copy"></i> ኮፒ</button></div>
+      </div>
+      <div class="upz" onclick="document.getElementById('ssIn').click()">
+        <input type="file" id="ssIn" accept="image/*" onchange="previewSS(event)" style="display:none;">
+        <div id="ssPreview">
+          <i class="fa-solid fa-cloud-arrow-up" style="font-size:26px;color:var(--txt3);margin-bottom:7px;"></i>
+          <div style="font-weight:700;color:var(--txt3);font-size:12px;">የደረሰኝ ፎቶ ያያይዙ</div>
+        </div>
+      </div>
+      <button class="btn-p ripple" id="confBtn" onclick="placeOrder()">ትዕዛዙን አረጋግጥ <i class="fa-solid fa-check"></i></button>
+    </div>
+  </div>
 </div>
+
+<div id="toast"></div>
 
 <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-    
-    // 🌟 BOT TOKENS & SECURITY CONFIG 🌟
-    const orderBotToken = "8666783314:AAEzdZ0VOUJ7MFH8-UeT900z-fm80ds7NVk"; 
-    const sellerBotToken = "8626862233:AAFEvJNgNTgB1VOCdz9NDE8fQO7UDk-LXXk"; 
-    const regBotToken = "8763423685:AAGPbYp7YNfSeTp_d49eco86gkx30IyDOxE"; 
-    const adminId = "1493452810"; 
-    const SECRET_VERIFICATION_CODE = "SINQ2026-YES"; 
+/* ══════════════════════════════════════════════
+   SINQ v3 — Full Feature 2026
+══════════════════════════════════════════════ */
+const tg=window.Telegram?.WebApp||{expand:()=>{},HapticFeedback:{impactOccurred:()=>{}},initDataUnsafe:{user:{}},close:()=>{}};
+tg.expand();
 
-    // API URL for the deployed Receipt Detector (Placeholder for now)
-    // ⚠️ ይህንን ሊንክ የ GitHub ፕሮጀክትህን ኢንተርኔት ላይ (ለምሳሌ Render.com ላይ) ስትጭን በሚሰጥህ ሊንክ ትቀይረዋለህ።
-    const RECEIPT_VERIFIER_API = "https://your-deployed-cbe-detector-api.onrender.com/verify";
+const CFG={
+  orderBot:"8666783314:AAEzdZ0VOUJ7MFH8-UeT900z-fm80ds7NVk",
+  sellerBot:"8626862233:AAFEvJNgNTgB1VOCdz9NDE8fQO7UDk-LXXk",
+  regBot:"8763423685:AAGPbYp7YNfSeTp_d49eco86gkx30IyDOxE",
+  adminId:"1493452810",
+  KYC:"SINQ2026-YES"
+};
 
-    const KOMBOLCHA_CENTER = { lat: 11.0833, lng: 39.7333 };
-    let calculatedDeliveryFee = 50; 
+/* ── I18N ── */
+const LANG={
+  am:{
+    home:"ዋና",cart:"ቅርጫት",orders:"ትዕዛዝ",chat:"Chat",profile:"ፕሮፋይል",
+    search:"ሱቅ፣ ምርት ወይም ምድብ ይፈልጉ...",checkout:"Checkout",
+    emptyCart:"ቅርጫትዎ ባዶ ነው",addedCart:"ወደ ቅርጫት ገብቷል",
+    buyNow:"ገዝ አሁን 💳",addCart:"🛒 ቅርጫት",
+    allShops:"ሁሉም ሱቆች",hotSells:"🔥 የሳምንቱ ምርጥ ሽያጮች"
+  },
+  en:{
+    home:"Home",cart:"Cart",orders:"Orders",chat:"Chat",profile:"Profile",
+    search:"Search shops, products...",checkout:"Checkout",
+    emptyCart:"Your cart is empty",addedCart:"Added to cart",
+    buyNow:"Buy Now 💳",addCart:"🛒 Cart",
+    allShops:"All Shops",hotSells:"🔥 Hot Sells of the Week"
+  }
+};
+let lang=ls('sinq_lang')||'am';
+function t(k){return LANG[lang][k]||LANG.am[k]||k;}
 
-    let cart = [];
-    let currentCategory = 'ሁሉንም';
-    let selectedBankMethod = "";
-    let lastOrderTime = 0;
-    let lastUploadTime = 0;
+/* ── STATE ── */
+let cart=[],curProd={},curQty=1,payMeth='',payAcc='',curCat='ሁሉንም';
+let lastOrd=0,lastUp=0,delFee=50;
+let orders=JSON.parse(ls('sinq_orders')||'[]');
+let isDark=ls('sinq_theme')==='dark';
+let chatMsgs=JSON.parse(ls('sinq_chat')||'[]');
 
-    // 🌟 FULL DATABASE 🌟
-    const shops = [
-        { id: 1, name: "አዎርስ ካፌ", category: "ምግብ ቤቶች", time: "15-30 ደቂቃ", rating: 4.8, desc: "ምግቦች እና መጠጦች", logo: "https://i.ibb.co/hxpdSjWF/x.jpg", banner: "https://i.ibb.co/spN51pFq/x.jpg", items: [{ name: "ፒዛ", price: 250, img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400", desc: "ትኩስ እና ጣፋጭ ፒዛ በልዩ አዘገጃጀት።" }, { name: "በርገር", price: 500, img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400", desc: "በስጋ እና በቺዝ የተሞላ ልዩ በርገር።" }] },
-        { id: 2, name: "አሞር ካፌ", category: "ምግብ ቤቶች", time: "20-40 ደቂቃ", rating: 4.6, desc: "ቁርስ፣ ሳንድዊች እና ፒዛ", logo: "https://i.ibb.co/YF1br7R2/x.jpg", banner: "https://i.ibb.co/N2R1ChwM/x.jpg", items: [{ name: "ስፔሻል ፉል", price: 130, img: "https://images.unsplash.com/photo-1548943487-a2e4b43b5852?w=400", desc: "በቅቤ እና በእንቁላል የተሰራ የጠዋት ፉል።" }, { name: "ስፔሻል ፒዛ", price: 450, img: "https://images.unsplash.com/photo-1604381720451-3eaa9ee036b7?w=400", desc: "በብዙ አይነት አትክልት እና ስጋ የተሰራ።" }] },
-        { id: 3, name: "Kebir Electronics", category: "ኤሌክትሮኒክስ", time: "20-40 ደቂቃ", rating: 4.7, desc: "ጥራት ያላቸው ኤሌክትሮኒክስ እቃዎች", logo: "https://via.placeholder.com/100/bc0000/fff?text=Kebir", banner: "https://i.ibb.co/mCs7DHGq/x.jpg", items: [] },
-        { id: 4, name: "Asli Cosmetics", category: "ኮስሞቲክስ", time: "10-20 ደቂቃ", rating: 4.9, desc: "ኦርጅናል የውበት መጠበቂያ", logo: "https://i.ibb.co/B5bKG1yc/x.jpg", banner: "https://i.ibb.co/8nd95GmK/x.jpg", items: [ 
-            { name: "Savuage ሽቶ", price: 2000, img: "https://i.ibb.co/v4rx3HVg/x.jpg", desc: "Dior ብራንድ ኦርጅናል የውበት ሽቶ ለወንዶች (100ml)።" },
-            { name: "Vaseline Body Lotion", price: 600, img: "https://i.ibb.co/j96dX3fL/x.jpg", desc: "ኦርጅናል የሰውነት ሎሽን፣ ቆዳን ያለሰልሳል።" },
-            { name: "Dr. Davey Facial Cleanser", price: 150, img: "https://i.ibb.co/Wvq3BzHs/x.jpg", desc: "የፊት መታጠቢያ፣ ቆሻሻን ጠራርጎ ያነሳል።" },
-            { name: "Dr. Davey Black Soap", price: 650, img: "https://i.ibb.co/nsKks3bC/x.jpg", desc: "ጥቁር ነጠብጣብን የሚያጠፋ ከሰል (Charcoal) ሳሙና።" },
-            { name: "CeraVe Foaming Cleanser", price: 2100, img: "https://i.ibb.co/G3pKf1xF/x.jpg", desc: "በቆዳ ሃኪሞች የተመከረ የፊት መታጠቢያ።" },
-            { name: "ሮዝ ሞዴስ", price: 100, img: "https://i.ibb.co/fdx1P4vP/x.jpg", desc: "ለሴቶች የወር አበባ ንፅህና መጠበቂያ የሚያገለግል ጥራት ያለው ሞዴስ።" },
-            { name: "የጆሮ መፅጃ", price: 50, img: "https://i.ibb.co/zTjZCyny/x.jpg", desc: "ጆሮን በቀላሉና በደህንነት ለመፅዳት የሚያገለግል የጥጥ እንጨት።" },
-            { name: "Acne ሳሙና", price: 200, img: "https://i.ibb.co/kstCwspC/x.jpg", desc: "የፊት ብጉርንና ጥቁር ነጠብጣብን ለማጥፋት የሚረዳ የፊት ሳሙና።" },
-            { name: "Kono ሳሙና", price: 150, img: "https://i.ibb.co/svWq6WWN/x.jpg", desc: "ቆዳን የሚያለሰልስና የሚያጠራ ልዩ የሰውነት ሳሙና።" },
-            { name: "Dr Rashel Sunscreen", price: 650, img: "https://i.ibb.co/HDSbvzRq/x.jpg", desc: "ቆዳን ከፀሐይ ቃጠሎና ከጎጂ ጨረሮች የሚከላከል ጥራት ያለው ሰንስክሪን።" },
-            { name: "ጥቁር ነጠብጣብ ማጥፊያ", price: 600, img: "https://i.ibb.co/Z6k0Bgk3/x.jpg", desc: "በፊት ላይ የሚወጡ ጥቁር ነጠብጣቦችንና ጠባሳዎችን ለማጥፋት የሚረዳ።" },
-            { name: "Duru ሳሙና", price: 250, img: "https://i.ibb.co/Z6Vyj3qm/x.jpg", desc: "ደስ የሚል መዓዛ ያለውና ቆዳን የማያደርቅ ጥራት ያለው ሳሙና።" },
-            { name: "ፌር", price: 200, img: "https://i.ibb.co/5W0X5PLd/x.jpg", desc: "የፊት ቆዳን ለማቅላትና ለማለስለስ የሚያገለግል የፊት ክሬም።" },
-            { name: "kojie san ሳሙና", price: 450, img: "https://i.ibb.co/j7s0C2R/x.jpg", desc: "ቆዳን ለማቅላትና ወጥ የሆነ መልክ እንዲኖረው ለማድረግ የሚረዳ ኦሪጅናል ሳሙና።" },
-            { name: "Dove ሳሙና", price: 250, img: "https://i.ibb.co/bjt0S3Gw/x.jpg", desc: "ሩብ እጅ እርጥበት አዘል ክሬም ያለውና ቆዳን የሚያለሰልስ ሳሙና።" },
-            { name: "የጥቁር አዝሙድ ሳሙና", price: 150, img: "https://i.ibb.co/Psqh9GzC/x.jpg", desc: "ከተፈጥሮ ጥቁር አዝሙድ የተሰራ ለቆዳ ጤንነት ጠቃሚ ሳሙና።" },
-            { name: "የ እርድ ሳሙና", price: 150, img: "https://i.ibb.co/fd2YdJ4L/x.jpg", desc: "ቆዳን በተፈጥሮ ለማቅላትና ለማጥራት የሚረዳ የእርድ ይዘት ያለው ሳሙና።" },
-            { name: "ማጥቆሪያ", price: 100, img: "https://i.ibb.co/2Y7rfkh4/x.jpg", desc: "ለዓይን ውበትና ለማጥቆሪያ የሚያገለግል ጥራት ያለው ኩል።" },
-            { name: "የፊት ማቅሊያ", price: 500, img: "https://i.ibb.co/TMjs7jQK/x.jpg", desc: "የፊት ቆዳን በአጭር ጊዜ ውስጥ ለማቅላትና ለማጥራት የሚረዳ።" },
-            { name: "Dimond beauty", price: 250, img: "https://i.ibb.co/vvkmt6qx/x.jpg", desc: "ለፊት ቆዳ ጥራትና ውበት ተመራጭ የሆነ የውበት ክሬም።" },
-            { name: "Powder", price: 250, img: "https://i.ibb.co/JFB1ccKW/x.jpg", desc: "ለፊት ሜካፕ ማጠናቀቂያ የሚያገለግል ለስላሳ ፓውደር።" },
-            { name: "Snail ቅባት", price: 350, img: "https://i.ibb.co/xtjvvsrZ/x.jpg", desc: "የቀንድ አውጣ ፈሳሽ ይዘት ያለውና ቆዳን የሚያድስ ልዩ ቅባት።" },
-            { name: "አፍሪኸርባል ጥቁር አዝሙድ ቅባት", price: 400, img: "https://i.ibb.co/bRr3VDbx/x.jpg", desc: "ለፀጉር እድገትና ለቆዳ ጤንነት የሚረዳ የተፈጥሮ ጥቁር አዝሙድ ቅባት።" },
-            { name: "Herbolene ቫዝሊን", price: 500, img: "https://i.ibb.co/My8MdQYL/x.jpg", desc: "ቆዳ እንዳይሰነጠቅና እርጥበት እንዲያገኝ የሚረዳ ጥራት ያለው ቫዝሊን።" },
-            { name: "Follow me", price: 450, img: "https://i.ibb.co/01jyXLn/x.jpg", desc: "ለፀጉር ውበትና ጥንካሬ የሚረዳ ተመራጭ የፀጉር ቅባት።" },
-            { name: "Honey Scrub", price: 400, img: "https://i.ibb.co/JgCmxh7/x.jpg", desc: "የሞቱ የቆዳ ሴሎችን በማስወገድ ቆዳን የሚያለሰልስ የማር ስክራብ።" },
-            { name: "Blue magic", price: 1000, img: "https://i.ibb.co/XZ5TqD3T/x.jpg", desc: "ለደረቅ ፀጉር ተስማሚ የሆነና የፀጉር መሰባበርን የሚከላከል ቅባት።" },
-            { name: "Angel cream ትሪትመንት", price: 800, img: "https://i.ibb.co/4Z6FQJ7h/x.jpg", desc: "የተጎዳ ፀጉርን የሚጠግንና የሚያለሰልስ የፀጉር ትሪትመንት።" },
-            { name: "Emulphon hair mask", price: 1000, img: "https://i.ibb.co/LzH3Kkbh/x.jpg", desc: "ለፀጉር ጥልቅ እርጥበት የሚሰጥና ውበትን የሚጨምር ሄር ማስክ።" },
-            { name: "የወይራ ዘይት", price: 300, img: "https://i.ibb.co/DPwKLVZL/x.jpg", desc: "ለፀጉርና ለሰውነት ተስማሚ የሆነ ንፁህ የወይራ ዘይት።" },
-            { name: "አፍሪኸርባል ሮዝመሪ ቅባት", price: 400, img: "https://i.ibb.co/2169FYRC/x.jpg", desc: "የፀጉርን እድገት የሚያፋጥንና የራስ ቅልን ጤንነት የሚጠብቅ ሮዝመሪ።" },
-            { name: "የፀጉር ማጠንከሪያ", price: 1800, img: "https://i.ibb.co/GQQ8ZS82/x.jpg", desc: "ፀጉር እንዳይነቀልና ጠንካራ እንዲሆን የሚያደርግ ልዩ ፎርሙላ።" },
-            { name: "የህፃናት ሻምፖ", price: 500, img: "https://i.ibb.co/Z1NsSqvJ/x.jpg", desc: "የህፃናትን አይን የማያቃጥልና ፀጉራቸውን የሚያለሰልስ ሻምፖ።" },
-            { name: "የህፃናት ሎሽን", price: 500, img: "https://i.ibb.co/fYRR29Qv/x.jpg", desc: "ለህፃናት ለስላሳ ቆዳ ተስማሚ የሆነ እርጥበት ሰጪ ሎሽን።" },
-            { name: "Cocoa butter", price: 550, img: "https://i.ibb.co/WW7crzfF/x.jpg", desc: "ቆዳን የሚያለሰልስና የሚመግብ ጥራት ያለው ኮኮዋ በት።" },
-            { name: "የእግር ማቅሊያ", price: 600, img: "https://i.ibb.co/cKzbr1Qb/x.jpg", desc: "የእግርን ጥቁረትና ሻካራነት በማጥፋት እንዲለሰልስና እንዲነጣ የሚያደርግ።" },
-            { name: "የፀጉር ቫይታሚን", price: 300, img: "https://i.ibb.co/0j0qQjGg/x.jpg", desc: "ለፀጉር አስፈላጊ የሆኑ ቫይታሚኖችን በመስጠት ብሩህና ጤናማ የሚያደርግ።" },
-            { name: "Kamra ሳምፕል", price: 800, img: "https://i.ibb.co/fzRM0G42/x.jpg", desc: "ደስ የሚል መዓዛ ያለውና ለረጅም ሰዓት የሚቆይ የሽቶ ሳምፕል።" },
-            { name: "Louis cardin ሽቶ", price: 1800, img: "https://i.ibb.co/B5rRjhv5/x.jpg", desc: "ልዩና ማራኪ መዓዛ ያለው ኦሪጅናል ሉዊስ ካርዲን ሽቶ።" },
-            { name: "ሸህ ዛይድ ሽቶ", price: 700, img: "https://i.ibb.co/2YsTB4K4/x.jpg", desc: "ታዋቂና ተወዳጅ የሆነ የአረብ ሽቶ፣ ለረጅም ሰዓት የሚቆይ።" },
-            { name: "eye liner", price: 300, img: "https://i.ibb.co/sJ2by5Qk/x.jpg", desc: "ዓይንን ውብ አድርጎ ለመሳል የሚረዳ ጥራት ያለው አይላይነር።" },
-            { name: "You ሽቶ", price: 3800, img: "https://i.ibb.co/1GXWqmS2/x.jpg", desc: "ፕሪሚየም ጥራት ያለውና እጅግ ማራኪ መዓዛ ያለው ሽቶ።" },
-            { name: "Glysolid", price: 200, img: "https://i.ibb.co/WWz2QMQn/x.jpg", desc: "በጣም የደረቀና የተሰነጠቀ ቆዳን በፍጥነት ለማከም የሚረዳ ክሬም።" },
-            { name: "የአበባ ጌጥ", price: 700, img: "https://i.ibb.co/pvXFZLZ4/x.jpg", desc: "ለፀጉር ውበት የሚያገለግል ማራኪ የአበባ ጌጥ።" },
-            { name: "ጌጣጌጥ", price: 950, img: "https://i.ibb.co/67TFX65n/x.jpg", desc: "ለሴቶች ውበት የሚሆኑ ማራኪና ዘመናዊ ጌጣጌጦች።" },
-            { name: "ጌጣጌጥ 2", price: 900, img: "https://i.ibb.co/VWy9yhfN/x.jpg", desc: "ለተለያዩ ዝግጅቶች የሚሆኑ የተመረጡ ጌጣጌጦች።" },
-            { name: "የጆሮ ጌጥ", price: 350, img: "https://i.ibb.co/HDpfBS87/x.jpg", desc: "የተለያዩ ዲዛይኖች ያሏቸው ውብ የጆሮ ጌጦች።" },
-            { name: "አፍሪኸርባል ቁሩንፈድ ቅባት", price: 400, img: "https://i.ibb.co/pvwWdZtB/x.jpg", desc: "ለፀጉር ጥንካሬና ለራስ ቆዳ ጤንነት የሚረዳ የቁሩንፈድ ቅባት።" },
-            { name: "Amla ቅባት", price: 350, img: "https://i.ibb.co/cSwDtvD9/x.jpg", desc: "ፀጉር እንዲጠቁርና እንዲፋፋ የሚያደርግ ታዋቂ የአምላ ቅባት።" },
-            { name: "paris ሎሽን", price: 600, img: "https://i.ibb.co/r2H74HwB/x.jpg", desc: "ደስ የሚል መዓዛ ያለውና ቆዳን የሚያለሰልስ ፓሪስ ሎሽን።" },
-            { name: "Gold skin", price: 700, img: "https://i.ibb.co/cKdWM0gK/x.jpg", desc: "ቆዳን ለማቅላትና ለማጥራት የሚረዳ ጎልድ ስኪን ሎሽን።" },
-            { name: "ፀጉር ማስያዣ", price: 150, img: "https://i.ibb.co/rRGNgGpM/x.jpg", desc: "ለተለያዩ የፀጉር ስታይሎች የሚሆኑ ጠንካራ ማስያዣዎች።" },
-            { name: "ጆሮጌጥ 2", price: 350, img: "https://i.ibb.co/27cZGkbV/x.jpg", desc: "ለየት ያለ ዲዛይን ያላቸው ውብ የጆሮ ጌጦች።" },
-            { name: "ሊፒስቲክ", price: 250, img: "https://i.ibb.co/4RXJtgCG/x.jpg", desc: "ከንፈርን ውብ የሚያደርጉ የተለያዩ ከለር ያላቸው ሊፒስቲኮች።" },
-            { name: "Niva creame", price: 300, img: "https://i.ibb.co/d3BTZbx/x.jpg", desc: "ቆዳን ከድርቀት የሚከላከልና ለስላሳ የሚያደርግ ኒቪያ ክሬም።" },
-            { name: "የፀጉር ቀለም", price: 550, img: "https://i.ibb.co/39dnwmBm/x.jpg", desc: "ለፀጉር ደስ የሚል ከለር የሚሰጥና የማይጎዳ ቀለም።" },
-            { name: "ሻወር ጄል", price: 2000, img: "https://i.ibb.co/tpqyVmKk/x.jpg", desc: "ሰውነትን በደንብ የሚያፀዳና ደስ የሚል ሽታ የሚሰጥ ሻወር ጄል።" },
-            { name: "Boady scrub", price: 600, img: "https://i.ibb.co/BHmMFbS9/x.jpg", desc: "የሰውነት ቆዳን ለማለስለስና ለማጥራት የሚረዳ ስክራብ።" },
-            { name: "Scrub", price: 550, img: "https://i.ibb.co/knrffP8/x.jpg", desc: "ለፊትና ለሰውነት የሚሆን ጥራት ያለው ቆዳ ማፅጃ ስክራብ።" },
-            { name: "መርየም አድሩስ", price: 600, img: "https://i.ibb.co/yc0dLbCM/x.jpg", desc: "ደስ የሚል መዓዛ ያለውና ቤትዎን የሚያውድ ቡኹር።" },
-            { name: "አሪፍ ቡኹር", price: 700, img: "https://i.ibb.co/Z1HSxVsR/x.jpg", desc: "ለረጅም ሰዓት የሚቆይና ልዩ መዓዛ ያለው ጥራት ያለው ቡኹር።" },
-            { name: "signal የጥርስ ሳሙና", price: 200, img: "https://i.ibb.co/GK41Z8Q/x.jpg", desc: "ጥርስን ከባክቴሪያ የሚከላከልና ነጭ የሚያደርግ ሲግናል ሳሙና።" },
-            { name: "Colgate የጥርስ ሳሙና", price: 200, img: "https://i.ibb.co/84mBrwcD/x.jpg", desc: "ለጥርስ ጤንነትና ለጥሩ የአፍ ጠረን የሚመከር ኮልጌት።" },
-            { name: "የጥርስ መፋቂያ", price: 150, img: "https://i.ibb.co/1GTc14cB/x.jpg", desc: "ጥርስን በተፈጥሯዊ መንገድ ለመንከባከብ የሚረዳ መፋቂያ።" },
-            { name: "የልደት spray", price: 350, img: "https://i.ibb.co/cKthqf46/x.jpg", desc: "ለልደትና ለተለያዩ ደስታዎች ድምቀት የሚሆን ስፕሬይ።" },
-            { name: "የኬክ ርችት", price: 180, img: "https://i.ibb.co/tTcP6PQX/x.jpg", desc: "ኬክ ላይ ተደርጎ የሚለኮስ ውብ የኬክ ርችት።" },
-            { name: "ነሲም ቡኹር", price: 1500, img: "https://i.ibb.co/S7Pc5KWJ/x.jpg", desc: "ፕሪሚየም ጥራት ያለውና ቤትዎን በልዩ መዓዛ የሚሞላ ቡኹር።" },
-            { name: "የሩዝ ሳሙና", price: 300, img: "https://i.ibb.co/k2CHkzJW/x.jpg", desc: "ቆዳን ለማቅላትና ለማጥራት የሚረዳ የሩዝ ይዘት ያለው ሳሙና።" },
-            { name: "cocoa butter (L)", price: 600, img: "https://i.ibb.co/Hf2XKd7v/x.jpg", desc: "ቆዳን በጥልቀት የሚመግብ ትልቅ ሳይዝ ኮኮዋ በት ሎሽን።" },
-            { name: "Blackangel", price: 600, img: "https://i.ibb.co/5dBCJVn/x.jpg", desc: "ለፀጉር ውበትና ጥንካሬ የሚረዳ ብላክ አንጀል ቅባት።" },
-            { name: "Lipgloss", price: 250, img: "https://i.ibb.co/hRSTBzCT/x.jpg", desc: "ከንፈርን የሚያብረቀርቅና ውብ የሚያደርግ ሊፕ ግሎስ።" },
-            { name: "ሰውነት መቅሊያ", price: 700, img: "https://i.ibb.co/d0K3KXwN/x.jpg", desc: "ጠቅላላ የሰውነት ቆዳን ለማቅላትና ለማጥራት የሚረዳ።" },
-            { name: "ወፍራሙ ኩል", price: 120, img: "https://i.ibb.co/G3QV78Jn/x.jpg", desc: "ለዓይን ውበት የሚሆን ወፍራም ጥራት ያለው ኩል።" },
-            { name: "የፀጉር ማጥፊያ", price: 200, img: "https://i.ibb.co/qYKr1nvV/x.jpg", desc: "አላስፈላጊ ፀጉርን ለማስወገድ የሚረዳ ክሬም ወይም መሣሪያ።" },
-            { name: "የሴቶች ፓንት", price: 250, img: "https://i.ibb.co/TBPrN5jn/x.jpg", desc: "ለስላሳና ምቹ የሆነ የጥጥ የሴቶች ፓንት።" },
-            { name: "የሴቶች ፓንት 2", price: 250, img: "https://i.ibb.co/1JvwRdGL/x.jpg", desc: "የተለያዩ ከለሮችና ዲዛይኖች ያሉት ምቹ የሴቶች ፓንት።" },
-            { name: "የእጅ ጓንት", price: 200, img: "https://i.ibb.co/JL9Jf5D/x.jpg", desc: "ከፀሐይና ከቅዝቃዜ የሚከላከል ጥራት ያለው የእጅ ጓንት።" },
-            { name: "Haishu ረጅም ካልስ", price: 250, img: "https://i.ibb.co/ks7V50WZ/x.jpg", desc: "ጥራት ያለውና ረጅም ዘላቂነት ያለው ሀይሹ ካልስ።" },
-            { name: "Capri ጡት መያዣ በከለር", price: 500, img: "https://i.ibb.co/q8mXy99/x.jpg", desc: "ለስላሳና ምቹ የሆነ የሴቶች ጡት መያዣ በተለያዩ ከለሮች።" },
-            { name: "ማጂክ ግሎስ", price: 250, img: "https://i.ibb.co/zVQ2VdW0/x.jpg", desc: "ከንፈር ላይ ሲቀቡት ወደ ሮዝ ከለር የሚቀየር ማጂክ ግሎስ።" },
-            { name: "Taflin ቅባት", price: 400, img: "https://i.ibb.co/60FjD8Rt/x.jpg", desc: "ለፀጉር ጤንነትና ውበት የሚረዳ ጥራት ያለው ቅባት።" }
-        ]},
-        { id: 5, name: "Shoa Supermarket", category: "ሱፐርማርኬት", time: "30-50 ደቂቃ", rating: 4.5, desc: "የቤት ፍጆታዎች", logo: "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=100", banner: "https://images.unsplash.com/photo-1578916171728-46686eac8d58?w=600", items: [] },
-        { id: 100, name: "የሲንቅ ነፃ ገበያ", category: "ነፃ ገበያ", time: "በስምምነት", rating: 4.2, desc: "ከሰው ለሰው መገበያያ", logo: "https://i.ibb.co/B2YtjZP8/x.jpg", banner: "https://i.ibb.co/b5xn5p7w/x.jpg", items: [{ name: "iPhone 13 Pro", price: 65000, img: "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=400", desc: "በጥሩ ሁኔታ የተያዘ አይፎን 13 ፕሮ" }] }
-    ];
+/* ── CATEGORIES ── */
+const CATS=[
+  {id:'ሁሉንም',nm:'ሁሉንም',icon:'<i class="fa-solid fa-border-all"></i>'},
+  {id:'ምግብ ቤቶች',nm:'ምግብ',icon:'<i class="fa-solid fa-utensils"></i>'},
+  {id:'ሱፐርማርኬት',nm:'ማርኬት',icon:'<i class="fa-solid fa-cart-shopping"></i>'},
+  {id:'መጠጦች',nm:'መጠጥ',icon:'<i class="fa-solid fa-bottle-water"></i>'},
+  {id:'ፋርማሲ',nm:'ፋርማሲ',icon:'<i class="fa-solid fa-kit-medical"></i>'},
+  {id:'ኮስሞቲክስ',nm:'ኮስሞቲክስ',icon:'<i class="fa-solid fa-wand-sparkles"></i>'},
+  {id:'ኤሌክትሮኒክስ',nm:'ኤሌክትሮ',icon:'<i class="fa-solid fa-microchip"></i>'},
+  {id:'ነፃ ገበያ',nm:'ገበያ',icon:'<i class="fa-solid fa-tag"></i>'},
+];
 
-    window.onload = function() {
-        if(localStorage.getItem('sinq_user_name')) {
-            document.getElementById('authView').style.display = 'none';
-            document.getElementById('mainApp').style.display = 'block';
-            document.getElementById('displayUserName').innerText = localStorage.getItem('sinq_user_name');
-            document.getElementById('profileNameDisplay').innerText = localStorage.getItem('sinq_user_name');
-            
-            if(localStorage.getItem('sinq_loc_str')) {
-                document.getElementById('headerLoc').innerText = "✅ ተመዝግቧል";
-                let fee = localStorage.getItem('sinq_del_fee');
-                if(fee) calculatedDeliveryFee = parseInt(fee);
-            }
-            if(localStorage.getItem('sinq_kyc_hash') === btoa(SECRET_VERIFICATION_CODE)) unlockSellerDashboard();
-            
-            let savedPic = localStorage.getItem('sinq_profile_pic');
-            if(savedPic) { document.getElementById('profileAvatarImg').src = savedPic; }
-            
-            renderHomeItems();
-            renderFeaturedItems();
-            startAutoSlider();
-        }
+/* ── SHOPS DATA ── */
+const SHOPS=[
+  {id:1,name:"አዎርስ ካፌ",cat:"ምግብ ቤቶች",time:"15-30",rating:4.8,desc:"ምርጥ ምግቦች እና መጠጦች",
+   logo:"https://i.ibb.co/hxpdSjWF/x.jpg",banner:"https://i.ibb.co/spN51pFq/x.jpg",
+   items:[{name:"ፒዛ",price:250,img:"https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400",desc:"ትኩስ እና ጣፋጭ ፒዛ በልዩ አዘገጃጀት።",brand:"Awors"},
+          {name:"ሀምበርገር",price:500,img:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400",desc:"ጭማቂ በርገር ከቺዝ ጋር።",brand:"Awors"},
+          {name:"ቲያ",price:80,img:"https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=400",desc:"ትኩስ ቲያ።",brand:"Awors"},
+          {name:"ጁስ",price:120,img:"https://images.unsplash.com/photo-1622597467836-f3e6953e0e82?w=400",desc:"ትኩስ ፍራፍሬ ጁስ።",brand:"Awors"}]},
+  {id:2,name:"አሞር ካፌ",cat:"ምግብ ቤቶች",time:"20-40",rating:4.6,desc:"ቁርስ፣ ሳንድዊች እና ፒዛ",
+   logo:"https://i.ibb.co/YF1br7R2/x.jpg",banner:"https://i.ibb.co/N2R1ChwM/x.jpg",
+   items:[{name:"ስፔሻል ፉል",price:130,img:"https://images.unsplash.com/photo-1548943487-a2e4b43b5852?w=400",desc:"ቅቤ እና እንቁላል ያለው ፉል።",brand:"Amor"},
+          {name:"ስፔሻል ፒዛ",price:450,img:"https://images.unsplash.com/photo-1604381720451-3eaa9ee036b7?w=400",desc:"ትልቅ ስፔሻል ፒዛ።",brand:"Amor"},
+          {name:"ሳንድዊች",price:180,img:"https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400",desc:"ልዩ ሳንድዊች።",brand:"Amor"}]},
+  {id:3,name:"Asli Cosmetics",cat:"ኮስሞቲክስ",time:"10-20",rating:4.9,desc:"ኦርጅናል የውበት ምርቶች",
+   logo:"https://i.ibb.co/B5bKG1yc/x.jpg",banner:"https://i.ibb.co/8nd95GmK/x.jpg",
+   items:[
+    {name:"ሮዝ ሞዴስ",price:100,img:"https://i.ibb.co/fdx1P4vP/x.jpg",desc:"ለሴቶች የወር አበባ ንፅህና መጠበቂያ የሚያገለግል ጥራት ያለው ሞዴስ።",brand:"Rose"},
+    {name:"Acne ሳሙና",price:200,img:"https://i.ibb.co/kstCwspC/x.jpg",desc:"የፊት ብጉርን ለማጥፋት።",brand:"Anti-Acne"},
+    {name:"Dr Rashel Sunscreen",price:650,img:"https://i.ibb.co/HDSbvzRq/x.jpg",desc:"ቆዳን ከፀሐይ ቃጠሎ ይከላከላል።",brand:"Dr Rashel"},
+    {name:"Duru ሳሙና",price:250,img:"https://i.ibb.co/Z6Vyj3qm/x.jpg",desc:"ደስ የሚል ሳሙና።",brand:"Duru"},
+    {name:"kojie san ሳሙና",price:450,img:"https://i.ibb.co/j7s0C2R/x.jpg",desc:"ቆዳን ለማቅላት።",brand:"Kojie San"},
+    {name:"Dove ሳሙና",price:250,img:"https://i.ibb.co/bjt0S3Gw/x.jpg",desc:"እርጥበት ያለው ሳሙና።",brand:"Dove"},
+    {name:"Snail ቅባት",price:350,img:"https://i.ibb.co/xtjvvsrZ/x.jpg",desc:"ቆዳን የሚያድስ ቅባት።",brand:"Snail White"},
+    {name:"Herbolene ቫዝሊን",price:500,img:"https://i.ibb.co/My8MdQYL/x.jpg",desc:"ቆዳ ከመሰንጠቅ ይከላከላል።",brand:"Himalaya"},
+    {name:"Blue magic",price:1000,img:"https://i.ibb.co/XZ5TqD3T/x.jpg",desc:"ደረቅ ፀጉርን ይጠብቃል።",brand:"Blue Magic"},
+    {name:"Louis cardin ሽቶ",price:1800,img:"https://i.ibb.co/B5rRjhv5/x.jpg",desc:"ልዩ ሉዊስ ካርዲን ሽቶ።",brand:"Louis Cardin"},
+    {name:"ሸህ ዛይድ ሽቶ",price:700,img:"https://i.ibb.co/2YsTB4K4/x.jpg",desc:"ታዋቂ የአረብ ሽቶ።",brand:"Sheikh Zayed"},
+    {name:"eye liner",price:300,img:"https://i.ibb.co/sJ2by5Qk/x.jpg",desc:"ዓይንን ለማሳመር።",brand:"Generic"},
+    {name:"You ሽቶ",price:3800,img:"https://i.ibb.co/1GXWqmS2/x.jpg",desc:"ፕሪሚየም ሽቶ።",brand:"You"},
+    {name:"ሊፒስቲክ",price:250,img:"https://i.ibb.co/4RXJtgCG/x.jpg",desc:"ተለያዩ ከለሮች።",brand:"Generic"},
+    {name:"Niva cream",price:300,img:"https://i.ibb.co/d3BTZbx/x.jpg",desc:"ከድርቀት ይከላከላል።",brand:"Nivea"},
+    {name:"Cocoa butter",price:550,img:"https://i.ibb.co/WW7crzfF/x.jpg",desc:"ቆዳን ያለሰልሳል።",brand:"Cocoa Butter"},
+    {name:"Honey Scrub",price:400,img:"https://i.ibb.co/JgCmxh7/x.jpg",desc:"የሞቱ ሴሎችን ያስወግዳል።",brand:"Generic"},
+    {name:"Gold skin",price:700,img:"https://i.ibb.co/cKdWM0gK/x.jpg",desc:"ቆዳን ለማቅላት።",brand:"Gold Skin"},
+    {name:"Lipgloss",price:250,img:"https://i.ibb.co/hRSTBzCT/x.jpg",desc:"ከንፈር ያብረቀርቃል።",brand:"Generic"},
+    {name:"ነሲም ቡኹር",price:1500,img:"https://i.ibb.co/S7Pc5KWJ/x.jpg",desc:"ቤትዎን ያምራል።",brand:"Naseem"},
+    {name:"Colgate",price:200,img:"https://i.ibb.co/84mBrwcD/x.jpg",desc:"ጥርስ ይጠብቃል።",brand:"Colgate"},
+    {name:"Amla ቅባት",price:350,img:"https://i.ibb.co/cSwDtvD9/x.jpg",desc:"ፀጉር ጥቁር ያደርጋል።",brand:"Dabur Amla"},
+    {name:"Capri ጡት መያዣ",price:500,img:"https://i.ibb.co/q8mXy99/x.jpg",desc:"ምቹ ጡት መያዣ።",brand:"Capri"},
+    {name:"Powder",price:250,img:"https://i.ibb.co/JFB1ccKW/x.jpg",desc:"ሜካፕ ፓውደር።",brand:"Generic"},
+    {name:"Follow me",price:450,img:"https://i.ibb.co/01jyXLn/x.jpg",desc:"የፀጉር ቅባት።",brand:"Follow Me"},
+    {name:"Angel cream",price:800,img:"https://i.ibb.co/4Z6FQJ7h/x.jpg",desc:"ፀጉር ትሪትመንት።",brand:"Angel"},
+    {name:"Emulphon mask",price:1000,img:"https://i.ibb.co/LzH3Kkbh/x.jpg",desc:"ሄር ማስክ።",brand:"Emulphon"},
+    {name:"Kamra ሳምፕል",price:800,img:"https://i.ibb.co/fzRM0G42/x.jpg",desc:"ሽቶ ሳምፕል።",brand:"Kamra"},
+    {name:"Glysolid",price:200,img:"https://i.ibb.co/WWz2QMQn/x.jpg",desc:"ደረቅ ቆዳን ያክማል።",brand:"Glysolid"},
+    {name:"Paris ሎሽን",price:600,img:"https://i.ibb.co/r2H74HwB/x.jpg",desc:"ቆዳን ያለሰልሳል።",brand:"Paris"},
+    {name:"ሻወር ጄል",price:2000,img:"https://i.ibb.co/tpqyVmKk/x.jpg",desc:"ሻወር ጄል።",brand:"Generic"},
+    {name:"ነጠብጣብ ማጥፊያ",price:600,img:"https://i.ibb.co/Z6k0Bgk3/x.jpg",desc:"ጥቁር ነጠብጣብ ያጠፋል።",brand:"Generic"},
+    {name:"ማጂክ ግሎስ",price:250,img:"https://i.ibb.co/zVQ2VdW0/x.jpg",desc:"ማጂክ ሊፕ ግሎስ።",brand:"Generic"},
+    {name:"Taflin ቅባት",price:400,img:"https://i.ibb.co/60FjD8Rt/x.jpg",desc:"የፀጉር ቅባት።",brand:"Taflin"}]},
+  {id:4,name:"Kebir Electronics",cat:"ኤሌክትሮኒክስ",time:"20-40",rating:4.5,desc:"ዘመናዊ ኤሌክትሮኒክ ምርቶች",
+   logo:"https://images.unsplash.com/photo-1518770660439-4636190af475?w=100",banner:"https://i.ibb.co/mCs7DHGq/x.jpg",
+   items:[{name:"USB-C Cable",price:180,img:"https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400",desc:"ፈጣን ቻርጂንግ ካብል።",brand:"Generic"},
+          {name:"Earphone",price:450,img:"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400",desc:"ጥሩ ድምፅ ያለው።",brand:"Generic"},
+          {name:"Power Bank",price:1200,img:"https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=400",desc:"10000mAh ፓወር ባንክ።",brand:"Generic"}]},
+  {id:5,name:"Brothers Electronics",cat:"ኤሌክትሮኒክስ",time:"25-45",rating:4.3,desc:"ስልኮች እና ኤሌክትሮኒክስ",
+   logo:"https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=100",banner:"https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=700",
+   items:[{name:"Screen Protector",price:120,img:"https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=400",desc:"ስክሪን ጠባቂ።",brand:"Generic"},
+          {name:"Phone Case",price:200,img:"https://images.unsplash.com/photo-1603600218520-7f4c0d2bc8c8?w=400",desc:"ስልክ ቤት።",brand:"Generic"}]},
+  {id:6,name:"Sinq ነፃ ገበያ",cat:"ነፃ ገበያ",time:"በስምምነት",rating:4.2,desc:"ከሰው ለሰው ቀጥታ ግዢ",
+   logo:"https://i.ibb.co/B2YtjZP8/x.jpg",banner:"https://i.ibb.co/b5xn5p7w/x.jpg",
+   items:[{name:"iPhone 13 Pro",price:65000,img:"https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=400",desc:"256GB ሰማያዊ ቀለም።",brand:"Apple"},
+          {name:"Samsung Galaxy A54",price:28000,img:"https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400",desc:"128GB ጥቁር።",brand:"Samsung"}]}
+];
+
+const KOMBOLCHA={lat:11.0833,lng:39.7333};
+
+/* ══════ INIT ══════ */
+window.onload=()=>{
+  applyTheme();
+  // Skeleton → auth or app
+  setTimeout(()=>{
+    document.getElementById('skeleton').classList.add('hide');
+    if(ls('sinq_name')){
+      showApp();
+    } else {
+      document.getElementById('authView').style.display='flex';
     }
+  },1800);
+};
 
-    function startAutoSlider() {
-        let slideIndex = 0;
-        setInterval(() => {
-            slideIndex = (slideIndex + 1) % 2;
-            document.getElementById('slider').style.transform = `translateX(-${slideIndex * 50}%)`;
-        }, 4000);
-    }
+function showApp(){
+  document.getElementById('authView').style.display='none';
+  document.getElementById('mainApp').style.display='block';
+  document.getElementById('pName').innerText=ls('sinq_name');
+  if(ls('sinq_pic')) document.getElementById('avImg').src=ls('sinq_pic');
+  if(ls('sinq_loc')) document.getElementById('hLoc').innerText='✅ ተመዝግቧል';
+  if(ls('sinq_del')) delFee=parseInt(ls('sinq_del'));
+  if(ls('sinq_kyc')===btoa(CFG.KYC)) unlockSeller();
+  document.getElementById('stOrd').innerText=orders.length;
+  applyLang();
+  renderCats(); renderShops(); renderHot(); renderOrders(); renderChat();
+  startSlider();
+}
 
-    function secureRegister() {
-        let name = document.getElementById('regName').value.trim();
-        let phone = document.getElementById('regPhone').value.trim();
-        const phoneRegex = /^(09|07)\d{8}$/;
-        
-        if(!name || !phone) { alert("እባክዎ ሙሉ ስምዎን እና ስልክዎን ያስገቡ!"); return; }
-        if(!phoneRegex.test(phone)) { alert("❌ የስልክ ቁጥር ስህተት! 09/07 ብለው የሚጀምር 10 ቁጥር ያስገቡ።"); return; }
-        
-        let tgId = tg.initDataUnsafe?.user?.id || "Web_" + Date.now();
-        let tgUsername = tg.initDataUnsafe?.user?.username || "Unknown";
+/* ══════ AUTH TABS ══════ */
+function switchAuthTab(t){
+  document.getElementById('loginForm').style.display=t==='login'?'block':'none';
+  document.getElementById('regForm').style.display=t==='reg'?'block':'none';
+  document.getElementById('tabLogin').classList.toggle('active',t==='login');
+  document.getElementById('tabReg').classList.toggle('active',t==='reg');
+}
 
-        let btn = document.getElementById('regBtn');
-        btn.innerHTML = "በመግባት ላይ... ⏳"; btn.disabled = true;
+/* ══════ VALIDATION ══════ */
+function validate(val,type){
+  if(type==='name') return val.trim().length>=2;
+  if(type==='phone') return /^(09|07)\d{8}$/.test(val.trim());
+  return false;
+}
+function showErr(id,show){
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.style.display=show?'block':'none';
+}
+function shakeInput(id){
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.classList.remove('error');
+  void el.offsetWidth;
+  el.classList.add('error');
+}
 
-        let msg = `🆕 **አዲስ ደንበኛ ተመዘገበ** 🆕\n\n👤 ስም: ${name}\n📱 ስልክ: ${phone}\n🆔 TG ID: \`${tgId}\`\n🔗 Username: @${tgUsername}`;
+/* ══════ LOGIN ══════ */
+async function doLogin(){
+  const ph=document.getElementById('lPhone').value.trim();
+  if(!validate(ph,'phone')){shakeInput('lPhone');showErr('lPhoneErr',true);return;}
+  showErr('lPhoneErr',false);
+  // Check if registered
+  if(ls('sinq_phone')===ph){
+    showApp(); return;
+  }
+  toast('❌ ስልኩ አልተመዘገበም። ይምዝገቡ።');
+}
 
-        fetch(`https://api.telegram.org/bot${regBotToken}/sendMessage`, {
-            method: "POST", headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({chat_id: adminId, text: msg, parse_mode: "Markdown"})
-        }).then(() => {
-            localStorage.setItem('sinq_user_name', name);
-            localStorage.setItem('sinq_user_phone', phone);
-            localStorage.setItem('sinq_tg_id', tgId);
-            
-            let photoInput = document.getElementById('regProfilePic');
-            if(photoInput.files && photoInput.files[0]) {
-                let reader = new FileReader();
-                reader.onload = function(e) {
-                    localStorage.setItem('sinq_profile_pic', e.target.result);
-                    window.onload();
-                };
-                reader.readAsDataURL(photoInput.files[0]);
-            } else { window.onload(); }
-        }).catch(() => {
-            alert("❌ የኢንተርኔት ግንኙነትዎን ያረጋግጡ!");
-            btn.innerHTML = "ወደ ሲንቅ ግባ <i class='fa-solid fa-arrow-left'></i>"; btn.disabled = false;
-        });
-    }
+/* ══════ REGISTER ══════ */
+async function doReg(){
+  const nm=document.getElementById('rName').value.trim();
+  const ph=document.getElementById('rPhone').value.trim();
+  let ok=true;
+  if(!validate(nm,'name')){shakeInput('rName');showErr('rNameErr',true);ok=false;} else showErr('rNameErr',false);
+  if(!validate(ph,'phone')){shakeInput('rPhone');showErr('rPhoneErr',true);ok=false;} else showErr('rPhoneErr',false);
+  if(!ok) return;
+  const btn=document.getElementById('rBtn'); btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i>...'; btn.disabled=true;
+  const tgId=tg.initDataUnsafe?.user?.id||'Web_'+Date.now();
+  const tgUsr=tg.initDataUnsafe?.user?.username||'Unknown';
+  try{
+    await fetch(`https://api.telegram.org/bot${CFG.regBot}/sendMessage`,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chat_id:CFG.adminId,text:`🆕 *አዲስ ደንበኛ*\n👤 ${nm}\n📱 ${ph}\n🆔 \`${tgId}\``,parse_mode:'Markdown'})});
+    lss('sinq_name',nm); lss('sinq_phone',ph); lss('sinq_tgid',tgId); lss('sinq_tguser',tgUsr);
+    const pic=document.getElementById('rPic').files[0];
+    if(pic){const b=await toB64(pic); lss('sinq_pic',b);}
+    showApp();
+  }catch(e){toast('❌ ኢንተርኔት ያረጋግጡ'); btn.innerHTML='ተመዝገብ'; btn.disabled=false;}
+}
 
-    function changeProfilePhoto(event) {
-        let file = event.target.files[0];
-        if(file) {
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                localStorage.setItem('sinq_profile_pic', e.target.result);
-                document.getElementById('profileAvatarImg').src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-    }
+/* ══════ SLIDER ══════ */
+let sIdx=0;
+function startSlider(){
+  setInterval(()=>{
+    sIdx=(sIdx+1)%3;
+    document.getElementById('slTrack').style.transform=`translateX(-${sIdx*100}%)`;
+    document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===sIdx));
+  },4000);
+}
 
-    function switchTab(tabId, el) {
-        document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        el.classList.add('active');
-    }
+/* ══════ CATEGORIES ══════ */
+function renderCats(){
+  document.getElementById('catRow').innerHTML=CATS.map(c=>`
+    <div class="cat-pill ${c.id===curCat?'active':''}" onclick="setCat('${c.id}',this)">
+      <div class="cat-ic">${c.icon}</div>
+      <div class="cat-nm">${c.nm}</div>
+    </div>`).join('');
+}
+function setCat(id,el){
+  curCat=id;
+  document.querySelectorAll('.cat-pill').forEach(p=>p.classList.remove('active'));
+  if(el) el.classList.add('active');
+  else document.querySelectorAll('.cat-pill')[0]?.classList.add('active');
+  renderShops();
+}
 
-    function getDistance(lat1, lon1, lat2, lon2) {
-        var R = 6371; 
-        var dLat = (lat2-lat1) * Math.PI / 180;
-        var dLon = (lon2-lon1) * Math.PI / 180;
-        var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
-        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return R * c;
-    }
+/* ══════ SHOPS ══════ */
+function renderShops(){
+  const list=curCat==='ሁሉንም'?SHOPS:SHOPS.filter(s=>s.cat===curCat);
+  document.getElementById('gridTitle').innerText=curCat==='ሁሉንም'?t('allShops'):curCat;
+  document.getElementById('shopGrid').innerHTML=list.length?list.map(shCard).join(''):'<div style="grid-column:span 2;text-align:center;padding:40px;color:var(--txt3);">ምንም የለም</div>';
+}
+function shCard(s){return `
+  <div class="sh-card ripple" onclick="openShop(${s.id})">
+    <div class="sh-img-w">
+      <img src="${s.banner}" onerror="this.src='https://via.placeholder.com/300x110/f5f5f5/ccc?text=Sinq'">
+      <div class="sh-ov"></div>
+      <div class="tb">🛵 ${s.time} ደቂ</div>
+      <img src="${s.logo}" class="sh-logo" onerror="this.style.display='none'">
+    </div>
+    <div class="sh-body">
+      <div class="sh-name">${s.name}</div>
+      <div class="sh-desc">${s.desc}</div>
+      <div class="sh-ft">
+        <div class="rat"><i class="fa-solid fa-star" style="color:var(--gold);font-size:9px;"></i> ${s.rating}</div>
+        <div style="font-size:9px;color:var(--txt3);">${s.items.length} ምርቶች</div>
+      </div>
+    </div>
+  </div>`;}
 
-    function updateLocation() {
-        if (navigator.geolocation) {
-            document.getElementById('headerLoc').innerText = "በመፈለግ ላይ...";
-            navigator.geolocation.getCurrentPosition(pos => {
-                let userLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-                localStorage.setItem('sinq_loc_str', 'saved');
-                localStorage.setItem('sinq_loc_coords', JSON.stringify(userLoc));
-                document.getElementById('headerLoc').innerText = "✅ ተመዝግቧል";
-                
-                let dist = getDistance(KOMBOLCHA_CENTER.lat, KOMBOLCHA_CENTER.lng, userLoc.lat, userLoc.lng);
-                calculatedDeliveryFee = Math.max(30, Math.floor(30 + (dist * 15)));
-                localStorage.setItem('sinq_del_fee', calculatedDeliveryFee);
-                
-                updateCartUI();
-                alert(`📍 ሎኬሽንዎ ተመዝግቧል! (ርቀት: ${dist.toFixed(1)} ኪ.ሜ)`);
-            }, err => { alert("❌ እባክዎ የስልክዎን ሎኬሽን (GPS) ያብሩ!"); document.getElementById('headerLoc').innerText = "ኮምቦልቻ (አድራሻ)"; });
-        }
-    }
+/* ══════ HOT SELLS ══════ */
+function renderHot(){
+  let all=[];
+  SHOPS.forEach(s=>s.items.forEach(it=>all.push({...it,shopName:s.name,shopId:s.id})));
+  for(let i=all.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[all[i],all[j]]=[all[j],all[i]];}
+  document.getElementById('hotRow').innerHTML=all.slice(0,10).map(it=>`
+    <div class="hot-card" onclick="openProdObj(${JSON.stringify({...it}).replace(/"/g,"'")})">
+      <img src="${it.img}" class="hot-img" onerror="this.src='https://via.placeholder.com/130x98'">
+      <div class="hot-body">
+        <div class="hot-name">${it.name}</div>
+        <div class="hot-shop">${it.shopName}</div>
+        <div class="hot-price">${it.price.toLocaleString()} ብር</div>
+      </div>
+    </div>`).join('');
+}
 
-    function searchItems() {
-        let q = document.getElementById('searchInput').value.toLowerCase();
-        if(q.length < 1) {
-            document.getElementById('mainContentWrapper').style.display = 'block';
-            document.getElementById('searchResults').style.display = 'none';
-            return;
-        }
-        
-        document.getElementById('mainContentWrapper').style.display = 'none';
-        document.getElementById('searchResults').style.display = 'block';
+/* ══════ OPEN SHOP ══════ */
+function openShop(id){
+  const s=SHOPS.find(x=>x.id===id);
+  document.getElementById('shBanner').src=s.banner;
+  document.getElementById('shLogo').src=s.logo;
+  document.getElementById('shName').innerText=s.name;
+  document.getElementById('shDesc').innerText=s.desc;
+  document.getElementById('shRat').innerText='⭐ '+s.rating;
+  document.getElementById('shTime').innerText=s.time;
+  document.getElementById('shCnt').innerText=s.items.length;
+  document.getElementById('shProdGrid').innerHTML=s.items.length?
+    s.items.map(it=>`
+      <div class="pg-card ripple" onclick="openProdDirect('${s.name}','${esc(it.name)}',${it.price},'${it.img}','${esc(it.desc||'')}','${esc(it.brand||'')}')">
+        <img src="${it.img}" class="pg-img" onerror="this.src='https://via.placeholder.com/150'">
+        <div class="pg-body">
+          <div class="pg-name">${it.name}</div>
+          <div class="pg-brand">${it.brand||''}</div>
+          <div class="pg-row">
+            <div class="pg-price">${it.price.toLocaleString()} ብር</div>
+            <button class="pg-add" onclick="event.stopPropagation();qAdd('${s.name}','${esc(it.name)}',${it.price},'${it.img}')"><i class="fa-solid fa-plus"></i></button>
+          </div>
+        </div>
+      </div>`).join(''):
+    '<div style="grid-column:span 2;text-align:center;padding:40px;color:var(--txt3);">ዕቃዎች በቅርቡ</div>';
+  document.getElementById('shopView').style.display='block';
+  window.scrollTo(0,0);
+}
 
-        let html = '<h3 style="margin-top:0; color:var(--primary);">የፍለጋ ውጤቶች</h3>';
-        let found = false;
-        
-        shops.forEach(s => {
-            s.items.forEach(i => {
-                if(i.name.toLowerCase().includes(q) || s.name.toLowerCase().includes(q)) {
-                    found = true;
-                    let safeDesc = i.desc ? i.desc.replace(/'/g, "\\'") : "ጥራት ያለው ምርት";
-                    html += `<div class="product-card" onclick="openProduct('${s.name}', '${i.name}', ${i.price}, '${i.img}', '${safeDesc}')"><img src="${i.img}" class="prod-img-small"><div style="flex-grow:1;"><div style="font-weight:900;">${i.name}</div><div style="font-size:11px; color:#888;">ከ ${s.name}</div><div style="color:var(--primary); font-weight:bold;">${i.price} ብር</div></div><button class="add-btn" onclick="event.stopPropagation(); addToCart('${s.name}', '${i.name}', ${i.price})"><i class="fa-solid fa-plus"></i></button></div>`;
-                }
-            });
-        });
+/* ══════ PRODUCT MODAL ══════ */
+function openProdObj(o){
+  if(typeof o==='string'){
+    try{o=JSON.parse(o.replace(/'/g,'"'));}catch(e){return;}
+  }
+  openProdDirect(o.shopName||o.shop,o.name,o.price,o.img,o.desc||'',o.brand||'');
+}
+function openProdDirect(shop,name,price,img,desc,brand){
+  curProd={shop,name,price,img,desc,brand}; curQty=1;
+  document.getElementById('pmImg').src=img;
+  document.getElementById('pmName').innerText=name;
+  document.getElementById('pmShop').innerText='ከ '+shop;
+  document.getElementById('pmBrand').innerText=brand||'';
+  document.getElementById('pmBrand').style.display=brand?'inline-block':'none';
+  document.getElementById('pmDesc').innerText=desc||'';
+  document.getElementById('pmPrice').innerText=price.toLocaleString()+' ብር';
+  document.getElementById('qNum').innerText='1';
+  document.getElementById('addCartBtn').innerText=t('addCart');
+  document.getElementById('buyNowBtn').innerText=t('buyNow');
+  document.getElementById('addCartBtn').onclick=()=>{doAddCart(); document.getElementById('prodModal').style.display='none';};
+  document.getElementById('buyNowBtn').onclick=()=>{doAddCart(); document.getElementById('prodModal').style.display='none'; switchTab('cartView',document.getElementById('nCart')); setTimeout(openPay,300);};
+  document.getElementById('prodModal').style.display='block';
+  window.scrollTo(0,0);
+}
+function chgQty(d){
+  curQty=Math.max(1,curQty+d);
+  document.getElementById('qNum').innerText=curQty;
+  document.getElementById('pmPrice').innerText=(curProd.price*curQty).toLocaleString()+' ብር';
+}
+function doAddCart(){
+  const ex=cart.find(c=>c.name===curProd.name&&c.shop===curProd.shop);
+  if(ex) ex.qty+=curQty;
+  else cart.push({id:Date.now(),shop:curProd.shop,name:curProd.name,price:curProd.price,img:curProd.img,qty:curQty});
+  updCart(); toast(`✅ ${curQty}x ${curProd.name} ${t('addedCart')}`);
+  tg.HapticFeedback.impactOccurred('medium');
+}
+function qAdd(shop,name,price,img){
+  const ex=cart.find(c=>c.name===name&&c.shop===shop);
+  if(ex) ex.qty++; else cart.push({id:Date.now(),shop,name,price,img,qty:1});
+  updCart(); toast(`✅ ${name} ${t('addedCart')}`);
+  tg.HapticFeedback.impactOccurred('light');
+}
 
-        if(!found) html += "<div style='text-align:center; color:#999; padding:40px;'>ምንም አልተገኘም 😔</div>";
-        document.getElementById('searchResults').innerHTML = html;
-    }
+/* ══════ CART ══════ */
+function chgCQ(id,d){
+  const it=cart.find(c=>c.id===id); if(!it) return;
+  it.qty+=d; if(it.qty<=0) cart=cart.filter(c=>c.id!==id);
+  updCart();
+}
+function calcDel(){
+  const c=ls('sinq_loc_coords');
+  if(!c) return 50;
+  const {lat,lng}=JSON.parse(c);
+  const R=6371,dLat=(lat-KOMBOLCHA.lat)*Math.PI/180,dLon=(lng-KOMBOLCHA.lng)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(KOMBOLCHA.lat*Math.PI/180)*Math.cos(lat*Math.PI/180)*Math.sin(dLon/2)**2;
+  const dist=R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+  document.getElementById('distKm').innerText=dist.toFixed(1);
+  return Math.max(30,Math.floor(30+dist*15));
+}
+function updCart(){
+  delFee=calcDel();
+  const cnt=cart.reduce((s,i)=>s+i.qty,0);
+  const badge=document.getElementById('cBadge');
+  badge.style.display=cnt>0?'block':'none'; badge.innerText=cnt;
+  document.getElementById('cHdrC').innerText=cnt+' እቃዎች';
+  if(!cart.length){
+    document.getElementById('cList').innerHTML='';
+    document.getElementById('cEmpty').style.display='block';
+    document.getElementById('cSum').style.display='none'; return;
+  }
+  document.getElementById('cEmpty').style.display='none';
+  document.getElementById('cSum').style.display='block';
+  let sub=0;
+  document.getElementById('cList').innerHTML=cart.map(it=>{
+    sub+=it.price*it.qty;
+    return `<div class="ci">
+      <img src="${it.img}" class="ci-img" onerror="this.src='https://via.placeholder.com/58'">
+      <div style="flex:1;">
+        <div style="font-weight:900;font-size:13px;color:var(--txt);">${it.name}</div>
+        <div style="font-size:10px;color:var(--txt3);">${it.shop}</div>
+        <div style="font-size:13px;font-weight:900;background:var(--pg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-top:2px;">${(it.price*it.qty).toLocaleString()} ብር</div>
+        <div class="qm-row">
+          <button class="qmb" onclick="chgCQ(${it.id},-1)">－</button>
+          <span style="font-weight:900;font-size:13px;min-width:18px;text-align:center;color:var(--txt);">${it.qty}</span>
+          <button class="qmb" onclick="chgCQ(${it.id},1)">＋</button>
+          <span style="font-size:10px;color:var(--txt3);">= ${(it.price*it.qty).toLocaleString()} ብር</span>
+        </div>
+      </div>
+      <button class="del-b" onclick="chgCQ(${it.id},-99)"><i class="fa-solid fa-xmark"></i></button>
+    </div>`;
+  }).join('');
+  document.getElementById('cSub').innerText=sub.toLocaleString()+' ብር';
+  document.getElementById('cDel').innerText=delFee+' ብር';
+  document.getElementById('cGrand').innerText=(sub+delFee).toLocaleString()+' ብር';
+}
 
-    function filterCat(cat, el) {
-        currentCategory = cat;
-        document.querySelectorAll('.cat-item').forEach(i => i.classList.remove('active'));
-        el.classList.add('active');
-        renderHomeItems();
-    }
+/* ══════ SEARCH ══════ */
+function doSearch(){
+  const q=document.getElementById('sBar').value.toLowerCase().trim();
+  const wrap=document.getElementById('srWrap'),grid=document.getElementById('shopGrid');
+  const hotSec=document.querySelector('#homeView .sec-t');
+  const hotRow=document.getElementById('hotRow');
+  if(!q){wrap.style.display='none';grid.style.display='grid';hotSec&&(hotSec.style.display='flex');hotRow&&(hotRow.style.display='flex');return;}
+  grid.style.display='none'; wrap.style.display='block';
+  hotSec&&(hotSec.style.display='none'); hotRow&&(hotRow.style.display='none');
+  let res=[];
+  SHOPS.forEach(s=>{
+    if(s.name.toLowerCase().includes(q)) res.push({type:'shop',data:s});
+    s.items.forEach(it=>{if(it.name.toLowerCase().includes(q)||(it.brand||'').toLowerCase().includes(q)) res.push({type:'item',data:it,shop:s});});
+  });
+  if(!res.length){wrap.innerHTML='<div class="empty"><div class="ei">🔍</div><p>"'+q+'" አልተገኘም</p></div>';return;}
+  wrap.innerHTML='<div class="prod-grid">'+res.map(r=>{
+    if(r.type==='shop') return shCard(r.data);
+    const it=r.data;
+    return `<div class="pg-card ripple" onclick="openProdDirect('${r.shop.name}','${esc(it.name)}',${it.price},'${it.img}','${esc(it.desc||'')}','${esc(it.brand||'')}')">
+      <img src="${it.img}" class="pg-img" onerror="this.src='https://via.placeholder.com/150'">
+      <div class="pg-body">
+        <div class="pg-name">${it.name}</div>
+        <div class="pg-brand">${it.brand||''} · ${r.shop.name}</div>
+        <div class="pg-row"><div class="pg-price">${it.price.toLocaleString()} ብር</div>
+          <button class="pg-add" onclick="event.stopPropagation();qAdd('${r.shop.name}','${esc(it.name)}',${it.price},'${it.img}')"><i class="fa-solid fa-plus"></i></button>
+        </div>
+      </div>
+    </div>`;
+  }).join('')+'</div>';
+}
 
-    function renderHomeItems() {
-        let html = '';
-        let filtered = currentCategory === 'ሁሉንም' ? shops : shops.filter(s => s.category === currentCategory);
-        filtered.forEach(shop => {
-            html += `
-            <div class="card" onclick="openShop(${shop.id})">
-                <div class="time-badge">🛵 ${shop.time}</div>
-                <img src="${shop.banner}" class="card-banner">
-                <img src="${shop.logo}" class="card-logo" onerror="this.src='https://via.placeholder.com/100/bc0000/fff?text=S'">
-                <div class="card-body">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <b style="font-size:15px;">${shop.name}</b>
-                        <div class="shop-rating"><i class="fa-solid fa-star" style="color:var(--gold);"></i> ${shop.rating}</div>
-                    </div>
-                    <div style="font-size:12px; color:#888; margin-top:2px;">${shop.desc}</div>
-                </div>
-            </div>`;
-        });
-        document.getElementById('shopGrid').innerHTML = html || "<p style='grid-column:span 2; text-align:center;'>ምንም የለም</p>";
-    }
+/* ══════ PAYMENT ══════ */
+function openPay(){
+  if(!ls('sinq_loc')){toast('❌ መጀመሪያ ሎኬሽን ያስምዝግቡ'); switchTab('profileView',document.getElementById('nProf')); return;}
+  const lm=document.getElementById('lmInp')?.value?.trim();
+  if(!lm){toast('❌ Landmark ያስገቡ'); return;}
+  if(Date.now()-lastOrd<60000){toast('⚠️ 1 ደቂቃ ይጠብቁ'); return;}
+  const g=cart.reduce((s,i)=>s+i.price*i.qty,0)+delFee;
+  document.getElementById('pTotal').innerText=g.toLocaleString()+' ብር';
+  document.getElementById('pTotal2').innerText=g.toLocaleString()+' ብር';
+  document.getElementById('ps1').style.display='block';
+  document.getElementById('ps2').style.display='none';
+  document.getElementById('payOv').style.display='flex';
+}
+function closePay(){document.getElementById('payOv').style.display='none';}
+function showPay(m,a){
+  payMeth=m; payAcc=a;
+  document.getElementById('pMeth').innerText=m;
+  document.getElementById('pAcc').innerText=a;
+  document.getElementById('ps1').style.display='none';
+  document.getElementById('ps2').style.display='block';
+  document.getElementById('ssIn').value='';
+  document.getElementById('ssPreview').innerHTML='<i class="fa-solid fa-cloud-arrow-up" style="font-size:26px;color:var(--txt3);margin-bottom:7px;"></i><div style="font-weight:700;color:var(--txt3);font-size:12px;">የደረሰኝ ፎቶ ያያይዙ</div>';
+}
+function backPay(){document.getElementById('ps2').style.display='none'; document.getElementById('ps1').style.display='block';}
+function copyAcc(){navigator.clipboard?.writeText(payAcc); toast('✅ ቁጥሩ ኮፒ ተደርጓል');}
+function previewSS(e){
+  const f=e.target.files[0]; if(!f) return;
+  document.getElementById('ssPreview').innerHTML=`<img src="${URL.createObjectURL(f)}" style="width:100%;border-radius:10px;max-height:150px;object-fit:cover;">`;
+}
 
-    function renderFeaturedItems() {
-        let html = '';
-        let featured = [];
-        if(shops[3] && shops[3].items.length > 0) featured.push({shop: shops[3].name, ...shops[3].items[0]});
-        if(shops[0] && shops[0].items.length > 0) featured.push({shop: shops[0].name, ...shops[0].items[0]});
-        if(shops[3] && shops[3].items.length > 2) featured.push({shop: shops[3].name, ...shops[3].items[2]});
-        
-        featured.forEach(i => {
-            let safeDesc = i.desc ? i.desc.replace(/'/g, "\\'") : "ጥራት ያለው ምርት";
-            html += `<div class="product-card" onclick="openProduct('${i.shop}', '${i.name}', ${i.price}, '${i.img}', '${safeDesc}')"><img src="${i.img}" class="prod-img-small"><div style="flex-grow:1;"><div style="font-weight:900;">${i.name}</div><div style="font-size:11px; color:#888;">${i.shop}</div><div style="color:var(--primary); font-weight:bold;">${i.price} ብር</div></div><button class="add-btn" onclick="event.stopPropagation(); addToCart('${i.shop}', '${i.name}', ${i.price})"><i class="fa-solid fa-plus"></i></button></div>`;
-        });
-        document.getElementById('featuredProductsGrid').innerHTML = html;
-    }
+async function placeOrder(){
+  const f=document.getElementById('ssIn').files[0];
+  if(!f){toast('❌ ደረሰኝ ፎቶ ያያይዙ'); return;}
+  const btn=document.getElementById('confBtn'); btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i>...'; btn.disabled=true;
+  const nm=ls('sinq_name'), ph=ls('sinq_phone'), tgId=ls('sinq_tgid');
+  const lm=document.getElementById('lmInp')?.value||'';
+  const g=cart.reduce((s,i)=>s+i.price*i.qty,0)+delFee;
+  const items=cart.map(i=>`- ${i.qty}x ${i.name} (${i.shop}) = ${(i.price*i.qty).toLocaleString()} ብር`).join('\n');
+  const coords=ls('sinq_loc_coords');
+  let mapLink='(ካርታ የለም)';
+  if(coords){const c=JSON.parse(coords); mapLink=`https://www.google.com/maps?q=${c.lat},${c.lng}`;}
+  const msg=`🚨 *አዲስ ትዕዛዝ (Sinq v3)*\n\n👤 *ስም:* ${nm}\n📱 *ስልክ:* \`${ph}\`\n📍 *ቦታ:* ${mapLink}\n🏠 *Landmark:* ${lm}\n\n🛍 *እቃዎች:*\n${items}\n\n💰 *ዴሊቨሪ:* ${delFee} ብር\n💰 *ጠቅላላ:* ${g.toLocaleString()} ብር\n💳 *ክፍያ:* ${payMeth}\n\n👉 tg://user?id=${tgId}`;
+  const fd=new FormData(); fd.append('chat_id',CFG.adminId); fd.append('photo',f); fd.append('caption',msg); fd.append('parse_mode','Markdown');
+  try{
+    const r=await fetch(`https://api.telegram.org/bot${CFG.orderBot}/sendPhoto`,{method:'POST',body:fd});
+    const d=await r.json();
+    if(d.ok){
+      orders.unshift({id:Date.now(),items:[...cart],grand:g,method:payMeth,date:new Date().toLocaleDateString('am-ET'),status:'pending'});
+      lss('sinq_orders',JSON.stringify(orders));
+      document.getElementById('stOrd').innerText=orders.length;
+      cart=[]; updCart(); renderOrders(); closePay(); lastOrd=Date.now();
+      if(document.getElementById('lmInp')) document.getElementById('lmInp').value='';
+      toast('🎉 ትዕዛዝ ተልኳል! ዴሊቨሪ ይደውላል');
+      setTimeout(()=>tg.close(),3000);
+    } else toast('❌ ፋይሉ ትልቅ ሊሆን ይችላል');
+  }catch(e){toast('❌ ኢንተርኔት ያረጋግጡ');}
+  btn.innerHTML='ትዕዛዙን አረጋግጥ <i class="fa-solid fa-check"></i>'; btn.disabled=false;
+}
 
-    function openShop(id) {
-        let shop = shops.find(s => s.id === id);
-        document.getElementById('shopView').style.display = 'block';
-        document.getElementById('shopBanner').src = shop.banner;
-        document.getElementById('shopLogo').src = shop.logo;
-        document.getElementById('shopName').innerText = shop.name;
-        document.getElementById('shopDesc').innerText = shop.desc;
-        document.getElementById('shopRatingVal').innerText = shop.rating;
-        
-        let phtml = '';
-        shop.items.forEach(item => {
-            let safeDesc = item.desc ? item.desc.replace(/'/g, "\\'") : "ጥራት ያለው ምርት";
-            phtml += `<div class="product-card" onclick="openProduct('${shop.name}', '${item.name}', ${item.price}, '${item.img}', '${safeDesc}')"><img src="${item.img}" class="prod-img-small"><div style="flex-grow:1;"><div style="font-weight:900;">${item.name}</div><div style="color:var(--primary); font-weight:bold;">${item.price} ብር</div></div><button class="add-btn" onclick="event.stopPropagation(); addToCart('${shop.name}', '${item.name}', ${item.price})"><i class="fa-solid fa-plus"></i></button></div>`;
-        });
-        document.getElementById('productGrid').innerHTML = phtml || "<p style='text-align:center;'>ዕቃዎች በቅርቡ ይገባሉ</p>";
-    }
+/* ══════ ORDERS ══════ */
+function renderOrders(){
+  const list=document.getElementById('ordList');
+  if(!orders.length){list.innerHTML='<div class="empty"><div class="ei">📦</div><p>ምንም ትዕዛዝ የለም</p></div>';return;}
+  list.innerHTML=orders.slice(0,30).map(o=>`
+    <div class="ord-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div style="font-weight:900;color:var(--txt);">#${String(o.id).slice(-6)}</div>
+        <div class="badge ${o.status==='delivered'?'badge-ok':'badge-warn'}">${o.status==='delivered'?'✅ ደርሷል':'⏳ በሂደት'}</div>
+      </div>
+      <div style="font-size:11px;color:var(--txt3);margin-bottom:7px;">${o.date}</div>
+      ${o.items.map(i=>`<div style="font-size:12px;display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);color:var(--txt2);"><span>${i.qty}x ${i.name}</span><span style="font-weight:700;">${(i.price*i.qty).toLocaleString()} ብር</span></div>`).join('')}
+      <div style="display:flex;justify-content:space-between;margin-top:10px;font-weight:900;font-size:14px;"><span style="color:var(--txt);">ጠቅላላ</span><span style="color:var(--p);">${o.grand.toLocaleString()} ብር</span></div>
+    </div>`).join('');
+}
 
-    function openProduct(shop, name, price, img, desc) {
-        document.getElementById('modalImg').src = img;
-        document.getElementById('modalName').innerText = name;
-        document.getElementById('modalShop').innerText = "📍 ከ " + shop;
-        document.getElementById('modalPrice').innerText = price + " ብር";
-        document.getElementById('modalDesc').innerText = desc || "ምንም ማብራሪያ አልተገኘም።";
-        
-        document.getElementById('modalAddBtn').onclick = () => { addToCart(shop, name, price); document.getElementById('productModal').style.display='none'; };
-        document.getElementById('productModal').style.display = 'block';
-    }
+/* ══════ CHAT (AI Support) ══════ */
+function renderChat(){
+  const wrap=document.getElementById('msgsWrap');
+  if(!chatMsgs.length){
+    chatMsgs=[{role:'bot',text:'ሰላም! 👋 ወደ Sinq ድጋፍ እንኳን ደህና መጡ። እንዴት ልረዳዎ?',time:now()}];
+  }
+  wrap.innerHTML=chatMsgs.map(m=>`
+    <div style="display:flex;flex-direction:column;align-items:${m.role==='bot'?'flex-end':'flex-start'};">
+      <div class="msg msg-${m.role}">${m.text}</div>
+      <div class="msg-time">${m.time}</div>
+    </div>`).join('');
+  wrap.scrollTop=wrap.scrollHeight;
+}
+async function sendChat(){
+  const inp=document.getElementById('chatInp');
+  const txt=inp.value.trim(); if(!txt) return;
+  chatMsgs.push({role:'user',text:txt,time:now()});
+  inp.value='';
+  renderChat();
+  // AI reply via Claude
+  chatMsgs.push({role:'bot',text:'<i class="fa-solid fa-spinner fa-spin"></i> ...',time:now()});
+  renderChat();
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:"claude-sonnet-4-20250514",max_tokens:300,
+        system:"You are Sinq Support, a friendly delivery app assistant for Sinq in Kombolcha, Ethiopia. Reply in Amharic. Be helpful, concise, and warm. Topics: orders, delivery, payment, shops. Max 2 sentences.",
+        messages:[{role:"user",content:txt}]
+      })
+    });
+    const data=await res.json();
+    const reply=data.content?.map(c=>c.text||'').join('')||'ምላሽ አልሰጠም።';
+    chatMsgs[chatMsgs.length-1]={role:'bot',text:reply,time:now()};
+  }catch(e){
+    chatMsgs[chatMsgs.length-1]={role:'bot',text:'አሁን ማገናኘት አልተቻለም። ቆይቶ ይሞክሩ።',time:now()};
+  }
+  lss('sinq_chat',JSON.stringify(chatMsgs.slice(-30)));
+  renderChat();
+}
+function now(){return new Date().toLocaleTimeString('am-ET',{hour:'2-digit',minute:'2-digit'});}
 
-    function addToCart(shop, name, price) {
-        cart.push({ id: Date.now(), shop, name, price });
-        updateCartUI();
-        tg.HapticFeedback.impactOccurred("medium");
-        alert(`✅ ${name} ወደ ቅርጫት ገብቷል`);
-    }
+/* ══════ THEME ══════ */
+function applyTheme(){
+  isDark=ls('sinq_theme')==='dark';
+  document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
+  const btn=document.getElementById('themeBtn');
+  if(btn) btn.innerHTML=isDark?'<i class="fa-solid fa-sun"></i>':'<i class="fa-solid fa-moon"></i>';
+  const lbl=document.getElementById('themeLabel');
+  if(lbl) lbl.innerText=isDark?'Dark Mode':'Light Mode';
+  const tog=document.getElementById('themeToggle');
+  if(tog){
+    tog.style.background=isDark?'var(--p)':'var(--border)';
+    const dot=tog.querySelector('div');
+    if(dot) dot.style.right=isDark?'calc(100% - 21px)':'3px';
+  }
+}
+function toggleTheme(){isDark=!isDark; lss('sinq_theme',isDark?'dark':'light'); applyTheme();}
 
-    function removeFromCart(id) { cart = cart.filter(item => item.id !== id); updateCartUI(); }
+/* ══════ LANGUAGE ══════ */
+function setLang(l,el){
+  lang=l; lss('sinq_lang',l);
+  document.documentElement.setAttribute('data-lang',l);
+  document.querySelectorAll('.lang-pill').forEach(p=>p.classList.remove('active'));
+  if(el) el.classList.add('active');
+  applyLang();
+}
+function applyLang(){
+  const sBar=document.getElementById('sBar');
+  if(sBar) sBar.placeholder=t('search');
+  document.querySelectorAll('.ni span').forEach((el,i)=>{
+    const keys=['home','cart','orders','chat','profile'];
+    if(keys[i]) el.innerText=t(keys[i]);
+  });
+  const emptyC=document.getElementById('cEmpty');
+  if(emptyC) emptyC.querySelector('p').innerText=t('emptyCart');
+  const gT=document.getElementById('gridTitle');
+  if(gT&&curCat==='ሁሉንም') gT.innerText=t('allShops');
+  const hotT=document.querySelector('#homeView .sec-t h3');
+  if(hotT) hotT.innerText=t('hotSells');
+}
+function switchLang(){
+  const newLang=lang==='am'?'en':'am';
+  const pill=document.querySelector(`.lang-pill[onclick*="'${newLang}'"]`);
+  setLang(newLang,pill);
+  const btn=document.getElementById('langBtn');
+  if(btn) btn.querySelector('span').innerText=lang==='am'?'አማ':'EN';
+  toast(lang==='am'?'ቋንቋ ወደ አማርኛ ተቀየረ':'Language changed to English');
+}
 
-    function updateCartUI() {
-        let count = cart.length;
-        let badge = document.getElementById('navCartCount');
-        
-        let fee = localStorage.getItem('sinq_del_fee');
-        if(fee) calculatedDeliveryFee = parseInt(fee);
-        
-        if(count > 0) {
-            badge.style.display = 'block'; badge.innerText = count;
-            document.getElementById('cartTotalDisplay').style.display = 'block';
-            document.getElementById('emptyCartMsg').style.display = 'none';
-            
-            let html = '', subTotal = 0;
-            cart.forEach(item => {
-                subTotal += item.price;
-                html += `<div class="cart-item"><div><b style="font-size:15px;">${item.name}</b><div style="font-size:11px; color:#888;">${item.shop}</div><div style="color:var(--primary); font-weight:900;">${item.price} ብር</div></div><button class="remove-btn" onclick="removeFromCart(${item.id})"><i class="fa-solid fa-xmark"></i></button></div>`;
-            });
-            document.getElementById('cartItemsList').innerHTML = html;
-            
-            document.getElementById('subTotal').innerText = subTotal + " ብር";
-            document.getElementById('deliveryFeeDisplay').innerText = calculatedDeliveryFee + " ብር";
-            
-            if(localStorage.getItem('sinq_loc_str')) {
-                let savedLoc = JSON.parse(localStorage.getItem('sinq_loc_coords'));
-                let dist = getDistance(KOMBOLCHA_CENTER.lat, KOMBOLCHA_CENTER.lng, savedLoc.lat, savedLoc.lng);
-                document.getElementById('distKm').innerText = dist.toFixed(1);
-            } else { document.getElementById('distKm').innerText = "?"; }
-            
-            document.getElementById('grandTotal').innerText = (subTotal + calculatedDeliveryFee) + " ብር";
-        } else {
-            badge.style.display = 'none';
-            document.getElementById('cartItemsList').innerHTML = '';
-            document.getElementById('emptyCartMsg').style.display = 'block';
-            document.getElementById('cartTotalDisplay').style.display = 'none';
-        }
-    }
+/* ══════ LOCATION ══════ */
+function doLoc(){
+  if(!navigator.geolocation){toast('❌ GPS አይሰራም');return;}
+  document.getElementById('hLoc').innerText='📡 ...';
+  navigator.geolocation.getCurrentPosition(p=>{
+    lss('sinq_loc','1');
+    lss('sinq_loc_coords',JSON.stringify({lat:p.coords.latitude,lng:p.coords.longitude}));
+    document.getElementById('hLoc').innerText='✅ ተመዝግቧል';
+    delFee=calcDel(); lss('sinq_del',delFee);
+    toast('📍 ቦታዎ ተመዝግቧል! ዴሊቨሪ: '+delFee+' ብር');
+  },()=>{toast('❌ GPS ያብሩ'); document.getElementById('hLoc').innerText='ኮምቦልቻ';});
+}
 
-    function openSmartPayment() {
-        let locStr = localStorage.getItem('sinq_loc_str');
-        let specificAdd = document.getElementById('specificAddress').value.trim();
-        
-        if(!locStr) { alert("❌ እባክዎ መጀመሪያ የማድረሻ ሎኬሽንዎን (ካርታ) ያስመዝግቡ!"); switchTab('profileView', document.getElementById('navProfile')); return; }
-        if(!specificAdd) { alert("❌ እባክዎ የሰፈርዎን ልዩ ስም / Landmark ያስገቡ!"); return; }
-        if(Date.now() - lastOrderTime < 60000) { alert("⚠️ እባክዎ ቀጣይ ትዕዛዝ ለማድረግ 1 ደቂቃ ይጠብቁ!"); return; }
+/* ══════ KYC ══════ */
+async function sendKYC(){
+  const ph=document.getElementById('idPh').files[0]; if(!ph){toast('❌ መታወቂያ ያያይዙ');return;}
+  const btn=document.getElementById('kycBtn'); btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i>'; btn.disabled=true;
+  const fd=new FormData(); fd.append('chat_id',CFG.adminId); fd.append('photo',ph);
+  fd.append('caption',`🚨 *KYC*\n👤 ${ls('sinq_name')}\n📱 ${ls('sinq_phone')}\n🔑 \`${CFG.KYC}\``);
+  fd.append('parse_mode','Markdown');
+  try{await fetch(`https://api.telegram.org/bot${CFG.sellerBot}/sendPhoto`,{method:'POST',body:fd}); toast('✅ ተልኳል! ኮድ ይጠብቁ');}
+  catch(e){toast('❌ ኢንተርኔት ያረጋግጡ');}
+  btn.innerHTML='ለማረጋገጫ ላክ'; btn.disabled=false;
+}
+function checkKYC(){
+  if(document.getElementById('kycCode').value===CFG.KYC){lss('sinq_kyc',btoa(CFG.KYC)); unlockSeller(); toast('🎉 ተረጋጋጠ!');}
+  else toast('❌ ኮዱ ስህተት ነው');
+}
+function unlockSeller(){
+  document.getElementById('kycBox').style.display='none';
+  document.getElementById('sellBox').style.display='block';
+  const b=document.getElementById('vBadge'); b.className='bv'; b.innerHTML='<i class="fa-solid fa-circle-check"></i> Verified Seller';
+}
 
-        let subTotal = cart.reduce((s, i) => s + i.price, 0);
-        document.getElementById('paymentOverlay').style.display = 'flex';
-        document.getElementById('paymentSelectionBox').style.display = 'block';
-        document.getElementById('digitalPaymentForm').style.display = 'none';
-        document.getElementById('paymentScreenshot').value = ''; 
-        document.getElementById('payAmountDisp').innerText = (subTotal + calculatedDeliveryFee) + " ብር";
-    }
+/* ══════ SELL ══════ */
+async function uploadProd(){
+  if(Date.now()-lastUp<30000){toast('⚠️ 30 ሰከንድ ይጠብቁ');return;}
+  const ph=document.getElementById('sPh').files[0],nm=document.getElementById('sNm').value.trim();
+  const pr=document.getElementById('sPr').value.trim(),de=document.getElementById('sDe').value.trim();
+  if(!ph||!nm||!pr){toast('❌ ሁሉንም ያስገቡ');return;}
+  const btn=document.getElementById('sellBtn'); btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i>'; btn.disabled=true;
+  const fd=new FormData(); fd.append('chat_id',CFG.adminId); fd.append('photo',ph);
+  fd.append('caption',`✅ *Verified Seller ምርት*\n🛍 *${nm}*\n📝 ${de}\n💰 ${pr} ብር\n👤 ${ls('sinq_name')}`);
+  fd.append('parse_mode','Markdown');
+  try{await fetch(`https://api.telegram.org/bot${CFG.sellerBot}/sendPhoto`,{method:'POST',body:fd}); toast('✅ ምርትዎ ደርሷል!'); lastUp=Date.now();}
+  catch(e){toast('❌ ኢንተርኔት ያረጋግጡ');}
+  btn.innerHTML='<i class="fa-solid fa-upload"></i> እቃ ገበያ ላይ አውጣ'; btn.disabled=false;
+}
 
-    function closePayment() { document.getElementById('paymentOverlay').style.display = 'none'; }
-    function showDigitalForm(method, accNumber) {
-        selectedBankMethod = method;
-        document.getElementById('paymentSelectionBox').style.display = 'none';
-        document.getElementById('digitalPaymentForm').style.display = 'block';
-        document.getElementById('selectedMethodText').innerText = method;
-        document.getElementById('accNumberDisplay').innerText = accNumber;
-    }
-    function backToMethods() { document.getElementById('digitalPaymentForm').style.display = 'none'; document.getElementById('paymentSelectionBox').style.display = 'block'; }
-    function copyAccount() { navigator.clipboard.writeText(document.getElementById('accNumberDisplay').innerText); tg.HapticFeedback.impactOccurred("light"); alert("✅ ኮፒ ተደርጓል!"); }
-
-    // 🌟 ONLINE RECEIPT VERIFICATION (API CALL) 🌟
-    function processScreenshotOrder() {
-        let screenshotFile = document.getElementById('paymentScreenshot').files[0];
-        if(!screenshotFile) { alert("❌ ደረሰኝ ያያይዙ!"); return; }
-
-        let btn = document.getElementById('confirmPayBtn');
-        btn.innerHTML = "ደረሰኙን በመመርመር ላይ... 🔍"; 
-        btn.disabled = true;
-
-        let verifyData = new FormData();
-        verifyData.append("file", screenshotFile); // "file" is the expected key based on typical fastAPI setups
-
-        // 🌟 ይህንን 'https://ethiobank-receipts.onrender.com ' የራስህ አድርገህ ቀይረው
-        fetch(RECEIPT_VERIFIER_API, {
-            method: "POST",
-            body: verifyData
-        })
-        .then(res => {
-            if (!res.ok) throw new Error("API Down");
-            return res.json();
-        })
-        .then(apiResult => {
-            // ይህንን ሎጂክ አፕሎድ በምታደርገው ፕሮጀክት ላይ አብረህ ታስተካክለዋለህ (ምሳሌ፡ isValid: true)
-            let isReal = apiResult.isValid || apiResult.status === "valid";
-
-            if (isReal) {
-                sendToTelegramAdmin(screenshotFile, "✅ ትክክለኛ (System Verified)");
-            } else {
-                alert("❌ ሀሰተኛ ደረሰኝ (Fake Receipt)!\nእባክዎ ትክክለኛ ደረሰኝ ያስገቡ።");
-                btn.innerHTML = "አረጋግጥ እና እዘዝ <i class='fa-solid fa-check'></i>";
-                btn.disabled = false;
-            }
-        })
-        .catch(err => {
-            // API እስኪጫን ወይም ኢንተርኔት ከተቋረጠ እንዳይበላሽ (Fallback)
-            alert("⚠️ የማረጋገጫ ሰርቨር አልተገናኘም። ትዕዛዙ በቀጥታ ለአድሚን ይላካል።");
-            sendToTelegramAdmin(screenshotFile, "⚠️ ሲስተም አላረጋገጠውም (Manual Check Required)");
-        });
-    }
-
-    function sendToTelegramAdmin(screenshotFile, verifyStatus) {
-        let name = localStorage.getItem('sinq_user_name');
-        let phone = localStorage.getItem('sinq_user_phone');
-        let tgId = localStorage.getItem('sinq_tg_id');
-        let specificAdd = document.getElementById('specificAddress').value.trim();
-        let grand = cart.reduce((s, i) => s + i.price, 0) + calculatedDeliveryFee;
-        let items = cart.map(i => `- ${i.name} (${i.shop})`).join("\n");
-        
-        let savedLoc = JSON.parse(localStorage.getItem('sinq_loc_coords'));
-        let map_link = `http://googleusercontent.com/maps.google.com/5${savedLoc.lat},${savedLoc.lng}`;
-
-        let msg = `🚨 **አዲስ ትዕዛዝ** 🚨\n\n👤 **ስም:** ${name}\n📱 **ስልክ:** ${phone}\n\n📍 **የማድረሻ ቦታ:**\n${map_link}\n🏠 **ልዩ ሰፈር:** ${specificAdd}\n\n🛍 **እቃዎች:**\n${items}\n💰 **ጠቅላላ ክፍያ:** ${grand} ብር\n💳 **የክፍያ ዘዴ:** ${selectedBankMethod}\n\n🤖 **ደረሰኝ ማረጋገጫ:** ${verifyStatus}\n\n⚠️ **ደንበኛውን ለማናገር:** 👉 tg://user?id=${tgId}`;
-
-        let formData = new FormData();
-        formData.append("chat_id", adminId);
-        formData.append("photo", screenshotFile);
-        formData.append("caption", msg);
-
-        fetch(`https://api.telegram.org/bot${orderBotToken}/sendPhoto`, { method: "POST", body: formData })
-        .then(res => res.json())
-        .then(data => {
-            if(data.ok) {
-                closePayment(); lastOrderTime = Date.now(); cart = []; document.getElementById('specificAddress').value = ''; updateCartUI(); tg.close();
-                alert(`🎉 ትዕዛዝዎ ተልኳል!\nዴሊቬሪ ሰራተኛችን ወዲያውኑ ይደውልልዎታል።`); 
-            } else { 
-                alert("❌ ፋይሉ በጣም ትልቅ ነው።"); 
-                document.getElementById('confirmPayBtn').innerHTML = "አረጋግጥ እና እዘዝ <i class='fa-solid fa-check'></i>"; 
-                document.getElementById('confirmPayBtn').disabled = false; 
-            }
-        }).catch(err => { 
-            alert("❌ የቴሌግራም ችግር!"); 
-            document.getElementById('confirmPayBtn').innerHTML = "አረጋግጥ እና እዘዝ <i class='fa-solid fa-check'></i>"; 
-            document.getElementById('confirmPayBtn').disabled = false; 
-        });
-    }
-
-    function submitKYC() {
-        let photo = document.getElementById('idPhoto').files[0];
-        if(!photo) { alert("መታወቂያ ያያይዙ!"); return; }
-        let btn = document.getElementById('verifyBtn'); btn.innerHTML = "በመላክ ላይ... ⏳"; btn.disabled = true;
-
-        let tgId = localStorage.getItem('sinq_tg_id');
-        let msg = `🚨 **የሻጭነት ማረጋገጫ (KYC)** 🚨\n👤 ስም: ${localStorage.getItem('sinq_user_name')}\n📱 ስልክ: ${localStorage.getItem('sinq_user_phone')}\n🔒 TG ID: \`${tgId}\`\n👉 **ማረጋገጫ ኮድ:** \`${SECRET_VERIFICATION_CODE}\``;
-        let formData = new FormData(); formData.append("chat_id", adminId); formData.append("photo", photo); formData.append("caption", msg); formData.append("parse_mode", "Markdown");
-
-        fetch(`https://api.telegram.org/bot${sellerBotToken}/sendPhoto`, { method: "POST", body: formData })
-        .then(() => { alert("✅ ተልኳል!"); btn.innerHTML = "ለማረጋገጫ ላክ"; btn.disabled = false; });
-    }
-    function checkVerificationCode() {
-        if(document.getElementById('verifyCode').value === SECRET_VERIFICATION_CODE) {
-            localStorage.setItem('sinq_kyc_hash', btoa(SECRET_VERIFICATION_CODE)); alert("🎉 መታወቂያዎ ተረጋግጧል።"); unlockSellerDashboard();
-        } else { alert("❌ የተሳሳተ ኮድ!"); }
-    }
-    function unlockSellerDashboard() {
-        document.getElementById('kycBox').style.display = 'none'; document.getElementById('sellerDashboard').style.display = 'block';
-        document.getElementById('verificationStatus').className = 'verified-badge'; document.getElementById('verificationStatus').innerHTML = '<i class="fa-solid fa-check-circle"></i> የተረጋገጠ ሻጭ (Verified)';
-    }
-    function submitSecureProduct() {
-        if(Date.now() - lastUploadTime < 30000) { alert("⚠️ 30 ሰከንድ ይጠብቁ!"); return; }
-        let photo = document.getElementById('sellPhoto').files[0]; let name = document.getElementById('sellName').value; let price = document.getElementById('sellPrice').value;
-        if(!photo || !name || !price) { alert("መረጃ ሙሉ!"); return; }
-        let btn = document.getElementById('uploadBtn'); btn.innerHTML = "በመላክ ላይ... ⏳"; btn.disabled = true;
-
-        let msg = `✅ **ከተረጋገጠ ሻጭ አዲስ እቃ**\n🛍 እቃ: ${name}\n💰 ዋጋ: ${price} ብር\n👤 ሻጭ: ${localStorage.getItem('sinq_user_name')}`;
-        let formData = new FormData(); formData.append("chat_id", adminId); formData.append("photo", photo); formData.append("caption", msg); formData.append("parse_mode", "Markdown");
-
-        fetch(`https://api.telegram.org/bot${sellerBotToken}/sendPhoto`, { method: "POST", body: formData }).then(() => { alert("✅ ለአድሚን ደርሷል!"); lastUploadTime = Date.now(); btn.innerHTML = "እቃውን ገበያ ላይ አውጣ"; btn.disabled = false; });
-    }
-    function logout() { localStorage.clear(); window.location.reload(); }
+/* ══════ MISC ══════ */
+function chgPic(e){const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=ev=>{lss('sinq_pic',ev.target.result); document.getElementById('avImg').src=ev.target.result;}; r.readAsDataURL(f);}
+function doLogout(){if(confirm('ከሲንቅ ይውጡ?')){localStorage.clear(); location.reload();}}
+function switchTab(id,el){
+  document.querySelectorAll('.vs').forEach(v=>v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+}
+function shareApp(){if(navigator.share){navigator.share({title:'Sinq',text:'ሲንቅ ዴሊቨሪ!',url:'https://t.me/SinqDelivery'});}else{navigator.clipboard?.writeText('https://t.me/SinqDelivery'); toast('🔗 ሊንክ ኮፒ ተደርጓል');}}
+function toast(msg){const t=document.getElementById('toast'); t.innerText=msg; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),3000);}
+function ls(k){return localStorage.getItem(k);}
+function lss(k,v){localStorage.setItem(k,v);}
+function esc(s){return String(s).replace(/'/g,'&#39;').replace(/"/g,'&quot;');}
+async function toB64(f){return new Promise(res=>{const r=new FileReader(); r.onload=e=>res(e.target.result); r.readAsDataURL(f);});}
 </script>
 </body>
 </html>
