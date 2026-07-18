@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Sinq. v4.1</title>
+<title>Sinq. v4</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
@@ -32,9 +32,12 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 #skeleton{position:fixed;inset:0;background:var(--bg);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity .5s;}
 #skeleton.out{opacity:0;pointer-events:none;}
 .sk-logo{width:86px;height:86px;border-radius:26px;background:linear-gradient(90deg,var(--bg2) 25%,var(--sf) 50%,var(--bg2) 75%);background-size:200% 100%;animation:sh 1.4s infinite;}
+.sk-b{height:11px;border-radius:6px;background:linear-gradient(90deg,var(--bg2) 25%,var(--sf) 50%,var(--bg2) 75%);background-size:200% 100%;animation:sh 1.4s infinite;}
 @keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .sk-spin{width:44px;height:44px;border-radius:50%;border:3px solid rgba(188,0,0,.15);border-top-color:var(--p);animation:spin 1s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
+.sk-t{width:110px;}
+.sk-s{width:170px;height:8px;border-radius:4px;background:linear-gradient(90deg,var(--bg2) 25%,var(--sf) 50%,var(--bg2) 75%);background-size:200% 100%;animation:sh 1.4s infinite .1s;}
 
 /* ─── ONBOARDING ─── */
 #onboard{position:fixed;inset:0;z-index:9800;background:var(--bg);display:none;}
@@ -55,6 +58,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .orb{position:absolute;border-radius:50%;filter:blur(55px);animation:orb 7s ease-in-out infinite;}
 .o1{width:280px;height:280px;background:radial-gradient(circle,rgba(188,0,0,.38),transparent 70%);top:-8%;right:-8%;animation-delay:0s;}
 .o2{width:190px;height:190px;background:radial-gradient(circle,rgba(231,76,60,.28),transparent 70%);bottom:22%;left:-5%;animation-delay:2.5s;}
+.o3{width:140px;height:140px;background:radial-gradient(circle,rgba(188,0,0,.18),transparent 70%);bottom:-4%;right:28%;animation-delay:5s;}
+@keyframes orb{0%,100%{transform:translate(0,0) scale(1)}40%{transform:translate(12px,-12px) scale(1.06)}70%{transform:translate(-8px,8px) scale(.94)}}
 .auth-in{width:100%;max-width:390px;padding:48px 22px 36px;display:flex;flex-direction:column;align-items:center;}
 .auth-logo{width:84px;height:84px;border-radius:26px;object-fit:cover;border:2px solid rgba(255,255,255,.18);box-shadow:0 0 38px rgba(188,0,0,.48);animation:float 3s ease-in-out infinite;margin-bottom:12px;}
 .auth-brand{font-size:38px;font-weight:900;background:var(--pg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-1px;}
@@ -67,6 +72,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .ai{width:100%;padding:14px 38px 14px 14px;border:1.5px solid var(--br);border-radius:var(--rs);font-size:14px;background:var(--sf2);color:var(--txt);outline:none;font-family:inherit;transition:var(--tr);}
 .ai::placeholder{color:var(--txt3);}
 .ai:focus{border-color:var(--p);background:var(--sf);box-shadow:0 0 0 3px rgba(188,0,0,.1);}
+.ai.err{border-color:#e74c3c;animation:shake .3s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.ierr{font-size:11px;color:#e74c3c;font-weight:700;margin-top:2px;display:none;}
 .btn-p{background:var(--pg);color:#fff;border:none;width:100%;padding:15px;border-radius:var(--rs);font-weight:900;font-size:15px;cursor:pointer;font-family:inherit;box-shadow:0 8px 22px rgba(188,0,0,.32);transition:var(--tr);margin-top:8px;position:relative;overflow:hidden;}
 .btn-p:active{transform:scale(.97);}
 .btn-p:disabled{opacity:.55;cursor:not-allowed;transform:none;}
@@ -80,7 +88,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .ib{width:35px;height:35px;border-radius:11px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:var(--tr);background:var(--sf2);color:var(--txt);border:1px solid var(--br);}
 .ib:active{transform:scale(.92);}
 .sw{position:relative;}
-.si{position:absolute;right:13px;top:50%;transform:translateY(-50%);color:var(--txt3);font-size:13px;}
+.si{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--txt3);font-size:13px;}
 .sb{width:100%;padding:11px 13px 11px 36px;background:var(--sf2);border:1.5px solid var(--br);border-radius:50px;font-size:13px;outline:none;font-family:inherit;color:var(--txt);transition:var(--tr);}
 .sb:focus{border-color:var(--p);background:var(--sf);}
 .sb::placeholder{color:var(--txt3);}
@@ -164,10 +172,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .stv{font-size:14px;font-weight:900;color:var(--txt);}
 .stl{font-size:10px;color:var(--txt3);font-weight:700;}
 
-/* ─── PRODUCT GRID - SELECT BUTTON ─── */
+/* ─── PRODUCT GRID ─── */
 .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 13px;}
-.pgc{background:var(--sf);backdrop-filter:var(--bl2);border:1.5px solid var(--br);border-radius:var(--rs);overflow:hidden;box-shadow:var(--sh2);cursor:pointer;transition:var(--tr);position:relative;}
-.pgc.selected{border-color:var(--ok);background:var(--sf);box-shadow:0 0 0 2px rgba(0,184,148,.2);}
+.pgc{background:var(--sf);backdrop-filter:var(--bl2);border:1px solid var(--br);border-radius:var(--rs);overflow:hidden;box-shadow:var(--sh2);cursor:pointer;transition:var(--tr);}
 .pgc:active{transform:scale(.97);}
 .pgi{width:100%;height:108px;object-fit:cover;}
 .pgb{padding:8px 10px 10px;}
@@ -175,9 +182,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .pgbr{font-size:9px;color:var(--txt3);margin-bottom:3px;}
 .pgr{display:flex;justify-content:space-between;align-items:center;}
 .pgp{color:var(--p);font-weight:900;font-size:13px;}
-.select-btn{width:36px;height:36px;background:var(--ok);border:none;border-radius:8px;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--tr);}
-.select-btn:active{transform:scale(.88);}
-.select-btn.qty-badge{width:auto;padding:4px 8px;font-size:12px;font-weight:900;}
+.pga{width:29px;height:29px;background:var(--pg);border:none;border-radius:8px;color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--tr);}
+.pga:active{transform:scale(.86);}
 
 /* ─── PRODUCT MODAL ─── */
 #prodModal{position:fixed;inset:0;background:var(--bg);z-index:3000;display:none;overflow-y:auto;padding-bottom:100px;}
@@ -199,18 +205,26 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .heart-btn.liked{color:#e74c3c;}
 .heart-btn:not(.liked){color:#ccc;}
 
-/* ─── CHECKOUT ─── */
-#checkoutView{display:none;position:fixed;inset:0;background:var(--bg);z-index:2500;overflow-y:auto;padding-bottom:80px;}
-.co-hdr{background:var(--pg);color:#fff;padding:17px 14px;font-size:18px;font-weight:900;}
-.co-item{background:var(--sf);backdrop-filter:var(--bl2);border:1px solid var(--br);border-radius:var(--rs);margin:0 13px 9px;padding:11px;display:flex;align-items:center;gap:10px;transition:var(--tr);}
-.coim{width:56px;height:56px;border-radius:11px;object-fit:cover;flex-shrink:0;}
-.co-sum{background:var(--sf);backdrop-filter:var(--bl);border:1px solid var(--br);margin:0 13px;border-radius:var(--r);padding:17px;box-shadow:var(--sh2);}
-.co-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--br);font-size:13px;color:var(--txt2);}
-.co-row:last-child{border:none;padding-top:11px;}
-.co-total{font-size:18px;font-weight:900;background:var(--pg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.co-input{width:100%;padding:11px 13px;margin:7px 0 13px;border:1.5px solid var(--br);border-radius:var(--rs);font-size:13px;background:var(--sf2);color:var(--txt);outline:none;font-family:inherit;}
-.co-input:focus{border-color:var(--p);}
-.co-input::placeholder{color:var(--txt3);}
+/* ─── CART ─── */
+.cart-hdr{padding:18px 14px 14px;background:var(--pg);color:#fff;}
+.cit{background:var(--sf);backdrop-filter:var(--bl2);border:1px solid var(--br);border-radius:var(--rs);margin:0 13px 9px;padding:11px;display:flex;align-items:center;gap:10px;transition:var(--tr);}
+.citim{width:56px;height:56px;border-radius:11px;object-fit:cover;flex-shrink:0;}
+.qmr{display:flex;align-items:center;gap:6px;margin-top:4px;}
+.qmb{width:26px;height:26px;border-radius:7px;border:none;background:rgba(188,0,0,.1);color:var(--p);font-size:14px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.qmb:active{transform:scale(.88);}
+.delb{background:rgba(188,0,0,.08);color:var(--p);border:none;width:30px;height:30px;border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;}
+.csum{background:var(--sf);backdrop-filter:var(--bl);border:1px solid var(--br);margin:0 13px;border-radius:var(--r);padding:17px;box-shadow:var(--sh2);}
+.sr{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--br);font-size:13px;color:var(--txt2);}
+.sr:last-child{border:none;padding-top:11px;}
+.srtot{font-size:18px;font-weight:900;background:var(--pg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.lmi{width:100%;padding:11px 13px;margin:7px 0 13px;border:1.5px solid var(--br);border-radius:var(--rs);font-size:13px;background:var(--sf2);color:var(--txt);outline:none;font-family:inherit;}
+.lmi:focus{border-color:var(--p);}
+.lmi::placeholder{color:var(--txt3);}
+/* promo input */
+.promo-row{display:flex;gap:7px;margin-bottom:10px;}
+.promo-row input{flex:1;padding:10px 13px;border:1.5px solid var(--br);border-radius:var(--rs);font-size:13px;background:var(--sf2);color:var(--txt);outline:none;font-family:inherit;}
+.promo-row input::placeholder{color:var(--txt3);}
+.promo-row button{padding:10px 14px;background:var(--pg);border:none;border-radius:var(--rs);color:#fff;font-weight:900;font-size:12px;cursor:pointer;white-space:nowrap;}
 
 /* ─── PAYMENT ─── */
 #payOv{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:4000;display:none;align-items:flex-end;backdrop-filter:blur(6px);}
@@ -251,12 +265,23 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .mri{width:37px;height:37px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
 .bv{background:rgba(0,184,148,.14);color:var(--ok);padding:3px 9px;border-radius:20px;font-size:10px;font-weight:900;display:inline-flex;align-items:center;gap:3px;}
 .buv{background:rgba(231,76,60,.1);color:#e74c3c;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:900;display:inline-flex;align-items:center;gap:3px;}
+.kycc{background:var(--sf);backdrop-filter:var(--bl2);border:1.5px solid rgba(188,0,0,.14);border-radius:var(--r);padding:17px;margin-bottom:11px;}
+.sellc{background:var(--sf);backdrop-filter:var(--bl2);border:1.5px solid rgba(0,184,148,.18);border-radius:var(--r);padding:17px;margin-bottom:11px;display:none;}
+.fi{width:100%;padding:12px 14px;margin:5px 0;border:1.5px solid var(--br);border-radius:var(--rs);font-size:13px;background:var(--sf2);outline:none;font-family:inherit;color:var(--txt);}
+.fi:focus{border-color:var(--p);}
+.fi::placeholder{color:var(--txt3);}
+
+/* ─── LOYALTY POINTS ─── */
 .pts-card{background:linear-gradient(135deg,#1a1a2e,#2d0808);border-radius:var(--r);padding:18px;margin-bottom:11px;color:#fff;position:relative;overflow:hidden;}
 .pts-card::before{content:'';position:absolute;top:-30%;right:-10%;width:150px;height:150px;background:rgba(188,0,0,.25);border-radius:50%;}
 .pts-val{font-size:36px;font-weight:900;background:var(--pg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 
+/* ─── WISHLIST VIEW ─── */
+#wishView{padding-top:14px;}
+
 /* ─── ORDERS ─── */
 .orc{background:var(--sf);backdrop-filter:var(--bl2);border:1px solid var(--br);border-radius:var(--rs);margin:0 13px 10px;padding:14px;box-shadow:var(--sh2);}
+/* countdown timer */
 .ctimer{display:inline-flex;align-items:center;gap:5px;background:rgba(9,132,227,.1);color:var(--info);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:900;margin-top:6px;}
 
 /* ─── CHAT ─── */
@@ -295,10 +320,6 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .badge{padding:3px 8px;border-radius:7px;font-size:10px;font-weight:900;}
 .bok{background:rgba(0,184,148,.12);color:var(--ok);}
 .bwarn{background:rgba(243,156,18,.12);color:var(--warn);}
-
-/* ─── BANNER ADS ─── */
-.banner-ad{width:100%;height:auto;margin:13px;border-radius:var(--r);overflow:hidden;box-shadow:var(--sh2);cursor:pointer;}
-.banner-ad img{width:100%;display:block;}
 </style>
 </head>
 <body>
@@ -306,6 +327,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 <!-- SKELETON -->
 <div id="skeleton">
   <div class="sk-logo"></div>
+  <div class="sk-b sk-t"></div>
+  <div class="sk-s"></div>
+  <div class="sk-spin"></div>
 </div>
 
 <!-- ONBOARDING -->
@@ -314,8 +338,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
     <div style="flex:1;overflow:hidden;position:relative;">
       <div class="ob-slides" id="obSlides">
         <div class="ob-slide"><div class="ob-icon">🚀</div><div class="ob-title">ፈጣን ዴሊቬሪ</div><div class="ob-desc">ኮምቦልቻ ውስጥ ከ30 ደቂቃ ባነሰ ጊዜ ምርቶችዎ ይደርሳሉ!</div></div>
-        <div class="ob-slide"><div class="ob-icon">🛍️</div><div class="ob-title">ምርቶች ይምረጡ</div><div class="ob-desc">ምግብ፣ ኮስሞቲክስ፣ ኤሌክትሮኒክስ - ምርጥ ምርቶች።</div></div>
-        <div class="ob-slide"><div class="ob-icon">🔒</div><div class="ob-title">ደህንነቱ የተጠበቀ ክፍያ</div><div class="ob-desc">Claude AI ደረሰኞን ያረጋግጣል। ሐሰተኛ ክፍያ አይቻልም!</div></div>
+        <div class="ob-slide"><div class="ob-icon">🛍️</div><div class="ob-title">ምርጥ ሱቆች</div><div class="ob-desc">ምግብ፣ ኮስሞቲክስ፣ ኤሌክትሮኒክስ እና ሌሎች ሱቆች በአንድ ቦታ።</div></div>
+        <div class="ob-slide"><div class="ob-icon">🔒</div><div class="ob-title">ደህንነቱ የተጠበቀ ክፍያ</div><div class="ob-desc">Claude AI ደረሰኞን ያረጋግጣል። ሐሰተኛ ክፍያ አይቻልም!</div></div>
         <div class="ob-slide"><div class="ob-icon">⭐</div><div class="ob-title">Loyalty Points</div><div class="ob-desc">ትዕዛዝ ሲሰጡ ነጥቦች ያሸንፋሉ፣ ቅናሽ ያግኙ!</div></div>
       </div>
     </div>
@@ -333,11 +357,11 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 
 <!-- AUTH -->
 <div id="authView">
-  <div class="auth-bg-wrap"><div class="orb o1"></div><div class="orb o2"></div></div>
+  <div class="auth-bg-wrap"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
   <div class="auth-in">
-    <div class="auth-logo" style="background:linear-gradient(135deg,#bc0000,#e74c3c);display:flex;align-items:center;justify-content:center;font-size:40px;">S</div>
+    <img src="https://i.ibb.co/6cPCXJCx/x.jpg" class="auth-logo" onerror="this.style.background='#bc0000'">
     <div class="auth-brand">Sinq.</div>
-    <div class="auth-sub">ኮምቦልቻ · v4.1 · 2026</div>
+    <div class="auth-sub">ኮምቦልቻ · v4 · 2026</div>
     <div class="glass" style="width:100%;padding:22px;">
       <div class="atabs">
         <button class="atab a" id="tl" onclick="satab('l')">ግባ</button>
@@ -345,13 +369,19 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
       </div>
       <div id="lf">
         <div class="iw"><i class="fa-solid fa-phone ii"></i><input class="ai" id="lph" type="tel" placeholder="📱 09/07..."></div>
+        <div class="ierr" id="lpe">ትክክለኛ ስልክ ይጠቀሙ</div>
         <button class="btn-p" id="lbtn" onclick="doLogin()">ግባ <i class="fa-solid fa-arrow-left"></i></button>
       </div>
       <div id="rf" style="display:none;">
         <div class="iw"><i class="fa-solid fa-user ii"></i><input class="ai" id="rnm" type="text" placeholder="👤 ሙሉ ስምዎ"></div>
+        <div class="ierr" id="rne">ስምዎን ያስገቡ</div>
         <div class="iw"><i class="fa-solid fa-phone ii"></i><input class="ai" id="rph" type="tel" placeholder="📱 09/07..."></div>
+        <div class="ierr" id="rpe">ትክክለኛ ስልክ ይጠቀሙ</div>
+        <label style="font-size:11px;color:var(--txt3);font-weight:700;margin-top:4px;display:block;">የፕሮፋይል ፎቶ</label>
+        <input class="ai" id="rpic" type="file" accept="image/*" style="padding:9px;margin-top:5px;">
         <button class="btn-p" id="rbtn" onclick="doReg()">ተመዝገብ <i class="fa-solid fa-arrow-left"></i></button>
       </div>
+      <div style="text-align:center;margin-top:12px;font-size:10px;color:var(--txt3);"><i class="fa-solid fa-shield-halved"></i> AI Receipt Verified · Sinq v4</div>
     </div>
   </div>
 </div>
@@ -363,32 +393,52 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
       <div class="loc-chip" id="locChip" onclick="doLoc()"><i class="fa-solid fa-location-dot"></i><span id="hLoc">ኮምቦልቻ</span></div>
       <div class="hact">
         <button class="ib" onclick="toggleTheme()" id="thbtn"><i class="fa-solid fa-moon"></i></button>
-        <button class="ib" onclick="switchTab('wishView',document.getElementById('nWish'))"><i class="fa-solid fa-heart"></i></button>
+        <button class="ib" onclick="switchTab('wishView',document.getElementById('nWish'))" title="Wishlist"><i class="fa-solid fa-heart"></i></button>
         <button class="ib" onclick="switchTab('chatView',document.getElementById('nChat'))"><i class="fa-solid fa-comments"></i></button>
       </div>
     </div>
-    <div class="sw"><i class="fa-solid fa-magnifying-glass si"></i><input class="sb" id="sBar" placeholder="ሱቅ ወይም ምርት ይፈልጉ..." oninput="doSearch()"></div>
+    <div class="sw"><i class="fa-solid fa-magnifying-glass si"></i><input class="sb" id="sBar" placeholder="ሱቅ፣ ምርት ወይም ም�ቢ ይፈልጉ..." oninput="doSearch()"></div>
   </div>
 
   <!-- HOME -->
   <div id="homeView" class="vs a">
     <div class="slw"><div class="sls" id="slT">
-      <div class="sli" style="background-image:url('https://i.ibb.co/0ybVXW5Z/x.jpg')"><div class="slov"><div style="color:rgba(255,255,255,.8);font-size:11px;font-weight:700;">✨ ምርጥ ሰነዓ</div><div style="color:#fff;font-size:19px;font-weight:900;margin-top:1px;">በ 30 ደቂቃ</div></div></div>
-      <div class="sli" style="background-image:url('https://i.ibb.co/twDFKCV5/x.jpg')"><div class="slov"><div style="color:rgba(255,255,255,.8);font-size:11px;font-weight:700;">🍕 ምግብ</div><div style="color:#fff;font-size:19px;font-weight:900;margin-top:1px;">ትኩስ ምግቦች</div></div></div>
-      <div class="sli" style="background-image:url('https://i.ibb.co/rKpv23Ht/x.jpg')"><div class="slov"><div style="color:rgba(255,255,255,.8);font-size:11px;font-weight:700;">💄 ውበት</div><div style="color:#fff;font-size:19px;font-weight:900;margin-top:1px;">Asli Cosmetics</div></div></div>
-      <div class="sli" style="background-image:url('https://i.ibb.co/rgQRhCn/x.jpg')"><div class="slov"><div style="color:rgba(255,255,255,.8);font-size:11px;font-weight:700;">📱 ቴክ</div><div style="color:#fff;font-size:19px;font-weight:900;margin-top:1px;">ኤሌክትሮኒክስ</div></div></div>
-      <div class="sli" style="background-image:url('https://i.ibb.co/spyyPkZF/x.jpg')"><div class="slov"><div style="color:rgba(255,255,255,.8);font-size:11px;font-weight:700;">🎁 ልዩ</div><div style="color:#fff;font-size:19px;font-weight:900;margin-top:1px;">ገበያ ተገዛ</div></div></div>
+      <div class="sli" style="background-image:url('https://i.ibb.co/6cPCXJCx/x.jpg')"><div class="slov"><div style="color:rgba(255,255,255,.8);font-size:11px;font-weight:700;">✨ ምርጥ ምርቶች</div><div style="color:#fff;font-size:19px;font-weight:900;margin-top:1px;">Asli Cosmetics 💄</div></div></div>
+      <div class="sli" style="background-image:url('https://i.ibb.co/N2R1ChwM/x.jpg')"><div class="slov"><div style="color:rgba(255,255,255,.8);font-size:11px;font-weight:700;">🍕 ልዩ ምግቦች</div><div style="color:#fff;font-size:19px;font-weight:900;margin-top:1px;">አሞር ካፌ</div></div></div>
+      <div class="sli" style="background-image:url('https://i.ibb.co/b5xn5p7w/x.jpg')"><div class="slov"><div style="color:rgba(255,255,255,.8);font-size:11px;font-weight:700;">🛍️ ነፃ ያስተዋውቁ</div><div style="color:#fff;font-size:19px;font-weight:900;margin-top:1px;">ሲንቅ ነፃ ገበያ</div></div></div>
     </div>
-    <div class="sl-dots" id="slD"><div class="d a"></div><div class="d"></div><div class="d"></div><div class="d"></div><div class="d"></div></div></div>
-    
-    <div class="promo"><div class="pic">🚀</div><div><div style="font-weight:900;font-size:13px;">ፈጣን ዴሊቬሪ — 30 ደቂቃ!</div><div style="font-size:11px;opacity:.85;">Sinq v4.1 · AI Verified</div></div></div>
-    
+    <div class="sl-dots" id="slD"><div class="d a"></div><div class="d"></div><div class="d"></div></div></div>
+    <div class="promo"><div class="pic">🚀</div><div><div style="font-weight:900;font-size:13px;">ፈጣን ዴሊቬሪ — 30 ደቂቃ!</div><div style="font-size:11px;opacity:.85;">Sinq v4 · AI Verified Payments</div></div><i class="fa-solid fa-chevron-left" style="margin-right:auto;opacity:.45;font-size:11px;"></i></div>
     <div class="cats" id="catRow"></div>
-    <div class="st"><h3 id="hotTitle">🔥 ተወዳጅ ምርቶች</h3></div>
+    <div class="st"><h3 id="hotTitle">🔥 የሳምንቱ ምርጥ ሽያጮች</h3></div>
     <div class="hscr" id="hotRow"></div>
-    <div class="st"><h3 id="gridTitle">ሁሉም ሱቆች</h3><span onclick="setCat('ሁሉንም',null)">ሁሉንም</span></div>
+    <div class="st"><h3 id="gridTitle">ሁሉም ሱቆች</h3><span onclick="setCat('ሁሉንም',null)">ሁሉንም እይ</span></div>
     <div class="sgrid" id="shopGrid"></div>
     <div id="srWrap" style="display:none;padding:0 13px;"></div>
+  </div>
+
+  <!-- CART -->
+  <div id="cartView" class="vs">
+    <div class="cart-hdr"><div style="font-size:20px;font-weight:900;">ቅርጫት 🛒</div><div style="font-size:12px;opacity:.85;margin-top:2px;" id="cHdrC">0 እቃዎች</div></div>
+    <div style="height:11px;"></div>
+    <div id="cList"></div>
+    <div id="cSumWrap" style="display:none;padding:0 13px 13px;">
+      <div class="csum">
+        <label style="font-size:11px;font-weight:900;color:var(--p);">🎟 ፕሮሞ ኮድ</label>
+        <div class="promo-row">
+          <input type="text" id="promoInp" placeholder="ኮድ ያስገቡ...">
+          <button onclick="applyPromo()">ተጠቀም</button>
+        </div>
+        <label style="font-size:11px;font-weight:900;color:var(--p);">📍 Landmark *</label>
+        <input type="text" id="lmInp" class="lmi" placeholder="ምሳሌ፡ አዋሽ ባንክ ፊት ለፊት...">
+        <div class="sr"><span>የእቃ ሂሳብ</span><span id="cSub">0 ብር</span></div>
+        <div class="sr"><span>ቅናሽ</span><span id="cDisc" style="color:var(--ok);">- 0 ብር</span></div>
+        <div class="sr"><span>ዴሊቬሪ (<span id="dkm">?</span> ኪ.ሜ)</span><span id="cDel">50 ብር</span></div>
+        <div class="sr"><span style="font-weight:900;color:var(--txt);">ጠቅላላ</span><span class="srtot" id="cGrand">50 ብር</span></div>
+      </div>
+      <button class="btn-p" style="margin-top:11px;" onclick="openPay()">Checkout · ይክፈሉ <i class="fa-solid fa-arrow-left"></i></button>
+    </div>
+    <div id="cEmpty" class="empty"><div class="ei">🛒</div><p>ቅርጫትዎ ባዶ ነው</p></div>
   </div>
 
   <!-- WISHLIST -->
@@ -406,7 +456,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 
   <!-- CHAT -->
   <div id="chatView" class="vs">
-    <div class="chdr"><div style="font-size:17px;font-weight:900;">Sinq AI ድጋፍ 💬</div><div style="font-size:11px;opacity:.8;margin-top:2px;">24/7 · Claude AI</div></div>
+    <div class="chdr"><div style="font-size:17px;font-weight:900;">Sinq AI ድጋፍ 💬</div><div style="font-size:11px;opacity:.8;margin-top:2px;">24/7 · Claude AI Powered</div></div>
     <div class="mwrap" id="msgsWrap"></div>
     <div class="cinr">
       <input class="cinp" id="chatInp" placeholder="መልዕክት ይፃፉ..." onkeydown="if(event.key==='Enter')sendChat()">
@@ -418,42 +468,71 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
   <div id="profileView" class="vs">
     <div class="profhero">
       <div style="display:flex;align-items:center;gap:12px;position:relative;z-index:2;">
-        <img id="avImg" class="pav" src="https://via.placeholder.com/74/bc0000/fff?text=S">
+        <div style="position:relative;cursor:pointer;" onclick="document.getElementById('ppic').click()">
+          <img id="avImg" class="pav" src="https://via.placeholder.com/74/bc0000/fff?text=S">
+          <div style="position:absolute;bottom:-2px;right:-2px;background:rgba(255,255,255,.88);color:var(--p);width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;box-shadow:0 2px 5px rgba(0,0,0,.2);"><i class="fa-solid fa-pen"></i></div>
+        </div>
+        <input type="file" id="ppic" accept="image/*" style="display:none;" onchange="chgPic(event)">
         <div>
           <div style="color:#fff;font-size:18px;font-weight:900;" id="pName">ስምዎ</div>
-          <div id="vBadge" class="buv"><i class="fa-solid fa-circle-xmark"></i> ያልተረጋገጠ</div>
+          <div id="vBadge" class="buv" style="margin-top:3px;"><i class="fa-solid fa-circle-xmark"></i> ያልተረጋገጠ</div>
         </div>
       </div>
     </div>
     <div class="pcards">
+      <!-- Loyalty Points -->
       <div class="pts-card">
         <div style="font-size:12px;font-weight:700;opacity:.7;margin-bottom:4px;position:relative;z-index:2;">⭐ Loyalty Points</div>
         <div class="pts-val" id="ptsVal">0</div>
-        <div style="font-size:11px;opacity:.6;margin-top:4px;position:relative;z-index:2;">ትዕዛዝ ሲሰጡ ነጥቦች ያሸንፋሉ</div>
+        <div style="font-size:11px;opacity:.6;margin-top:4px;position:relative;z-index:2;">ትዕዛዝ ሲሰጡ ነጥቦች ያሸንፋሉ · 100 pts = 10 ብር ቅናሽ</div>
       </div>
+      <!-- Stats -->
       <div class="sc">
         <div class="sg">
           <div class="sbox"><div style="font-size:15px;font-weight:900;color:var(--txt);" id="stOrd">0</div><div style="font-size:10px;color:var(--txt3);font-weight:700;">ትዕዛዞች</div></div>
-          <div class="sbox"><div style="font-size:15px;font-weight:900;color:var(--txt);">⭐ 4.9</div><div style="font-size:10px;color:var(--txt3);font-weight:700;">ደረጃ</div></div>
+          <div class="sbox"><div style="font-size:15px;font-weight:900;color:var(--txt);">⭐ 4.8</div><div style="font-size:10px;color:var(--txt3);font-weight:700;">ደረጃ</div></div>
           <div class="sbox"><div style="font-size:15px;font-weight:900;color:var(--txt);" id="stWish">0</div><div style="font-size:10px;color:var(--txt3);font-weight:700;">Wishlist</div></div>
         </div>
       </div>
       <div class="mc">
-        <div class="mr" onclick="doLoc()"><div class="mri" style="background:rgba(52,152,219,.12);color:#3498db;"><i class="fa-solid fa-location-dot"></i></div><div style="flex:1;"><div style="font-weight:900;font-size:13px;color:var(--txt);">ሎኬሽን</div><div style="font-size:10px;color:var(--txt3);">GPS ተምዝግብ</div></div><i class="fa-solid fa-chevron-left" style="color:var(--txt3);"></i></div>
-        <div class="mr" onclick="toggleTheme()"><div class="mri" style="background:rgba(241,196,15,.12);color:#a07700;"><i class="fa-solid fa-circle-half-stroke"></i></div><div style="flex:1;"><div style="font-weight:900;font-size:13px;color:var(--txt);">Theme</div><div style="font-size:10px;color:var(--txt3);" id="thlbl">Light</div></div></div>
-        <div class="mr" onclick="shareApp()"><div class="mri" style="background:rgba(9,132,227,.12);color:var(--info);"><i class="fa-solid fa-share-nodes"></i></div><div style="flex:1;"><div style="font-weight:900;font-size:13px;color:var(--txt);">Sinq ላክ</div><div style="font-size:10px;color:var(--txt3);">ጓደኞች</div></div></div>
+        <div class="mr" onclick="doLoc()"><div class="mri" style="background:rgba(52,152,219,.12);color:#3498db;"><i class="fa-solid fa-location-dot"></i></div><div style="flex:1;"><div style="font-weight:900;font-size:13px;color:var(--txt);">የማድረሻ ቦታ</div><div style="font-size:10px;color:var(--txt3);">GPS</div></div><i class="fa-solid fa-chevron-left" style="color:var(--txt3);font-size:11px;"></i></div>
+        <div class="mr" onclick="switchTab('ordersView',document.getElementById('nOrd'))"><div class="mri" style="background:rgba(0,184,148,.12);color:var(--ok);"><i class="fa-solid fa-box"></i></div><div style="flex:1;"><div style="font-weight:900;font-size:13px;color:var(--txt);">ትዕዛዞቼ</div><div style="font-size:10px;color:var(--txt3);">ታሪክ</div></div><i class="fa-solid fa-chevron-left" style="color:var(--txt3);font-size:11px;"></i></div>
+        <div class="mr" onclick="switchTab('wishView',document.getElementById('nWish'))"><div class="mri" style="background:rgba(231,76,60,.1);color:#e74c3c;"><i class="fa-solid fa-heart"></i></div><div style="flex:1;"><div style="font-weight:900;font-size:13px;color:var(--txt);">Wishlist</div><div style="font-size:10px;color:var(--txt3);" id="wishCount">0 ምርቶች</div></div><i class="fa-solid fa-chevron-left" style="color:var(--txt3);font-size:11px;"></i></div>
+        <div class="mr" onclick="toggleTheme()"><div class="mri" style="background:rgba(241,196,15,.12);color:#a07700;"><i class="fa-solid fa-circle-half-stroke"></i></div><div style="flex:1;"><div style="font-weight:900;font-size:13px;color:var(--txt);">Dark / Light Mode</div><div style="font-size:10px;color:var(--txt3);" id="thlbl">Light</div></div></div>
+        <div class="mr" onclick="shareApp()"><div class="mri" style="background:rgba(9,132,227,.12);color:var(--info);"><i class="fa-solid fa-share-nodes"></i></div><div style="flex:1;"><div style="font-weight:900;font-size:13px;color:var(--txt);">ሲንቅ ለጓደኞች ላክ</div><div style="font-size:10px;color:var(--txt3);">Referral</div></div><i class="fa-solid fa-chevron-left" style="color:var(--txt3);font-size:11px;"></i></div>
       </div>
-      <button class="btn-g" onclick="doLogout()" style="margin-bottom:13px;"><i class="fa-solid fa-right-from-bracket"></i> ውጣ</button>
+      <!-- KYC -->
+      <div class="kycc" id="kycBox">
+        <div style="font-size:14px;font-weight:900;color:var(--p);margin-bottom:4px;"><i class="fa-solid fa-shield-halved"></i> KYC — የሻጭ ማረጋገጫ</div>
+        <div style="font-size:11px;color:var(--txt2);margin-bottom:11px;">እቃ ለመሸጥ መታወቂያዎን ያስገቡ</div>
+        <input type="file" id="idPh" class="fi" accept="image/*" style="padding:9px;">
+        <button class="btn-p" id="kycBtn" onclick="sendKYC()">ለማረጋገጫ ላክ</button>
+        <div class="div"></div>
+        <div style="display:flex;gap:7px;">
+          <input type="password" id="kycCode" class="fi" style="margin:0;flex:1;" placeholder="ማረጋገጫ ኮድ">
+          <button class="btn-p" style="width:auto;margin:0;padding:12px 15px;" onclick="checkKYC()">አረጋግጥ</button>
+        </div>
+      </div>
+      <!-- Seller -->
+      <div class="sellc" id="sellBox">
+        <div style="font-size:14px;font-weight:900;color:var(--ok);margin-bottom:10px;"><i class="fa-solid fa-store"></i> የሻጭ ዳሽቦርድ</div>
+        <input type="file" id="sPh" class="fi" accept="image/*" style="padding:9px;">
+        <input type="text" id="sNm" class="fi" placeholder="የእቃው ስም">
+        <input type="number" id="sPr" class="fi" placeholder="ዋጋ (ብር)">
+        <input type="text" id="sDe" class="fi" placeholder="አጭር መግለጫ">
+        <button class="btn-p" style="background:linear-gradient(135deg,var(--ok),#00a381);" id="sellBtn" onclick="uploadProd()"><i class="fa-solid fa-upload"></i> እቃ ለባያ ላይ አውጣ</button>
+      </div>
+      <button class="btn-g" onclick="doLogout()" style="margin-bottom:13px;"><i class="fa-solid fa-right-from-bracket"></i> ከአካውንት ውጣ</button>
     </div>
   </div>
 
   <!-- BOTTOM NAV -->
   <div class="bnav">
     <div class="ni a" id="nHome" onclick="switchTab('homeView',this)"><div class="niw"><i class="fa-solid fa-house"></i></div><span>ዋና</span></div>
-    <div class="ni" id="nCart" onclick="switchTab('checkoutView',this)"><div class="niw"><i class="fa-solid fa-bag-shopping"></i></div><span>ምርጫ</span></div>
+    <div class="ni" id="nCart" onclick="switchTab('cartView',this)"><div class="niw" style="position:relative;"><i class="fa-solid fa-basket-shopping"></i><span class="cb" id="cBadge">0</span></div><span>ቅርጫት</span></div>
     <div class="ni" id="nWish" onclick="switchTab('wishView',this)"><div class="niw"><i class="fa-solid fa-heart"></i></div><span>Wishlist</span></div>
     <div class="ni" id="nOrd" onclick="switchTab('ordersView',this)"><div class="niw"><i class="fa-solid fa-box-open"></i></div><span>ትዕዛዝ</span></div>
-    <div class="ni" id="nProf" onclick="switchTab('profileView',this)"><div class="niw"><i class="fa-solid fa-user"></i></div><span>Profile</span></div>
+    <div class="ni" id="nChat" onclick="switchTab('chatView',this)"><div class="niw"><i class="fa-solid fa-comments"></i></div><span>Chat</span></div>
   </div>
 </div>
 
@@ -462,12 +541,13 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
   <div class="shhero">
     <img id="shBnr" src="" style="width:100%;height:100%;object-fit:cover;">
     <div class="shheroo"></div>
-    <div class="bbtn" onclick="closeShop()"><i class="fa-solid fa-arrow-right"></i></div>
+    <div class="bbtn" onclick="document.getElementById('shopView').style.display='none'"><i class="fa-solid fa-arrow-right"></i></div>
     <img id="shLgo" class="shlogob" src="">
   </div>
   <div class="shinf">
     <div style="font-size:18px;font-weight:900;color:var(--txt);" id="shNm"></div>
     <div style="font-size:12px;color:var(--txt3);margin-top:2px;" id="shDsc"></div>
+    <!-- Open/Closed badge -->
     <div id="shStatus" style="margin-top:6px;"></div>
     <div class="shsts">
       <div style="text-align:center;"><div class="stv" id="shR"></div><div class="stl">Rating</div></div>
@@ -475,13 +555,13 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
       <div style="text-align:center;"><div class="stv" id="shCt"></div><div class="stl">ምርቶች</div></div>
     </div>
   </div>
-  <div style="padding:4px 13px 11px;font-weight:900;font-size:14px;color:var(--txt);margin-top:7px;">ምርቶች - በ🟢 ይምረጡ</div>
+  <div style="padding:4px 13px 11px;font-weight:900;font-size:14px;color:var(--txt);margin-top:7px;">ምርቶች</div>
   <div class="pgrid" id="shPG"></div>
 </div>
 
 <!-- PRODUCT MODAL -->
 <div id="prodModal">
-  <div class="bbtn" style="position:fixed;top:14px;right:14px;z-index:10;" onclick="closeProd()"><i class="fa-solid fa-arrow-right"></i></div>
+  <div class="bbtn" style="position:fixed;top:14px;right:14px;z-index:10;" onclick="document.getElementById('prodModal').style.display='none'"><i class="fa-solid fa-arrow-right"></i></div>
   <div style="position:relative;">
     <img id="pmImg" class="pmi">
     <button class="heart-btn" id="pmHeart" onclick="toggleWish()"><i class="fa-solid fa-heart"></i></button>
@@ -493,79 +573,74 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
       <div class="pmbr" id="pmBrand"></div>
       <div class="pmd" id="pmDesc"></div>
       <div class="pmp" id="pmPrice"></div>
+      <!-- Star Rating -->
+      <div id="prodRating" style="margin-bottom:8px;font-size:12px;color:var(--txt3);"></div>
       <div class="qr">
         <button class="qb" onclick="chgQ(-1)">－</button>
         <div class="qn" id="qNum">1</div>
         <button class="qb" onclick="chgQ(1)">＋</button>
       </div>
-      <button class="btn-p" style="margin-top:11px;" onclick="addToCheckout()">ወደ ምርጫ ጨምር 🛒</button>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px;">
+        <button class="btn-p" id="buyNow" style="margin:0;">ገዝ አሁን 💳</button>
+        <button id="addCart" style="background:rgba(188,0,0,.08);color:var(--p);border:1.5px solid rgba(188,0,0,.2);padding:14px;border-radius:var(--rs);font-weight:900;font-size:14px;cursor:pointer;font-family:inherit;">🛒 ቅርጫት</button>
+      </div>
     </div>
   </div>
-</div>
-
-<!-- CHECKOUT VIEW -->
-<div id="checkoutView">
-  <div class="co-hdr">ምርጫዎ 🛍</div>
-  <div id="coList"></div>
-  <div id="coSumWrap" style="display:none;padding:0 13px 13px;">
-    <div class="co-sum">
-      <div class="co-row"><span>የእቃ ሂሳብ</span><span id="coSub">0 ብር</span></div>
-      <div class="co-row"><span>ዴሊቬሪ</span><span id="coDel">50 ብር</span></div>
-      <div class="co-row"><span style="font-weight:900;color:var(--txt);">ጠቅላላ</span><span class="co-total" id="coGrand">50 ብር</span></div>
-    </div>
-    <input type="text" id="landmarkInp" class="co-input" placeholder="📍 Landmark (ምሳሌ፡ አዋሽ ባንክ ፊት)">
-    <button class="btn-p" onclick="openPayment()">ክፍያ ዘዴ ይምረጡ 💳</button>
-  </div>
-  <div id="coEmpty" class="empty" style="display:none;"><div class="ei">🛍</div><p>ምርት ይምረጡ</p></div>
 </div>
 
 <!-- PAYMENT -->
-<div id="payOv" onclick="if(event.target===this)closePayment()">
+<div id="payOv" onclick="if(event.target===this)closePay()">
   <div class="paysh">
     <div class="phan"></div>
     <div id="ps1">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
-        <div style="font-size:17px;font-weight:900;color:var(--txt);">ክፍያ ዘዴ</div>
-        <div onclick="closePayment()" style="cursor:pointer;background:var(--sf2);width:31px;height:31px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--txt);"><i class="fa-solid fa-xmark"></i></div>
+        <div style="font-size:17px;font-weight:900;color:var(--txt);">ክፍያ ምርጫ</div>
+        <div onclick="closePay()" style="cursor:pointer;background:var(--sf2);width:31px;height:31px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--txt);"><i class="fa-solid fa-xmark"></i></div>
       </div>
       <div style="background:rgba(188,0,0,.06);border-radius:var(--rs);padding:12px 14px;margin-bottom:14px;display:flex;justify-content:space-between;font-weight:900;border:1px solid rgba(188,0,0,.1);">
         <span style="color:var(--txt2);">ጠቅላላ</span>
         <span style="font-size:16px;background:var(--pg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;" id="pTot">0 ብር</span>
       </div>
-      <div class="popt" onclick="showPayStep('Telebirr','0969106073')">
+      <div class="popt" onclick="showPay('Telebirr','0969106073')">
         <div class="poi" style="background:rgba(0,136,204,.12);color:#0088cc;"><i class="fa-solid fa-mobile-screen-button"></i></div>
         <div style="flex:1;"><div style="font-size:14px;">Telebirr</div><div style="font-size:11px;color:var(--txt3);font-weight:700;">0969106073</div></div>
         <i class="fa-solid fa-chevron-left" style="color:var(--txt3);font-size:11px;"></i>
       </div>
-      <div class="popt" onclick="showPayStep('CBE Birr','1000562339427')">
+      <div class="popt" onclick="showPay('CBE Birr','1000562339427')">
         <div class="poi" style="background:rgba(142,68,173,.12);color:#8e44ad;"><i class="fa-solid fa-building-columns"></i></div>
         <div style="flex:1;"><div style="font-size:14px;">CBE Birr</div><div style="font-size:11px;color:var(--txt3);font-weight:700;">1000562339427</div></div>
         <i class="fa-solid fa-chevron-left" style="color:var(--txt3);font-size:11px;"></i>
       </div>
     </div>
-    <!-- STEP 2: Receipt Upload -->
+    <!-- STEP 2: Receipt Upload + Claude AI Verify -->
     <div id="ps2" style="display:none;">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:15px;cursor:pointer;color:var(--p);font-weight:900;" onclick="backPayment()"><i class="fa-solid fa-arrow-right"></i> ወደ ኋላ</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:15px;cursor:pointer;color:var(--p);font-weight:900;" onclick="backPay()"><i class="fa-solid fa-arrow-right"></i> ወደ ኋላ</div>
       <h3 style="text-align:center;margin-bottom:4px;color:var(--txt);">በ <span id="pMeth"></span> ይክፈሉ</h3>
-      <p style="text-align:center;font-size:12px;color:var(--txt3);margin-bottom:11px;">ጠቅላላ <b style="color:var(--p);" id="pTot2"></b></p>
+      <p style="text-align:center;font-size:12px;color:var(--txt3);margin-bottom:11px;">ጠቅላላ <b style="color:var(--p);" id="pTot2"></b> ወደ ዚህ አካውንት ያስተላልፉ</p>
       <div style="background:var(--sf2);padding:14px;border-radius:var(--rs);border:1px solid var(--br);">
-        <div style="font-size:12px;color:var(--txt2);">አካውንት: <b>Sinq Delivery</b></div>
-        <div class="accn"><span id="pAcc"></span><button class="cpb" onclick="cpAcc()"><i class="fa-solid fa-copy"></i></button></div>
+        <div style="font-size:12px;color:var(--txt2);">አካውንት ስም: <b>Aymen Kemal</b></div>
+        <div class="accn"><span id="pAcc"></span><button class="cpb" onclick="cpAcc()"><i class="fa-solid fa-copy"></i> ኮፒ</button></div>
       </div>
+
+      <!-- AI RECEIPT VERIFICATION ZONE -->
       <div style="margin-top:14px;">
-        <div style="font-size:12px;font-weight:900;color:var(--p);margin-bottom:6px;"><i class="fa-solid fa-robot"></i> ደረሰኝ ያያይዙ</div>
+        <div style="font-size:12px;font-weight:900;color:var(--p);margin-bottom:6px;"><i class="fa-solid fa-robot"></i> Claude AI ደረሰኝ ማረጋገጫ</div>
         <div class="upz" onclick="document.getElementById('ssIn').click()">
           <input type="file" id="ssIn" accept="image/*" onchange="onSSPick(event)">
           <div id="ssPrev">
             <i class="fa-solid fa-cloud-arrow-up" style="font-size:26px;color:var(--txt3);margin-bottom:7px;display:block;"></i>
-            <div style="font-weight:700;color:var(--txt3);font-size:12px;">ደረሰኝ ይያይዙ</div>
+            <div style="font-weight:700;color:var(--txt3);font-size:12px;">የደረሰኝ ፎቶ ያያይዙ (Screenshot)</div>
+            <div style="font-size:10px;color:var(--txt3);margin-top:4px;">CBE · Telebirr · Dashen · Awash</div>
           </div>
         </div>
+        <!-- Status Box -->
         <div id="verifyStatus" class="verify-status"></div>
       </div>
+
       <button class="btn-p" id="confBtn" onclick="placeOrder()" disabled style="opacity:.5;">
         <i class="fa-solid fa-shield-halved"></i> አረጋግጥ እና እዘዝ
       </button>
+      <div style="font-size:10px;text-align:center;color:var(--txt3);margin-top:7px;">ደረሰኝዎ Claude AI ካረጋገጠ በኋላ ትዕዛዝ ይላካል</div>
     </div>
   </div>
 </div>
@@ -574,6 +649,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 <div id="rateModal">
   <div class="rate-card">
     <div style="font-size:16px;font-weight:900;text-align:center;color:var(--txt);">ትዕዛዙን ይገምግሙ ⭐</div>
+    <div style="font-size:12px;text-align:center;color:var(--txt3);margin-top:4px;" id="rateOrderId"></div>
     <div class="stars" id="stars">
       <span class="star" onclick="setStar(1)">★</span>
       <span class="star" onclick="setStar(2)">★</span>
@@ -592,22 +668,35 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 <div id="toast"></div>
 
 <script>
+/* ══════════════════════════════════════
+   SINQ v4 — AI Receipt Verified
+══════════════════════════════════════ */
 const tg=window.Telegram?.WebApp||{expand:()=>{},HapticFeedback:{impactOccurred:()=>{}},initDataUnsafe:{user:{}},close:()=>{}};
 tg.expand();
 
-const CFG={orderBot:"8666783314:AAEzdZ0VOUJ7MFH8-UeT900z-fm80ds7NVk",adminId:"1493452810",KYC:"SINQ2026-YES"};
+const CFG={
+  orderBot:"8666783314:AAEzdZ0VOUJ7MFH8-UeT900z-fm80ds7NVk",
+  sellerBot:"8626862233:AAFEvJNgNTgB1VOCdz9NDE8fQO7UDk-LXXk",
+  regBot:"8763423685:AAGPbYp7YNfSeTp_d49eco86gkx30IyDOxE",
+  adminId:"1493452810",KYC:"SINQ2026-YES"
+};
+const PROMO_CODES={SINQ10:{pct:10,label:"10% ቅናሽ"},SINQ20:{pct:20,label:"20% ቅናሽ"},FREE:{pct:100,del:true,label:"ነፃ ዴሊቨሪ"}};
 const KOMBOLCHA={lat:11.0833,lng:39.7333};
 
-let selectedItems=[],curProd={},curQ=1,payMeth='',payAcc='',curCat='ሁሉንም';
-let delFee=50,discount=0,promoApplied='',lastOrd=0,lastUp=0;
+/* STATE */
+let cart=[],curProd={},curQ=1,payMeth='',payAcc='',curCat='ሁሉንም';
+let lastOrd=0,lastUp=0,delFee=50,discount=0,promoApplied='';
 let orders=JSON.parse(ls('sinq_orders')||'[]');
 let wishlist=JSON.parse(ls('sinq_wish')||'[]');
 let ratings=JSON.parse(ls('sinq_ratings')||'{}');
 let pts=parseInt(ls('sinq_pts')||'0');
 let isDark=ls('sinq_theme')==='dark';
 let chatMsgs=JSON.parse(ls('sinq_chat')||'[]');
-let obIdx=0,slIdx=0,verifyOk=false,verifyData=null,ssFile=null,curRateOrder=null,curStar=0;
+let obIdx=0,slIdx=0;
+let verifyOk=false,verifyData=null,curRateOrder=null,curStar=0;
+let ssFile=null;
 
+/* CATS */
 const CATS=[
   {id:'ሁሉንም',nm:'ሁሉንም',ic:'<i class="fa-solid fa-border-all"></i>'},
   {id:'ምግብ ቤቶች',nm:'ምግብ',ic:'<i class="fa-solid fa-utensils"></i>'},
@@ -616,8 +705,10 @@ const CATS=[
   {id:'ፋርማሲ',nm:'ፋርማሲ',ic:'<i class="fa-solid fa-kit-medical"></i>'},
   {id:'ኮስሞቲክስ',nm:'ኮስሞቲክስ',ic:'<i class="fa-solid fa-wand-sparkles"></i>'},
   {id:'ኤሌክትሮኒክስ',nm:'ኤሌክትሮ',ic:'<i class="fa-solid fa-microchip"></i>'},
+  {id:'ነፃ ገበያ',nm:'ገበያ',ic:'<i class="fa-solid fa-tag"></i>'},
 ];
 
+/* SHOPS */
 const SHOPS=[
   {id:1,name:"አዎርስ ካፌ",cat:"ምግብ ቤቶች",time:"15-30",rating:4.8,desc:"ምርጥ ምግቦች",open:true,
    logo:"https://i.ibb.co/hxpdSjWF/x.jpg",banner:"https://i.ibb.co/spN51pFq/x.jpg",
@@ -632,27 +723,63 @@ const SHOPS=[
           {name:"ሳንድዊች",price:180,img:"https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400",desc:"ልዩ ሳንድዊች",brand:"Amor"}]},
   {id:3,name:"Asli Cosmetics",cat:"ኮስሞቲክስ",time:"10-20",rating:4.9,desc:"ኦርጅናል የውበት ምርቶች",open:true,
    logo:"https://i.ibb.co/B5bKG1yc/x.jpg",banner:"https://i.ibb.co/8nd95GmK/x.jpg",
-   items:[{name:"ሮዝ ሞዴስ",price:100,img:"https://i.ibb.co/fdx1P4vP/x.jpg",desc:"ለሴቶች ንፅህና።",brand:"Rose"},
-          {name:"Dr Rashel Sunscreen",price:650,img:"https://i.ibb.co/HDSbvzRq/x.jpg",desc:"ከፀሐይ ይከላከላል።",brand:"Dr Rashel"},
-          {name:"Duru ሳሙና",price:250,img:"https://i.ibb.co/Z6Vyj3qm/x.jpg",desc:"ደስ ያለ ሳሙና።",brand:"Duru"},
-          {name:"kojie san ሳሙና",price:450,img:"https://i.ibb.co/j7s0C2R/x.jpg",desc:"ቆዳን ያቀልላል።",brand:"Kojie San"},
-          {name:"Dove ሳሙና",price:250,img:"https://i.ibb.co/bjt0S3Gw/x.jpg",desc:"እርጥበት ሳሙና።",brand:"Dove"},
-          {name:"Snail ቅባት",price:350,img:"https://i.ibb.co/xtjvvsrZ/x.jpg",desc:"ቆዳን ያድሳል።",brand:"Snail White"}]},
+   items:[
+    {name:"ሮዝ ሞዴስ",price:100,img:"https://i.ibb.co/fdx1P4vP/x.jpg",desc:"ለሴቶች ንፅህና።",brand:"Rose"},
+    {name:"Acne ሳሙና",price:200,img:"https://i.ibb.co/kstCwspC/x.jpg",desc:"ብጉር ያጠፋል።",brand:"Anti-Acne"},
+    {name:"Dr Rashel Sunscreen",price:650,img:"https://i.ibb.co/HDSbvzRq/x.jpg",desc:"ከፀሐይ ይከላከላል።",brand:"Dr Rashel"},
+    {name:"Duru ሳሙና",price:250,img:"https://i.ibb.co/Z6Vyj3qm/x.jpg",desc:"ደስ ያለ ሳሙና።",brand:"Duru"},
+    {name:"kojie san ሳሙና",price:450,img:"https://i.ibb.co/j7s0C2R/x.jpg",desc:"ቆዳን ያቀልላል።",brand:"Kojie San"},
+    {name:"Dove ሳሙና",price:250,img:"https://i.ibb.co/bjt0S3Gw/x.jpg",desc:"እርጥበት ሳሙና።",brand:"Dove"},
+    {name:"Snail ቅባት",price:350,img:"https://i.ibb.co/xtjvvsrZ/x.jpg",desc:"ቆዳን ያድሳል።",brand:"Snail White"},
+    {name:"Herbolene ቫዝሊን",price:500,img:"https://i.ibb.co/My8MdQYL/x.jpg",desc:"ቆዳ ያለሰልሳል።",brand:"Himalaya"},
+    {name:"Blue magic",price:1000,img:"https://i.ibb.co/XZ5TqD3T/x.jpg",desc:"ደረቅ ፀጉር።",brand:"Blue Magic"},
+    {name:"Louis cardin ሽቶ",price:1800,img:"https://i.ibb.co/B5rRjhv5/x.jpg",desc:"ልዩ ሽቶ።",brand:"Louis Cardin"},
+    {name:"ሸህ ዛይድ ሽቶ",price:700,img:"https://i.ibb.co/2YsTB4K4/x.jpg",desc:"የአረብ ሽቶ።",brand:"Sheikh Zayed"},
+    {name:"eye liner",price:300,img:"https://i.ibb.co/sJ2by5Qk/x.jpg",desc:"ዓይን ያሳምራል።",brand:"Generic"},
+    {name:"You ሽቶ",price:3800,img:"https://i.ibb.co/1GXWqmS2/x.jpg",desc:"ፕሪሚየም ሽቶ።",brand:"You"},
+    {name:"ሊፒስቲክ",price:250,img:"https://i.ibb.co/4RXJtgCG/x.jpg",desc:"ተለያዩ ቀለሞች።",brand:"Generic"},
+    {name:"Niva cream",price:300,img:"https://i.ibb.co/d3BTZbx/x.jpg",desc:"ድርቀት ያቆማል።",brand:"Nivea"},
+    {name:"Cocoa butter",price:550,img:"https://i.ibb.co/WW7crzfF/x.jpg",desc:"ቆዳ ያለሰልሳል።",brand:"Cocoa Butter"},
+    {name:"Honey Scrub",price:400,img:"https://i.ibb.co/JgCmxh7/x.jpg",desc:"ስክራብ።",brand:"Generic"},
+    {name:"Gold skin",price:700,img:"https://i.ibb.co/cKdWM0gK/x.jpg",desc:"ቆዳ ያቀልላል።",brand:"Gold Skin"},
+    {name:"Lipgloss",price:250,img:"https://i.ibb.co/hRSTBzCT/x.jpg",desc:"ከንፈር ያብራል።",brand:"Generic"},
+    {name:"ነሲም ቡኹር",price:1500,img:"https://i.ibb.co/S7Pc5KWJ/x.jpg",desc:"ቤት ያምራል።",brand:"Naseem"},
+    {name:"Colgate",price:200,img:"https://i.ibb.co/84mBrwcD/x.jpg",desc:"ጥርስ ጤና።",brand:"Colgate"},
+    {name:"Amla ቅባት",price:350,img:"https://i.ibb.co/cSwDtvD9/x.jpg",desc:"ፀጉር ያጠቁራል።",brand:"Dabur Amla"},
+    {name:"Capri ጡት መያዣ",price:500,img:"https://i.ibb.co/q8mXy99/x.jpg",desc:"ምቹ መያዣ።",brand:"Capri"},
+    {name:"Powder",price:250,img:"https://i.ibb.co/JFB1ccKW/x.jpg",desc:"ሜካፕ ፓውደር።",brand:"Generic"},
+    {name:"Follow me",price:450,img:"https://i.ibb.co/01jyXLn/x.jpg",desc:"ፀጉር ቅባት።",brand:"Follow Me"},
+    {name:"Kamra ሳምፕል",price:800,img:"https://i.ibb.co/fzRM0G42/x.jpg",desc:"ሽቶ ሳምፕል።",brand:"Kamra"},
+    {name:"ማጂክ ግሎስ",price:250,img:"https://i.ibb.co/zVQ2VdW0/x.jpg",desc:"ማጂክ ሊፕ።",brand:"Generic"},
+    {name:"Taflin ቅባት",price:400,img:"https://i.ibb.co/60FjD8Rt/x.jpg",desc:"ፀጉር ቅባት።",brand:"Taflin"}]},
   {id:4,name:"Kebir Electronics",cat:"ኤሌክትሮኒክስ",time:"20-40",rating:4.5,desc:"ኤሌክትሮኒክ ምርቶች",open:true,
    logo:"https://images.unsplash.com/photo-1518770660439-4636190af475?w=100",banner:"https://i.ibb.co/mCs7DHGq/x.jpg",
    items:[{name:"USB-C Cable",price:180,img:"https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400",desc:"ፈጣን ቻርጂንግ።",brand:"Generic"},
           {name:"Earphone",price:450,img:"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400",desc:"ጥሩ ድምፅ።",brand:"Generic"},
           {name:"Power Bank",price:1200,img:"https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=400",desc:"10000mAh።",brand:"Generic"}]},
+  {id:5,name:"Brothers Electronics",cat:"ኤሌክትሮኒክስ",time:"25-45",rating:4.3,desc:"ስልኮች እና ኤሌክትሮኒክስ",open:false,
+   logo:"https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=100",banner:"https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=700",
+   items:[{name:"Screen Protector",price:120,img:"https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=400",desc:"ስክሪን ጠባቂ።",brand:"Generic"},
+          {name:"Phone Case",price:200,img:"https://images.unsplash.com/photo-1603600218520-7f4c0d2bc8c8?w=400",desc:"ስልክ ቤት።",brand:"Generic"}]},
+  {id:6,name:"Sinq ነፃ ገበያ",cat:"ነፃ ገበያ",time:"በስምምነት",rating:4.2,desc:"ከሰው ለሰው",open:true,
+   logo:"https://i.ibb.co/B2YtjZP8/x.jpg",banner:"https://i.ibb.co/b5xn5p7w/x.jpg",
+   items:[{name:"iPhone 13 Pro",price:65000,img:"https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=400",desc:"256GB ሰማያዊ።",brand:"Apple"},
+          {name:"Samsung Galaxy A54",price:28000,img:"https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400",desc:"128GB ጥቁር።",brand:"Samsung"}]}
 ];
 
+/* ══════ INIT ══════ */
 window.onload=()=>{
   applyTheme();
   setTimeout(()=>{
     document.getElementById('skeleton').classList.add('out');
     if(!ls('sinq_name')){
-      if(!ls('sinq_ob')){document.getElementById('onboard').style.display='block';}
-      else{document.getElementById('authView').style.display='flex';}
-    } else{showApp();}
+      // Show onboarding first time
+      if(!ls('sinq_ob')){
+        document.getElementById('onboard').style.display='block';
+      } else {
+        document.getElementById('authView').style.display='flex';
+      }
+    } else { showApp(); }
   },1600);
 };
 
@@ -664,6 +791,7 @@ function showApp(){
   if(ls('sinq_pic')) document.getElementById('avImg').src=ls('sinq_pic');
   if(ls('sinq_loc')) document.getElementById('hLoc').innerText='✅ ተመዝግቧል';
   if(ls('sinq_del')) delFee=parseInt(ls('sinq_del'));
+  if(ls('sinq_kyc')===btoa(CFG.KYC)) unlockSeller();
   pts=parseInt(ls('sinq_pts')||'0');
   document.getElementById('ptsVal').innerText=pts.toLocaleString();
   document.getElementById('stOrd').innerText=orders.length;
@@ -671,12 +799,13 @@ function showApp(){
   startSlider();
 }
 
-// ─── ONBOARDING ───
+/* ══════ ONBOARDING ══════ */
 function nextOb(){
   obIdx++;
   if(obIdx>=4){skipOnboard();return;}
   document.getElementById('obSlides').style.transform=`translateX(-${obIdx*100}%)`;
   document.querySelectorAll('.ob-dot').forEach((d,i)=>d.classList.toggle('a',i===obIdx));
+  if(obIdx===3) document.getElementById('obNext').innerText='ጀምር!';
 }
 function skipOnboard(){
   lss('sinq_ob','1');
@@ -684,7 +813,7 @@ function skipOnboard(){
   document.getElementById('authView').style.display='flex';
 }
 
-// ─── AUTH ───
+/* ══════ AUTH ══════ */
 function satab(t){
   document.getElementById('lf').style.display=t==='l'?'block':'none';
   document.getElementById('rf').style.display=t==='r'?'block':'none';
@@ -696,34 +825,46 @@ function val(v,t){
   if(t==='ph') return /^(09|07)\d{8}$/.test(v.trim());
   return false;
 }
+function shErr(id,show){const e=document.getElementById(id);if(e)e.style.display=show?'block':'none';}
+function shk(id){const e=document.getElementById(id);if(!e)return;e.classList.remove('err');void e.offsetWidth;e.classList.add('err');}
 
 async function doLogin(){
   const ph=document.getElementById('lph').value.trim();
-  if(!val(ph,'ph')){toast('❌ ትክክለኛ ስልክ ቁጥር ያስገቡ');return;}
+  if(!val(ph,'ph')){shk('lph');shErr('lpe',true);return;}
+  shErr('lpe',false);
   if(ls('sinq_phone')===ph){showApp();return;}
-  toast('❌ ይመዝገቡ');
+  toast('❌ አልተመዘገቡም። ይምዝገቡ።');
 }
-
 async function doReg(){
   const nm=document.getElementById('rnm').value.trim();
   const ph=document.getElementById('rph').value.trim();
-  if(!val(nm,'nm')){toast('❌ ሙሉ ስምዎን ያስገቡ');return;}
-  if(!val(ph,'ph')){toast('❌ ትክክለኛ ስልክ ቁጥር ያስገቡ');return;}
+  let ok=true;
+  if(!val(nm,'nm')){shk('rnm');shErr('rne',true);ok=false;}else shErr('rne',false);
+  if(!val(ph,'ph')){shk('rph');shErr('rpe',true);ok=false;}else shErr('rpe',false);
+  if(!ok) return;
+  const btn=document.getElementById('rbtn'); btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i>'; btn.disabled=true;
   const tgId=tg.initDataUnsafe?.user?.id||'Web_'+Date.now();
-  lss('sinq_name',nm); lss('sinq_phone',ph); lss('sinq_tgid',tgId);
-  showApp();
+  const tgUsr=tg.initDataUnsafe?.user?.username||'Unknown';
+  try{
+    await fetch(`https://api.telegram.org/bot${CFG.regBot}/sendMessage`,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({chat_id:CFG.adminId,text:`🆕 *Sinq v4 ደንበኛ*\n👤 ${nm}\n📱 ${ph}\n🆔 \`${tgId}\``,parse_mode:'Markdown'})});
+    lss('sinq_name',nm); lss('sinq_phone',ph); lss('sinq_tgid',tgId); lss('sinq_tguser',tgUsr);
+    const pic=document.getElementById('rpic').files[0];
+    if(pic){const b=await toB64(pic);lss('sinq_pic',b);}
+    showApp();
+  }catch(e){toast('❌ ኢንተርኔት ያረጋግጡ'); btn.innerHTML='ተመዝገብ'; btn.disabled=false;}
 }
 
-// ─── SLIDER ───
+/* ══════ SLIDER ══════ */
 function startSlider(){
   setInterval(()=>{
-    slIdx=(slIdx+1)%5;
+    slIdx=(slIdx+1)%3;
     document.getElementById('slT').style.transform=`translateX(-${slIdx*100}%)`;
     document.querySelectorAll('.d').forEach((d,i)=>d.classList.toggle('a',i===slIdx));
   },4000);
 }
 
-// ─── CATEGORIES ───
+/* ══════ CATS ══════ */
 function renderCats(){
   document.getElementById('catRow').innerHTML=CATS.map(c=>`
     <div class="cp ${c.id===curCat?'a':''}" onclick="setCat('${c.id}',this)">
@@ -738,7 +879,7 @@ function setCat(id,el){
   renderShops();
 }
 
-// ─── SHOPS ───
+/* ══════ SHOPS ══════ */
 function renderShops(){
   const list=curCat==='ሁሉንም'?SHOPS:SHOPS.filter(s=>s.cat===curCat);
   document.getElementById('gridTitle').innerText=curCat==='ሁሉንም'?'ሁሉም ሱቆች':curCat;
@@ -762,7 +903,7 @@ function shCard(s){return `
     </div>
   </div>`;}
 
-// ─── HOT SELLS ───
+/* ══════ HOT SELLS ══════ */
 function renderHot(){
   let all=[];
   SHOPS.forEach(s=>s.items.forEach(it=>all.push({...it,sn:s.name,sid:s.id})));
@@ -774,7 +915,7 @@ function renderHot(){
     </div>`).join('');
 }
 
-// ─── OPEN SHOP ───
+/* ══════ OPEN SHOP ══════ */
 function openShop(id){
   const s=SHOPS.find(x=>x.id===id);
   document.getElementById('shBnr').src=s.banner;
@@ -785,35 +926,25 @@ function openShop(id){
   document.getElementById('shTm').innerText=s.time;
   document.getElementById('shCt').innerText=s.items.length;
   document.getElementById('shStatus').innerHTML=s.open?
-    '<span style="background:rgba(0,184,148,.12);color:var(--ok);padding:3px 10px;border-radius:20px;font-size:10px;font-weight:900;">● ክፈት ነው</span>':
+    '<span style="background:rgba(0,184,148,.12);color:var(--ok);padding:3px 10px;border-radius:20px;font-size:10px;font-weight:900;">● አሁን ክፈት ነው</span>':
     '<span style="background:rgba(231,76,60,.1);color:#e74c3c;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:900;">● ዘጋ ነው</span>';
   document.getElementById('shPG').innerHTML=s.items.length?s.items.map(it=>`
-    <div class="pgc ${selectedItems.find(si=>si.name===it.name&&si.shop===s.name)?'selected':''}" id="prod_${it.name}">
-      <img src="${it.img}" class="pgi" onerror="this.src='https://via.placeholder.com/150'" onclick='openProdRaw(${JSON.stringify({...it,shop:s.name})})'>
+    <div class="pgc" onclick='openProdRaw(${JSON.stringify({...it,shop:s.name})})'>
+      <img src="${it.img}" class="pgi" onerror="this.src='https://via.placeholder.com/150'">
       <div class="pgb">
         <div class="pgn">${it.name}</div>
         <div class="pgbr">${it.brand||''}</div>
         <div class="pgr">
           <div class="pgp">${it.price.toLocaleString()} ብር</div>
-          <button class="select-btn" onclick='toggleSelect(${JSON.stringify({...it,shop:s.name})})'><i class="fa-solid fa-check"></i></button>
+          <button class="pga" onclick='event.stopPropagation();qAdd(${JSON.stringify({...it,shop:s.name})})'><i class="fa-solid fa-plus"></i></button>
         </div>
       </div>
     </div>`).join(''):'<div style="grid-column:span 2;text-align:center;padding:40px;color:var(--txt3);">ዕቃዎች በቅርቡ</div>';
   document.getElementById('shopView').style.display='block';
   window.scrollTo(0,0);
 }
-function closeShop(){document.getElementById('shopView').style.display='none';}
 
-// ─── TOGGLE SELECT ───
-function toggleSelect(o){
-  const idx=selectedItems.findIndex(si=>si.name===o.name&&si.shop===o.shop);
-  if(idx>=0){selectedItems.splice(idx,1);toast('❌ ወገዱ');}
-  else{selectedItems.push({...o,qty:1});toast('✅ ተጨምሯል');}
-  updateCheckout();
-  document.getElementById('prod_'+o.name).classList.toggle('selected');
-}
-
-// ─── PRODUCT MODAL ───
+/* ══════ PRODUCT MODAL ══════ */
 function openProdRaw(o){
   if(typeof o==='string') try{o=JSON.parse(o);}catch(e){return;}
   curProd=o; curQ=1;
@@ -825,99 +956,53 @@ function openProdRaw(o){
   document.getElementById('pmDesc').innerText=o.desc||'';
   document.getElementById('pmPrice').innerText=o.price.toLocaleString()+' ብር';
   document.getElementById('qNum').innerText='1';
+  // Wishlist heart
   const inW=wishlist.some(w=>w.name===o.name&&w.shop===(o.shop||o.sn));
   document.getElementById('pmHeart').classList.toggle('liked',inW);
+  // Ratings
+  const key=o.name+'|'+(o.shop||o.sn);
+  const r=ratings[key];
+  document.getElementById('prodRating').innerText=r?`⭐ ${r.avg.toFixed(1)} (${r.count} ግምገማ)`:'ገና አልተገመገመም';
+  document.getElementById('addCart').onclick=()=>{doAddCart(); document.getElementById('prodModal').style.display='none';};
+  document.getElementById('buyNow').onclick=()=>{doAddCart(); document.getElementById('prodModal').style.display='none'; switchTab('cartView',document.getElementById('nCart')); setTimeout(openPay,300);};
   document.getElementById('prodModal').style.display='block';
   window.scrollTo(0,0);
 }
-function closeProd(){document.getElementById('prodModal').style.display='none';}
 function chgQ(d){
   curQ=Math.max(1,curQ+d);
   document.getElementById('qNum').innerText=curQ;
   document.getElementById('pmPrice').innerText=(curProd.price*curQ).toLocaleString()+' ብር';
 }
-function addToCheckout(){
+function doAddCart(){
   const shop=curProd.shop||curProd.sn||'';
-  const ex=selectedItems.find(s=>s.name===curProd.name&&s.shop===shop);
-  if(ex) ex.qty+=curQ; else selectedItems.push({...curProd,shop,qty:curQ});
-  updateCheckout();
-  toast('✅ ወደ ምርጫ ተጨምሯል');
-  closeProd();
+  const ex=cart.find(c=>c.name===curProd.name&&c.shop===shop);
+  if(ex) ex.qty+=curQ; else cart.push({id:Date.now(),shop,name:curProd.name,price:curProd.price,img:curProd.img,qty:curQ});
+  updCart(); toast(`✅ ${curQ}x ${curProd.name} ተጨምሯል`);
+  tg.HapticFeedback.impactOccurred('medium');
+}
+function qAdd(o){
+  const shop=o.shop||o.sn||'';
+  const ex=cart.find(c=>c.name===o.name&&c.shop===shop);
+  if(ex) ex.qty++; else cart.push({id:Date.now(),shop,name:o.name,price:o.price,img:o.img,qty:1});
+  updCart(); toast(`✅ ${o.name} ተጨምሯል`);
+  tg.HapticFeedback.impactOccurred('light');
 }
 
-// ─── CHECKOUT ───
-function updateCheckout(){
-  const list=document.getElementById('coList');
-  const wrap=document.getElementById('coSumWrap');
-  const emp=document.getElementById('coEmpty');
-  
-  if(!selectedItems.length){
-    list.innerHTML='';
-    wrap.style.display='none';
-    emp.style.display='block';
-    return;
-  }
-  
-  emp.style.display='none';
-  wrap.style.display='block';
-  let sub=0;
-  
-  list.innerHTML=selectedItems.map(it=>{
-    sub+=it.price*it.qty;
-    return `<div class="co-item">
-      <img src="${it.img}" class="coim" onerror="this.src='https://via.placeholder.com/56'">
-      <div style="flex:1;">
-        <div style="font-weight:900;font-size:13px;color:var(--txt);">${it.name}</div>
-        <div style="font-size:10px;color:var(--txt3);">${it.shop}</div>
-        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
-          <button style="width:24px;height:24px;border-radius:6px;border:none;background:rgba(188,0,0,.1);color:var(--p);font-size:12px;font-weight:900;cursor:pointer;" onclick="chgItemQty('${it.name}','${it.shop}',-1)">－</button>
-          <span style="font-weight:900;font-size:12px;min-width:20px;text-align:center;color:var(--txt);">${it.qty}</span>
-          <button style="width:24px;height:24px;border-radius:6px;border:none;background:rgba(188,0,0,.1);color:var(--p);font-size:12px;font-weight:900;cursor:pointer;" onclick="chgItemQty('${it.name}','${it.shop}',1)">＋</button>
-        </div>
-      </div>
-      <div style="text-align:right;">
-        <div style="font-weight:900;font-size:13px;color:var(--p);">${(it.price*it.qty).toLocaleString()} ብር</div>
-        <button style="background:rgba(231,76,60,.1);color:#e74c3c;border:none;width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:11px;margin-top:4px;" onclick="remItem('${it.name}','${it.shop}')"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-    </div>`;
-  }).join('');
-  
-  const fd=delFee;
-  const g=sub+fd;
-  document.getElementById('coSub').innerText=sub.toLocaleString()+' ብር';
-  document.getElementById('coDel').innerText=fd+' ብር';
-  document.getElementById('coGrand').innerText=g.toLocaleString()+' ብር';
-}
-
-function chgItemQty(name,shop,d){
-  const it=selectedItems.find(s=>s.name===name&&s.shop===shop);
-  if(!it) return;
-  it.qty+=d;
-  if(it.qty<=0) remItem(name,shop);
-  else updateCheckout();
-}
-
-function remItem(name,shop){
-  selectedItems=selectedItems.filter(s=>!(s.name===name&&s.shop===shop));
-  updateCheckout();
-}
-
-// ─── WISHLIST ───
+/* ══════ WISHLIST ══════ */
 function toggleWish(){
   const shop=curProd.shop||curProd.sn||'';
   const idx=wishlist.findIndex(w=>w.name===curProd.name&&w.shop===shop);
-  if(idx>=0){wishlist.splice(idx,1);document.getElementById('pmHeart').classList.remove('liked');}
-  else{wishlist.push({...curProd,shop});document.getElementById('pmHeart').classList.add('liked');}
+  if(idx>=0){wishlist.splice(idx,1); toast('💔 Wishlist ከወጣ'); document.getElementById('pmHeart').classList.remove('liked');}
+  else{wishlist.push({...curProd,shop}); toast('❤️ Wishlist ገባ'); document.getElementById('pmHeart').classList.add('liked');}
   lss('sinq_wish',JSON.stringify(wishlist));
   renderWish();
 }
-
 function renderWish(){
   const grid=document.getElementById('wishGrid');
   const emp=document.getElementById('wishEmpty');
   document.getElementById('stWish').innerText=wishlist.length;
-  
-  if(!wishlist.length){grid.innerHTML='';emp.style.display='block';return;}
+  document.getElementById('wishCount').innerText=wishlist.length+' ምርቶች';
+  if(!wishlist.length){grid.innerHTML=''; emp.style.display='block'; return;}
   emp.style.display='none';
   grid.innerHTML=wishlist.map(it=>`
     <div class="pgc" onclick='openProdRaw(${JSON.stringify(it)})'>
@@ -926,18 +1011,85 @@ function renderWish(){
         <div class="pgn">${it.name}</div>
         <div class="pgbr">${it.brand||''}</div>
         <div class="pgr"><div class="pgp">${it.price.toLocaleString()} ብር</div>
-          <button class="select-btn" onclick='event.stopPropagation();toggleSelect(${JSON.stringify(it)})'><i class="fa-solid fa-plus"></i></button>
+          <button class="pga" onclick='event.stopPropagation();qAdd(${JSON.stringify(it)})'><i class="fa-solid fa-cart-plus"></i></button>
         </div>
       </div>
     </div>`).join('');
 }
 
-// ─── SEARCH ───
+/* ══════ PROMO CODES ══════ */
+function applyPromo(){
+  const code=document.getElementById('promoInp').value.trim().toUpperCase();
+  const p=PROMO_CODES[code];
+  if(!p){toast('❌ ፕሮሞ ኮድ ስህተት'); return;}
+  if(promoApplied===code){toast('⚠️ ኮዱ አስቀድሞ ጥቅም ላይ ዋለ'); return;}
+  promoApplied=code;
+  toast('🎉 '+p.label+' ተፈጻሚ ሆነ!');
+  updCart();
+}
+
+/* ══════ CART ══════ */
+function chgCQ(id,d){
+  const it=cart.find(c=>c.id===id); if(!it) return;
+  it.qty+=d; if(it.qty<=0) cart=cart.filter(c=>c.id!==id);
+  updCart();
+}
+function calcDel(){
+  const c=ls('sinq_loc_coords'); if(!c) return 50;
+  const{lat,lng}=JSON.parse(c);
+  const R=6371,dLat=(lat-KOMBOLCHA.lat)*Math.PI/180,dLon=(lng-KOMBOLCHA.lng)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(KOMBOLCHA.lat*Math.PI/180)*Math.cos(lat*Math.PI/180)*Math.sin(dLon/2)**2;
+  const dist=R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+  document.getElementById('dkm').innerText=dist.toFixed(1);
+  return Math.max(30,Math.floor(30+dist*15));
+}
+function updCart(){
+  delFee=calcDel();
+  const cnt=cart.reduce((s,i)=>s+i.qty,0);
+  const badge=document.getElementById('cBadge');
+  badge.style.display=cnt>0?'block':'none'; badge.innerText=cnt;
+  document.getElementById('cHdrC').innerText=cnt+' እቃዎች';
+  if(!cart.length){
+    document.getElementById('cList').innerHTML='';
+    document.getElementById('cEmpty').style.display='block';
+    document.getElementById('cSumWrap').style.display='none'; return;
+  }
+  document.getElementById('cEmpty').style.display='none';
+  document.getElementById('cSumWrap').style.display='block';
+  let sub=0;
+  document.getElementById('cList').innerHTML=cart.map(it=>{
+    sub+=it.price*it.qty;
+    return `<div class="cit">
+      <img src="${it.img}" class="citim" onerror="this.src='https://via.placeholder.com/56'">
+      <div style="flex:1;">
+        <div style="font-weight:900;font-size:13px;color:var(--txt);">${it.name}</div>
+        <div style="font-size:10px;color:var(--txt3);">${it.shop}</div>
+        <div style="font-size:13px;font-weight:900;background:var(--pg);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-top:2px;">${(it.price*it.qty).toLocaleString()} ብር</div>
+        <div class="qmr">
+          <button class="qmb" onclick="chgCQ(${it.id},-1)">－</button>
+          <span style="font-weight:900;font-size:13px;min-width:17px;text-align:center;color:var(--txt);">${it.qty}</span>
+          <button class="qmb" onclick="chgCQ(${it.id},1)">＋</button>
+        </div>
+      </div>
+      <button class="delb" onclick="chgCQ(${it.id},-99)"><i class="fa-solid fa-xmark"></i></button>
+    </div>`;
+  }).join('');
+  const p=PROMO_CODES[promoApplied];
+  discount=p?(p.del?delFee:Math.floor(sub*p.pct/100)):0;
+  document.getElementById('cSub').innerText=sub.toLocaleString()+' ብር';
+  document.getElementById('cDisc').innerText='- '+discount.toLocaleString()+' ብር';
+  const fd=p&&p.del?0:delFee;
+  const grand=sub+fd-discount;
+  document.getElementById('cDel').innerText=fd+' ብር';
+  document.getElementById('cGrand').innerText=Math.max(0,grand).toLocaleString()+' ብር';
+}
+
+/* ══════ SEARCH ══════ */
 function doSearch(){
   const q=document.getElementById('sBar').value.toLowerCase().trim();
   const wrap=document.getElementById('srWrap'),grid=document.getElementById('shopGrid');
   if(!q){wrap.style.display='none';grid.style.display='grid';return;}
-  grid.style.display='none';wrap.style.display='block';
+  grid.style.display='none'; wrap.style.display='block';
   let res=[];
   SHOPS.forEach(s=>{
     if(s.name.toLowerCase().includes(q)) res.push({type:'shop',data:s});
@@ -951,54 +1103,54 @@ function doSearch(){
       <img src="${it.img}" class="pgi"><div class="pgb">
       <div class="pgn">${it.name}</div><div class="pgbr">${it.brand||''} · ${s.name}</div>
       <div class="pgr"><div class="pgp">${it.price.toLocaleString()} ብር</div>
-      <button class="select-btn" onclick='event.stopPropagation();toggleSelect(${JSON.stringify({...it,shop:s.name})})'><i class="fa-solid fa-check"></i></button>
+      <button class="pga" onclick='event.stopPropagation();qAdd(${JSON.stringify({...it,shop:s.name})})'><i class="fa-solid fa-plus"></i></button>
       </div></div></div>`;
   }).join('')+'</div>';
 }
 
-// ─── PAYMENT ───
-function openPayment(){
-  if(!ls('sinq_loc')){toast('❌ ሎኬሽን ያስምዝግቡ');return;}
-  const lm=document.getElementById('landmarkInp')?.value?.trim();
-  if(!lm){toast('❌ Landmark ያስገቡ');return;}
-  if(!selectedItems.length){toast('❌ ምርት ይምረጡ');return;}
-  if(Date.now()-lastOrd<60000){toast('⚠️ 1 ደቂቃ ይጠብቁ');return;}
-  
-  const sub=selectedItems.reduce((s,i)=>s+i.price*i.qty,0);
-  const g=sub+delFee;
+/* ══════ PAYMENT ══════ */
+function openPay(){
+  if(!ls('sinq_loc')){toast('❌ ሎኬሽን ያስምዝግቡ'); switchTab('profileView',null); return;}
+  const lm=document.getElementById('lmInp')?.value?.trim();
+  if(!lm){toast('❌ Landmark ያስገቡ'); return;}
+  if(Date.now()-lastOrd<60000){toast('⚠️ 1 ደቂቃ ይጠብቁ'); return;}
+  const sub=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const p=PROMO_CODES[promoApplied];
+  const fd=p&&p.del?0:delFee;
+  const g=Math.max(0,sub+fd-discount);
   document.getElementById('pTot').innerText=g.toLocaleString()+' ብር';
   document.getElementById('pTot2').innerText=g.toLocaleString()+' ብር';
   document.getElementById('ps1').style.display='block';
   document.getElementById('ps2').style.display='none';
   document.getElementById('payOv').style.display='flex';
-  verifyOk=false;verifyData=null;ssFile=null;
+  verifyOk=false; verifyData=null; ssFile=null;
   document.getElementById('confBtn').disabled=true;
   document.getElementById('confBtn').style.opacity='.5';
+  document.getElementById('verifyStatus').style.display='none';
 }
-
-function closePayment(){document.getElementById('payOv').style.display='none';}
-
-function showPayStep(m,a){
-  payMeth=m;payAcc=a;
+function closePay(){document.getElementById('payOv').style.display='none';}
+function showPay(m,a){
+  payMeth=m; payAcc=a;
   document.getElementById('pMeth').innerText=m;
   document.getElementById('pAcc').innerText=a;
   document.getElementById('ps1').style.display='none';
   document.getElementById('ps2').style.display='block';
   document.getElementById('ssIn').value='';
-  document.getElementById('ssPrev').innerHTML='<i class="fa-solid fa-cloud-arrow-up" style="font-size:26px;color:var(--txt3);margin-bottom:7px;display:block;"></i><div style="font-weight:700;color:var(--txt3);font-size:12px;">ደረሰኝ ይያይዙ</div>';
+  document.getElementById('ssPrev').innerHTML='<i class="fa-solid fa-cloud-arrow-up" style="font-size:26px;color:var(--txt3);margin-bottom:7px;display:block;"></i><div style="font-weight:700;color:var(--txt3);font-size:12px;">የደረሰኝ ፎቶ ያያይዙ</div><div style="font-size:10px;color:var(--txt3);margin-top:4px;">CBE · Telebirr · Dashen · Awash</div>';
   document.getElementById('verifyStatus').style.display='none';
   document.getElementById('confBtn').disabled=true;
   document.getElementById('confBtn').style.opacity='.5';
 }
+function backPay(){document.getElementById('ps2').style.display='none'; document.getElementById('ps1').style.display='block';}
+function cpAcc(){navigator.clipboard?.writeText(payAcc); toast('✅ ቁጥሩ ኮፒ ተደርጓል');}
 
-function backPayment(){document.getElementById('ps2').style.display='none';document.getElementById('ps1').style.display='block';}
-
-function cpAcc(){navigator.clipboard?.writeText(payAcc);toast('✅ ኮፒ ተደርጓል');}
-
+/* ══════ RECEIPT PICK → CLAUDE AI VERIFY ══════ */
 async function onSSPick(e){
-  ssFile=e.target.files[0];if(!ssFile) return;
+  ssFile=e.target.files[0]; if(!ssFile) return;
+  // Show preview
   const url=URL.createObjectURL(ssFile);
   document.getElementById('ssPrev').innerHTML=`<img src="${url}" style="width:100%;border-radius:10px;max-height:150px;object-fit:cover;">`;
+  // Start Claude AI verification automatically
   await verifyReceiptWithClaude(ssFile);
 }
 
@@ -1006,86 +1158,165 @@ async function verifyReceiptWithClaude(file){
   const statusEl=document.getElementById('verifyStatus');
   statusEl.style.display='block';
   statusEl.className='verify-status vs-checking';
-  statusEl.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Claude AI ደረሰኙን ይገምግማል...';
+  statusEl.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Claude AI ደረሰኙን እያረጋገጠ ነው...<div class="verify-detail">ሰከንድ ይጠብቁ</div>';
   document.getElementById('confBtn').disabled=true;
+  document.getElementById('confBtn').style.opacity='.5';
 
   try{
+    // Convert image to base64
     const b64=await toB64(file);
     const b64data=b64.split(',')[1];
     const mtype=file.type||'image/jpeg';
+
+    // Expected payment details for verification
     const expAmount=document.getElementById('pTot2').innerText.replace(' ብር','').replace(',','');
     const expAcc=payAcc;
     const expMethod=payMeth;
 
-    const prompt=`Verify this payment receipt. Extract: Bank, Amount, Receiver account, Status.
-Expected: ${expAmount} ETB to ${expAcc} via ${expMethod}.
-Respond ONLY in JSON: {"is_valid":true/false,"bank":"","amount":0,"receiver":"","status":"","confidence":"HIGH"}`;
+    const prompt=`You are a receipt verification AI for Sinq Delivery app in Ethiopia.
+Analyze this payment receipt screenshot carefully.
+
+TASK: Extract and verify the following from the receipt:
+1. Bank/Service name (CBE, Telebirr, Dashen, Awash, BOA, Zemen, etc.)
+2. Amount paid (in ETB/birr)
+3. Receiver account number or phone number
+4. Transaction date and time
+5. Transaction status (SUCCESS/FAILED/PENDING)
+6. Reference/Transaction number
+
+EXPECTED VALUES TO VERIFY:
+- Expected Amount: ${expAmount} ETB
+- Expected Receiver Account: ${expAcc}
+- Payment Method: ${expMethod}
+
+VERIFICATION RULES:
+- Amount must match within ±5 ETB tolerance
+- Receiver account must contain the digits: ${expAcc}
+- Status must be SUCCESS or COMPLETED
+- Receipt must be from an Ethiopian bank or Telebirr
+
+Respond ONLY in this exact JSON format (no markdown, no explanation):
+{
+  "is_valid": true or false,
+  "bank": "bank name",
+  "amount": number,
+  "receiver": "account/phone",
+  "date": "date string",
+  "reference": "transaction ref",
+  "status": "SUCCESS or other",
+  "reason": "why valid or invalid in Amharic (short)",
+  "confidence": "HIGH or MEDIUM or LOW"
+}`;
 
     const res=await fetch("https://api.anthropic.com/v1/messages",{
-      method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:300,messages:[{role:"user",content:[{type:"image",source:{type:"base64",media_type:mtype,data:b64data}},{type:"text",text:prompt}]}]})
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:"claude-sonnet-4-20250514",
+        max_tokens:500,
+        messages:[{
+          role:"user",
+          content:[
+            {type:"image",source:{type:"base64",media_type:mtype,data:b64data}},
+            {type:"text",text:prompt}
+          ]
+        }]
+      })
     });
 
     const data=await res.json();
     const rawText=data.content?.map(c=>c.text||'').join('')||'{}';
+
+    // Parse JSON from Claude response
     let result={};
-    try{const jsonMatch=rawText.match(/\{[\s\S]*\}/);if(jsonMatch) result=JSON.parse(jsonMatch[0]);}catch(pe){}
+    try{
+      const jsonMatch=rawText.match(/\{[\s\S]*\}/);
+      if(jsonMatch) result=JSON.parse(jsonMatch[0]);
+    }catch(pe){result={is_valid:false,reason:'ምላሽ ማንበብ አልተቻለም'};}
 
     verifyData=result;
+
     if(result.is_valid===true){
       verifyOk=true;
       statusEl.className='verify-status vs-ok';
-      statusEl.innerHTML=`<i class="fa-solid fa-circle-check"></i> <b>Claude: ደረሰኝ ✅</b>`;
+      statusEl.innerHTML=`
+        <i class="fa-solid fa-circle-check"></i> <b>Claude AI: ደረሰኝ ትክክለኛ ነው ✅</b>
+        <div class="verify-detail">
+          🏦 ባንክ: ${result.bank||'—'}<br>
+          💰 ክፍያ: ${result.amount||'—'} ብር<br>
+          📋 Ref: ${result.reference||'—'}<br>
+          📅 ቀን: ${result.date||'—'}<br>
+          🔒 Confidence: ${result.confidence||'—'}
+        </div>`;
       document.getElementById('confBtn').disabled=false;
       document.getElementById('confBtn').style.opacity='1';
-    }else{
+      document.getElementById('confBtn').innerHTML='<i class="fa-solid fa-shield-halved"></i> አረጋግጥ እና እዘዝ ✅';
+    } else {
       verifyOk=false;
       statusEl.className='verify-status vs-fail';
-      statusEl.innerHTML=`<i class="fa-solid fa-circle-xmark"></i> <b>ደረሰኝ ❌</b>`;
+      statusEl.innerHTML=`
+        <i class="fa-solid fa-circle-xmark"></i> <b>AI: ደረሰኝ አልተቀበለም ❌</b>
+        <div class="verify-detail">${result.reason||'ትክክለኛ ደረሰኝ አይደለም።'}</div>`;
     }
+
   }catch(err){
-    verifyOk=true;
+    // Network error — fallback: allow with manual review flag
+    verifyOk=true; // allow but flag for manual
     statusEl.className='verify-status vs-warn';
-    statusEl.innerHTML=`<i class="fa-solid fa-triangle-exclamation"></i> <b>Manual Review ⚠️</b>`;
+    statusEl.innerHTML=`
+      <i class="fa-solid fa-triangle-exclamation"></i> <b>AI ማረጋገጫ አልተቻለም ⚠️</b>
+      <div class="verify-detail">ደረሰኙ ለአድሚን ሰው ይጣራል (Manual Review)</div>`;
     document.getElementById('confBtn').disabled=false;
     document.getElementById('confBtn').style.opacity='1';
+    document.getElementById('confBtn').innerHTML='<i class="fa-solid fa-triangle-exclamation"></i> Manual Review ሆኖ እዘዝ';
   }
 }
 
+/* ══════ PLACE ORDER ══════ */
 async function placeOrder(){
-  if(!ssFile){toast('❌ ደረሰኝ ያያይዙ');return;}
-  const btn=document.getElementById('confBtn');btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i>';btn.disabled=true;
-  const nm=ls('sinq_name'),ph=ls('sinq_phone'),tgId=ls('sinq_tgid');
-  const lm=document.getElementById('landmarkInp')?.value||'';
-  const sub=selectedItems.reduce((s,i)=>s+i.price*i.qty,0);
-  const g=sub+delFee;
-  const items=selectedItems.map(i=>`- ${i.qty}x ${i.name} (${i.shop}) = ${(i.price*i.qty).toLocaleString()} ብር`).join('\n');
-  const msg=`🚨 *Sinq v4.1 ትዕዛዝ*\n\n👤 ${nm}\n📱 ${ph}\n🏠 ${lm}\n\n🛍 *እቃዎች:*\n${items}\n\n💰 ዴሊቨሪ: ${delFee} ብር\n💰 ጠቅላላ: ${g.toLocaleString()} ብር\n💳 ክፍያ: ${payMeth}`;
-  const fd=new FormData();fd.append('chat_id',CFG.adminId);fd.append('photo',ssFile);fd.append('caption',msg);fd.append('parse_mode','Markdown');
-  
+  if(!ssFile){toast('❌ ደረሰኝ ያያይዙ'); return;}
+  const btn=document.getElementById('confBtn'); btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i>...'; btn.disabled=true;
+  const nm=ls('sinq_name'), ph=ls('sinq_phone'), tgId=ls('sinq_tgid');
+  const lm=document.getElementById('lmInp')?.value||'';
+  const sub=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const prom=PROMO_CODES[promoApplied];
+  const fd=prom&&prom.del?0:delFee;
+  const g=Math.max(0,sub+fd-discount);
+  const items=cart.map(i=>`- ${i.qty}x ${i.name} (${i.shop}) = ${(i.price*i.qty).toLocaleString()} ብር`).join('\n');
+  const coords=ls('sinq_loc_coords');
+  let mapLink='(ካርታ የለም)';
+  if(coords){const c=JSON.parse(coords); mapLink=`https://www.google.com/maps?q=${c.lat},${c.lng}`;}
+  const aiStatus=verifyData?
+    (verifyData.is_valid?`✅ AI Verified (${verifyData.confidence}) — ${verifyData.bank} ${verifyData.amount}ብር Ref:${verifyData.reference}`:'⚠️ AI Unverified — Manual Check')
+    :'⚠️ AI Offline — Manual Check';
+  const msg=`🚨 *Sinq v4 ትዕዛዝ*\n\n👤 *ስም:* ${nm}\n📱 *ስልክ:* \`${ph}\`\n📍 *ቦታ:* ${mapLink}\n🏠 *Landmark:* ${lm}\n\n🛍 *እቃዎች:*\n${items}\n\n💰 *ዴሊቨሪ:* ${fd} ብር\n🎟 *ቅናሽ:* -${discount} ብር\n💰 *ጠቅላላ:* ${g.toLocaleString()} ብር\n💳 *ክፍያ:* ${payMeth}\n\n🤖 *AI ደረሰኝ:* ${aiStatus}\n\n👉 tg://user?id=${tgId}`;
+  const fd2=new FormData(); fd2.append('chat_id',CFG.adminId); fd2.append('photo',ssFile); fd2.append('caption',msg); fd2.append('parse_mode','Markdown');
   try{
-    const r=await fetch(`https://api.telegram.org/bot${CFG.orderBot}/sendPhoto`,{method:'POST',body:fd});
+    const r=await fetch(`https://api.telegram.org/bot${CFG.orderBot}/sendPhoto`,{method:'POST',body:fd2});
     const d=await r.json();
     if(d.ok){
-      const newOrd={id:Date.now(),items:[...selectedItems],grand:g,method:payMeth,date:new Date().toLocaleDateString('am-ET'),status:'pending'};
+      const newOrd={id:Date.now(),items:[...cart],grand:g,method:payMeth,date:new Date().toLocaleDateString('am-ET'),status:'pending',aiVerified:verifyOk};
       orders.unshift(newOrd);
       lss('sinq_orders',JSON.stringify(orders));
+      // Award loyalty points (1 pt per 10 birr)
       pts+=Math.floor(g/10);
       lss('sinq_pts',pts);
       document.getElementById('ptsVal').innerText=pts.toLocaleString();
       document.getElementById('stOrd').innerText=orders.length;
-      selectedItems=[];
-      document.getElementById('landmarkInp').value='';
-      updateCheckout();renderOrders();closePayment();
+      cart=[]; discount=0; promoApplied='';
+      if(document.getElementById('lmInp')) document.getElementById('lmInp').value='';
+      if(document.getElementById('promoInp')) document.getElementById('promoInp').value='';
+      updCart(); renderOrders(); closePay();
       lastOrd=Date.now();
-      toast('🎉 ትዕዛዝ ተልኳል!');
+      toast('🎉 ትዕዛዝ ተልኳል! +'+Math.floor(g/10)+' pts ⭐');
+      // Show rating modal after 2s
       setTimeout(()=>openRate(newOrd),2500);
-    }else toast('❌ ፋይሉ ትልቅ');
+    } else toast('❌ ፋይሉ ትልቅ ሊሆን ይችላል');
   }catch(e){toast('❌ ኢንተርኔት ያረጋግጡ');}
-  btn.innerHTML='አረጋግጥ';btn.disabled=false;
+  btn.innerHTML='<i class="fa-solid fa-shield-halved"></i> አረጋግጥ እና እዘዝ'; btn.disabled=false;
 }
 
-// ─── ORDERS ───
+/* ══════ ORDERS ══════ */
 function renderOrders(){
   const list=document.getElementById('ordList');
   if(!orders.length){list.innerHTML='<div class="empty"><div class="ei">📦</div><p>ምንም ትዕዛዝ የለም</p></div>';return;}
@@ -1094,23 +1325,25 @@ function renderOrders(){
     return `<div class="orc">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;">
         <div style="font-weight:900;color:var(--txt);">#${String(o.id).slice(-6)}</div>
-        <div class="badge ${o.status==='delivered'?'bok':'bwarn'}">${o.status==='delivered'?'✅':'⏳'}</div>
+        <div class="badge ${o.status==='delivered'?'bok':'bwarn'}">${o.status==='delivered'?'✅ ደርሷል':'⏳ በሂደት'}</div>
       </div>
       <div style="font-size:11px;color:var(--txt3);margin-bottom:6px;">${o.date}</div>
-      ${o.status!=='delivered'&&mins>0?`<div class="ctimer">≈ ${mins} ደቂቃ</div>`:''}
-      ${o.items.map(i=>`<div style="font-size:12px;display:flex;justify-content:space-between;padding:3px 0;color:var(--txt2);"><span>${i.qty}x ${i.name}</span><span>${(i.price*i.qty).toLocaleString()} ብር</span></div>`).join('')}
-      <div style="display:flex;justify-content:space-between;margin-top:9px;font-weight:900;">
-        <span>ጠቅላላ</span><span style="color:var(--p);">${o.grand.toLocaleString()} ብር</span>
+      ${o.status!=='delivered'&&mins>0?`<div class="ctimer"><i class="fa-solid fa-clock"></i> ≈ ${mins} ደቂቃ ይቀራል</div>`:''}
+      ${o.aiVerified?'<div style="font-size:10px;color:var(--ok);margin-top:4px;"><i class="fa-solid fa-robot"></i> AI Verified</div>':''}
+      ${o.items.map(i=>`<div style="font-size:12px;display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--br);color:var(--txt2);"><span>${i.qty}x ${i.name}</span><span style="font-weight:700;">${(i.price*i.qty).toLocaleString()} ብር</span></div>`).join('')}
+      <div style="display:flex;justify-content:space-between;margin-top:9px;font-weight:900;font-size:14px;">
+        <span style="color:var(--txt);">ጠቅላላ</span><span style="color:var(--p);">${o.grand.toLocaleString()} ብር</span>
       </div>
-      ${o.status!=='rated'?`<button onclick="openRate(orders.find(x=>x.id===${o.id}))" style="margin-top:8px;background:rgba(241,196,15,.12);color:#a07700;border:none;padding:7px 14px;border-radius:9px;font-weight:900;font-size:11px;cursor:pointer;width:100%;">⭐ ይገምግሙ</button>`:'<div style="font-size:11px;color:var(--txt3);margin-top:6px;text-align:center;">✅ ተገምግሟል</div>'}
+      ${o.status!=='rated'?`<button onclick="openRate(orders.find(x=>x.id===${o.id}))" style="margin-top:8px;background:rgba(241,196,15,.12);color:#a07700;border:none;padding:7px 14px;border-radius:9px;font-weight:900;font-size:11px;cursor:pointer;width:100%;">⭐ ትዕዛዙን ይገምግሙ</button>`:'<div style="font-size:11px;color:var(--txt3);margin-top:6px;text-align:center;">✅ ተገምግሟል</div>'}
     </div>`;
   }).join('');
 }
 
-// ─── RATINGS ───
+/* ══════ RATINGS ══════ */
 function openRate(o){
   if(!o) return;
-  curRateOrder=o;curStar=0;
+  curRateOrder=o; curStar=0;
+  document.getElementById('rateOrderId').innerText='ትዕዛዝ #'+String(o.id).slice(-6);
   document.querySelectorAll('.star').forEach(s=>s.classList.remove('on'));
   document.getElementById('rateComment').value='';
   document.getElementById('rateModal').style.display='flex';
@@ -1121,21 +1354,31 @@ function setStar(n){
   document.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('on',i<n));
 }
 function submitRate(){
-  if(!curStar){toast('❌ ኮከብ ይምረጡ');return;}
+  if(!curStar){toast('❌ ኮከብ ይምረጡ'); return;}
+  const comment=document.getElementById('rateComment').value.trim();
+  // Update ratings per product
   if(curRateOrder&&curRateOrder.items){
-    pts+=10;lss('sinq_pts',pts);
-    document.getElementById('ptsVal').innerText=pts.toLocaleString();
+    curRateOrder.items.forEach(it=>{
+      const key=it.name+'|'+it.shop;
+      if(!ratings[key]) ratings[key]={avg:curStar,count:1};
+      else{const c=ratings[key].count+1; ratings[key]={avg:(ratings[key].avg*(c-1)+curStar)/c,count:c};}
+    });
+    lss('sinq_ratings',JSON.stringify(ratings));
+    // Mark order as rated
     const idx=orders.findIndex(o=>o.id===curRateOrder.id);
-    if(idx>=0){orders[idx].status='rated';lss('sinq_orders',JSON.stringify(orders));}
+    if(idx>=0){orders[idx].status='rated'; lss('sinq_orders',JSON.stringify(orders));}
+    // Bonus points for rating
+    pts+=10; lss('sinq_pts',pts);
+    document.getElementById('ptsVal').innerText=pts.toLocaleString();
   }
-  closeRate();renderOrders();
-  toast('⭐ +10 pts');
+  closeRate(); renderOrders();
+  toast('⭐ ምስጋና! +10 loyalty points');
 }
 
-// ─── CHAT ───
+/* ══════ CHAT (Claude AI) ══════ */
 function renderChat(){
   const wrap=document.getElementById('msgsWrap');
-  if(!chatMsgs.length) chatMsgs=[{role:'bot',text:'ሰላም! 👋 ወደ Sinq Support!',time:now()}];
+  if(!chatMsgs.length) chatMsgs=[{role:'bot',text:'ሰላም! 👋 ወደ Sinq v4 ድጋፍ እንኳን ደህና መጡ። ስለ ትዕዛዝ፣ ዴሊቨሪ ወይም ምርቶች ሊጠይቁ ይችላሉ!',time:now()}];
   wrap.innerHTML=chatMsgs.map(m=>`
     <div style="display:flex;flex-direction:column;align-items:${m.role==='bot'?'flex-end':'flex-start'};">
       <div class="msg ${m.role==='bot'?'mbot':'musr'}">${m.text}</div>
@@ -1145,35 +1388,39 @@ function renderChat(){
 }
 async function sendChat(){
   const inp=document.getElementById('chatInp');
-  const txt=inp.value.trim();if(!txt) return;
+  const txt=inp.value.trim(); if(!txt) return;
   chatMsgs.push({role:'user',text:txt,time:now()});
-  inp.value='';renderChat();
-  chatMsgs.push({role:'bot',text:'<i class="fa-solid fa-spinner fa-spin"></i>',time:now()});
+  inp.value=''; renderChat();
+  chatMsgs.push({role:'bot',text:'<i class="fa-solid fa-spinner fa-spin"></i>...',time:now()});
   renderChat();
   try{
     const res=await fetch("https://api.anthropic.com/v1/messages",{
       method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:200,system:"Sinq Support AI - Reply in Amharic, 1-2 sentences max.",messages:[{role:"user",content:txt}]})
+      body:JSON.stringify({
+        model:"claude-sonnet-4-20250514",max_tokens:300,
+        system:"You are Sinq Support AI for Sinq delivery app in Kombolcha, Ethiopia (v4). Reply in Amharic only. Be helpful, warm, concise. You handle: order questions, delivery time, payment issues, shop info, product recommendations. Max 2-3 sentences.",
+        messages:[{role:"user",content:txt}]
+      })
     });
     const data=await res.json();
-    const reply=data.content?.map(c=>c.text||'').join('')||'ምላሽ አልሰጠም';
+    const reply=data.content?.map(c=>c.text||'').join('')||'ምላሽ አልሰጠም።';
     chatMsgs[chatMsgs.length-1]={role:'bot',text:reply,time:now()};
-  }catch(e){chatMsgs[chatMsgs.length-1]={role:'bot',text:'ሞላ? ቆይቶ ይሞክሩ',time:now()};}
+  }catch(e){chatMsgs[chatMsgs.length-1]={role:'bot',text:'አሁን ማገናኘት አልተቻለም። ቆይቶ ይሞክሩ።',time:now()};}
   lss('sinq_chat',JSON.stringify(chatMsgs.slice(-40)));
   renderChat();
 }
 function now(){return new Date().toLocaleTimeString('am-ET',{hour:'2-digit',minute:'2-digit'});}
 
-// ─── THEME ───
+/* ══════ THEME ══════ */
 function applyTheme(){
   isDark=ls('sinq_theme')==='dark';
   document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
-  const b=document.getElementById('thbtn');if(b) b.innerHTML=isDark?'<i class="fa-solid fa-sun"></i>':'<i class="fa-solid fa-moon"></i>';
-  const l=document.getElementById('thlbl');if(l) l.innerText=isDark?'Dark':'Light';
+  const b=document.getElementById('thbtn'); if(b) b.innerHTML=isDark?'<i class="fa-solid fa-sun"></i>':'<i class="fa-solid fa-moon"></i>';
+  const l=document.getElementById('thlbl'); if(l) l.innerText=isDark?'Dark Mode':'Light Mode';
 }
-function toggleTheme(){isDark=!isDark;lss('sinq_theme',isDark?'dark':'light');applyTheme();}
+function toggleTheme(){isDark=!isDark; lss('sinq_theme',isDark?'dark':'light'); applyTheme();}
 
-// ─── LOCATION ───
+/* ══════ LOCATION ══════ */
 function doLoc(){
   if(!navigator.geolocation){toast('❌ GPS አይሰራም');return;}
   document.getElementById('hLoc').innerText='📡 ...';
@@ -1181,23 +1428,60 @@ function doLoc(){
     lss('sinq_loc','1');
     lss('sinq_loc_coords',JSON.stringify({lat:p.coords.latitude,lng:p.coords.longitude}));
     document.getElementById('hLoc').innerText='✅ ተመዝግቧል';
-    toast('📍 ተመዝግቧል!');
-  },()=>{toast('❌ GPS ያብሩ');document.getElementById('hLoc').innerText='ኮምቦልቻ';});
+    const fee=calcDel(); lss('sinq_del',fee);
+    toast('📍 ቦታዎ ተመዝግቧል! ዴሊቨሪ: '+fee+' ብር');
+  },()=>{toast('❌ GPS ያብሩ'); document.getElementById('hLoc').innerText='ኮምቦልቻ';});
 }
 
-// ─── MISC ───
-function doLogout(){if(confirm('ውጣ?')){localStorage.clear();location.reload();}}
+/* ══════ KYC ══════ */
+async function sendKYC(){
+  const ph=document.getElementById('idPh').files[0]; if(!ph){toast('❌ መታወቂያ ያያይዙ');return;}
+  const btn=document.getElementById('kycBtn'); btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i>'; btn.disabled=true;
+  const fd=new FormData(); fd.append('chat_id',CFG.adminId); fd.append('photo',ph);
+  fd.append('caption',`🚨 *KYC v4*\n👤 ${ls('sinq_name')}\n📱 ${ls('sinq_phone')}\n🔑 \`${CFG.KYC}\``);
+  fd.append('parse_mode','Markdown');
+  try{await fetch(`https://api.telegram.org/bot${CFG.sellerBot}/sendPhoto`,{method:'POST',body:fd}); toast('✅ ተልኳል!');}
+  catch(e){toast('❌ ኢንተርኔት ያረጋግጡ');}
+  btn.innerHTML='ለማረጋገጫ ላክ'; btn.disabled=false;
+}
+function checkKYC(){
+  if(document.getElementById('kycCode').value===CFG.KYC){lss('sinq_kyc',btoa(CFG.KYC)); unlockSeller(); toast('🎉 ተረጋጋጠ!');}
+  else toast('❌ ኮዱ ስህተት');
+}
+function unlockSeller(){
+  document.getElementById('kycBox').style.display='none';
+  document.getElementById('sellBox').style.display='block';
+  const b=document.getElementById('vBadge'); b.className='bv'; b.innerHTML='<i class="fa-solid fa-circle-check"></i> Verified Seller';
+}
+
+/* ══════ SELL ══════ */
+async function uploadProd(){
+  if(Date.now()-lastUp<30000){toast('⚠️ 30 ሰከንድ ይጠብቁ');return;}
+  const ph=document.getElementById('sPh').files[0],nm=document.getElementById('sNm').value.trim(),pr=document.getElementById('sPr').value.trim(),de=document.getElementById('sDe').value.trim();
+  if(!ph||!nm||!pr){toast('❌ ሁሉንም ያስገቡ');return;}
+  const btn=document.getElementById('sellBtn'); btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i>'; btn.disabled=true;
+  const fd=new FormData(); fd.append('chat_id',CFG.adminId); fd.append('photo',ph);
+  fd.append('caption',`✅ *Verified Seller ምርት v4*\n🛍 *${nm}*\n📝 ${de}\n💰 ${pr} ብር\n👤 ${ls('sinq_name')}`);
+  fd.append('parse_mode','Markdown');
+  try{await fetch(`https://api.telegram.org/bot${CFG.sellerBot}/sendPhoto`,{method:'POST',body:fd}); toast('✅ ምርትዎ ደርሷል!'); lastUp=Date.now();}
+  catch(e){toast('❌ ኢንተርኔት ያረጋግጡ');}
+  btn.innerHTML='<i class="fa-solid fa-upload"></i> እቃ ለባያ ላይ አውጣ'; btn.disabled=false;
+}
+
+/* ══════ MISC ══════ */
+function chgPic(e){const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=ev=>{lss('sinq_pic',ev.target.result); document.getElementById('avImg').src=ev.target.result;}; r.readAsDataURL(f);}
+function doLogout(){if(confirm('ከሲንቅ ይውጡ?')){localStorage.clear(); location.reload();}}
 function switchTab(id,el){
   document.querySelectorAll('.vs').forEach(v=>v.classList.remove('a'));
-  const v=document.getElementById(id);if(v) v.classList.add('a');
+  const v=document.getElementById(id); if(v) v.classList.add('a');
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('a'));
   if(el) el.classList.add('a');
 }
-function shareApp(){if(navigator.share){navigator.share({title:'Sinq v4.1',text:'Sinq Delivery!',url:'https://t.me/SinqDelivery'});}else{navigator.clipboard?.writeText('https://t.me/SinqDelivery');toast('🔗 ኮፒ');}}
-function toast(msg){const t=document.getElementById('toast');t.innerText=msg;t.classList.add('sh');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('sh'),3200);}
+function shareApp(){if(navigator.share){navigator.share({title:'Sinq v4',text:'Sinq Delivery!',url:'https://t.me/SinqDelivery'});}else{navigator.clipboard?.writeText('https://t.me/SinqDelivery'); toast('🔗 ሊንክ ኮፒ ተደርጓል');}}
+function toast(msg){const t=document.getElementById('toast'); t.innerText=msg; t.classList.add('sh'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('sh'),3200);}
 function ls(k){return localStorage.getItem(k);}
 function lss(k,v){localStorage.setItem(k,v);}
-async function toB64(f){return new Promise(res=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.readAsDataURL(f);});}
+async function toB64(f){return new Promise(res=>{const r=new FileReader(); r.onload=e=>res(e.target.result); r.readAsDataURL(f);});}
 </script>
 </body>
 </html>
